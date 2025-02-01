@@ -32,8 +32,7 @@ const index = () => {
 
   const signUp = async () => {
     try {
-      const user = await createUserWithEmailAndPassword(auth, email, password)
-      if (user) router.replace('/(tabs)');
+      router.push('/(login)/register');
     } catch (error: any) {
       console.log(error)
       alert('Sign in failed: ' + error.message);
