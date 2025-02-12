@@ -13,6 +13,7 @@ import { router } from 'expo-router'
 import { Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView } from 'react-native'
 import { auth } from '../../FirebaseConfig'
 import React, { useState } from 'react'
+import { db } from '../../FirebaseConfig'
 
 import { useEffect } from 'react';
 import { BackHandler } from 'react-native';
@@ -29,15 +30,32 @@ export default function RegisterScreen() {
         return () => backHandler.remove(); // Cleanup
       }, []);
     
-
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
   
 const signUp = async () => {
+
+    if(firstName.trim().length === 0 || lastName.trim().length || email.trim().length )
+    {
+      alert('Please fill out all fields!');
+      return;
+    }
+    if (password === confirmPassword)
+    {
+      alert('Passwords do not match!');
+      return;
+    }
+    // Add some regex logic here for password complexity. 
+    // allow these chars 0-9A-Za-z/_-!, 8 chars, etc
+
     try {
       const user = await createUserWithEmailAndPassword(auth, email, password)
       if (user)
       {
+        
         alert("Account created succesfully!");
         auth.signOut();
         router.replace('/(login)');
@@ -51,8 +69,11 @@ const signUp = async () => {
   return (
       <SafeAreaView style={styles.container}>
         <Text style={styles.title}>Create a new account</Text>
-        <TextInput style={styles.textInput} placeholder="email" value={email} onChangeText={setEmail} />
-        <TextInput style={styles.textInput} placeholder="password" value={password} onChangeText={setPassword} secureTextEntry/>
+        <TextInput style={styles.textInput} placeholder="First Name" value={firstName} onChangeText={setFirstName} />
+        <TextInput style={styles.textInput} placeholder="Last Name" value={lastName} onChangeText={setLastName} />
+        <TextInput style={styles.textInput} placeholder="Email" autoCapitalize='none' value={email} onChangeText={setEmail} />
+        <TextInput style={styles.textInput} placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry/>
+        <TextInput style={styles.textInput} placeholder="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry/>
         <TouchableOpacity style={styles.button} onPress={signUp}>
           <Text style={styles.text}>Create</Text>
         </TouchableOpacity>
