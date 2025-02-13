@@ -23,7 +23,15 @@ const index = () => {
   const signIn = async () => {
     try {
       const user = await signInWithEmailAndPassword(auth, email, password)
-      if (user) router.replace('/(tabs)');
+      if (user){
+        if (auth.currentUser?.emailVerified){
+          router.replace('/(tabs)');
+        }
+        else{
+          alert('Your email is not authenticated: ' + auth.currentUser?.email + '\nSend new link? (TODO)');
+          auth.signOut()
+        }
+      } 
     } catch (error: any) {
       console.log(error)
       alert('Sign in failed: ' + error.message);

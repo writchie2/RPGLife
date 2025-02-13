@@ -10,7 +10,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'fire
 import { router } from 'expo-router'
 import { Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView } from 'react-native'
 import { auth } from '../../FirebaseConfig'
-import { validatePassword } from 'firebase/auth'
+import { validatePassword, sendEmailVerification } from 'firebase/auth'
 import React, { useState } from 'react'
 import { db } from '../../FirebaseConfig'
 import { setDoc, doc, query, where } from 'firebase/firestore';
@@ -69,25 +69,34 @@ const signUp = async () => {
       const user = await createUserWithEmailAndPassword(auth, email, password)
       if (user)
       {
-        
-        alert("Account created succesfully!");
-        if(auth.currentUser?.uid){
-          await setDoc(doc(db, "users", auth.currentUser.uid), {
+        const curUser = auth.currentUser
+
+        if(curUser?.uid){
+          await setDoc(doc(db, "users", curUser.uid), {
             username: userName,
             email: email,
             birthday: date.toDateString()
           });
-          
-      }
-      else {
-        alert("Database did not create a new doc for new user");
+          try{
+            const verStatus = sendEmailVerification(curUser);
           }
+          catch(error: any){
+            console.log(error)
+            alert('Email verfication failed: ' + error.message +'\nPlease contact support.');
+          }
+        }
+        else {
+          alert("Database did not create a new doc for new user");
+          }
+
+        alert("Account created succesfully!\nVerification email sent to "+ curUser?.email);
         auth.signOut();
         router.replace('/(login)');
       }
-    } catch (error: any) {
+    }
+     catch (error: any) {
       console.log(error)
-      alert('Sign in failed: ' + error.message);
+      alert('Account creation failed: ' + error.message);
     }
   }
 
