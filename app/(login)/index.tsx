@@ -9,9 +9,11 @@
 */
 
 import { Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView } from 'react-native'
-import React, { useState } from 'react'
+import React,{ useState, useEffect } from 'react'
 import { auth } from '../../FirebaseConfig'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
+import * as Google from "expo-auth-session/providers/google";
+
+import { signInWithEmailAndPassword, signInWithCredential, GoogleAuthProvider } from 'firebase/auth'
 import { router } from 'expo-router'
 
 
@@ -19,6 +21,8 @@ const index = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const provider = new GoogleAuthProvider();
+  auth.languageCode = 'it';
 
   const signIn = async () => {
     try {
@@ -58,6 +62,7 @@ const index = () => {
       <TouchableOpacity style={styles.button} onPress={signUp}>
         <Text style={styles.text}>Make Account</Text>
       </TouchableOpacity>
+      
     </SafeAreaView>
   )
 }
