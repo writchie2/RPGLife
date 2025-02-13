@@ -72,7 +72,6 @@ const signUp = async () => {
         
         alert("Account created succesfully!");
         if(auth.currentUser?.uid){
-          alert('we got here' + auth.currentUser.uid);
           await setDoc(doc(db, "users", auth.currentUser.uid), {
             username: userName,
             email: email,
