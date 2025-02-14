@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 interface DatePickerProps {
   style: any,
@@ -12,37 +12,33 @@ interface DatePickerProps {
 const DatePickerComponent: React.FC<DatePickerProps> = ({ style, label, dateSelected, onDateChange }) => {
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
-  //const [dateSelected, setDateSelected] = useState(false);
+  const [isDateSelected, setisDateSelected] = useState(false);
+  
   const maxDate = new Date();
   maxDate.setFullYear(maxDate.getFullYear() - 13);
 
-
-  const handleDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
-    setShowPicker(false);
-    if (selectedDate) {
-      setDate(selectedDate);
-      //setDateSelected(true);
-      onDateChange?.(selectedDate);
-    }
-  };
+    const handleConfirm = (date: Date) => {
+      setDate(date);
+      setisDateSelected(true);
+      onDateChange?.(date);
+      setShowPicker(false);
+    };
 
   return (
     <View style={style}>
-      {/* Button to Show Date Picker */}
-      {!showPicker && (
       <TouchableOpacity style={styles.container} onPress={() => setShowPicker(true)}>
-        <Text style={styles.text}>
-        {dateSelected ? date.toDateString() : "Birth Day"}
+      {isDateSelected &&
+        <Text style={styles.textSelected}>
+        {date.toDateString()}
         </Text>
+      }
+      {!isDateSelected &&
+        <Text style={styles.textLabel}>
+        {label}
+        </Text>
+      }
       </TouchableOpacity>
-      )}
-
-      {/* Date Picker (Only shown when triggered) */}
-      {showPicker && (
-        <View style={styles.container}>
-            <DateTimePicker value={date} mode="date" display="default" maximumDate={maxDate} onChange={handleDateChange}/>
-        </View>
-      )}
+      <DateTimePickerModal isVisible={showPicker} mode="date" onConfirm={handleConfirm} onCancel={() => setShowPicker(false)}/>
     </View>
   );
 };
@@ -53,9 +49,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  text: {
+  textLabel: {
     color: '#D3D3D3'
-  }
+  }, 
+  textSelected: {
+    color: '#3C4858'
+  },
 });
 
 export default DatePickerComponent;

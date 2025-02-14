@@ -20,9 +20,7 @@ import { router } from 'expo-router'
 const index = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const provider = new GoogleAuthProvider();
-  auth.languageCode = 'it';
+  
 
   const signIn = async () => {
     try {
