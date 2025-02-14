@@ -14,6 +14,9 @@ import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import { auth } from '../../FirebaseConfig';
 import { router } from 'expo-router';
 import { getAuth } from 'firebase/auth';
+import { db } from '../../FirebaseConfig';
+import { collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
+
 
 export default function MainScreen() {
 
@@ -21,11 +24,39 @@ export default function MainScreen() {
     if (!user) router.replace('/(login)');
   });
 
+  const user = auth.currentUser;
+  const usersCollection = collection(db, 'users');
+  const testDatabase= async() => {
+    if(user){
+      const docRef = doc(db, 'users', user.uid);
+
+      const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    alert(JSON.stringify(docSnap.data()));
+    //return docSnap.data();
+
+    const querySnapshot = await getDocs(collection(db, "users", user.uid, "quests"));
+    querySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    alert(JSON.stringify(doc.data()));
+    } );
+  } else {
+    console.log("No such document!");
+    return null;
+  }
+
+  }
+}
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign Out</Text>
       <TouchableOpacity style={styles.button} onPress={() => auth.signOut()}>
         <Text style={styles.text}>Sign Out</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={() => testDatabase()}>
+        <Text style={styles.text}>Test Database</Text>
       </TouchableOpacity>
     </View>
   );
