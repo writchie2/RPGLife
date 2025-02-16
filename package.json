@@ -7,14 +7,27 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "expo-setup": "npm install expo",
+    "datePicker-setup": "npx expo install react-native-modal-datetime-picker @react-native-community/datetimepicker",
+    "font-setup": "expo install expo-font @expo-google-fonts/metamorphous @expo-google-fonts/alegreya",
+    "setup": "npm run expo-setup && npm run datePicker-setup && npm run font-setup"
   },
+  "//": "comment: may need to run 'npm install -g yarn' be able to run some of the setup scripts!",
   "jest": {
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@expo-google-fonts/alegreya": "^0.2.3",
+    "@expo-google-fonts/almendra": "^0.2.3",
+    "@expo-google-fonts/aref-ruqaa": "^0.2.3",
+    "@expo-google-fonts/charm": "^0.2.3",
+    "@expo-google-fonts/laila": "^0.2.3",
+    "@expo-google-fonts/metal": "^0.2.3",
+    "@expo-google-fonts/metamorphous": "^0.2.3",
     "@expo/vector-icons": "^14.0.2",
     "@react-native-async-storage/async-storage": "^1.24.0",
+    "@react-native-community/datetimepicker": "8.2.0",
     "@react-navigation/native": "^7.0.14",
     "expo": "~52.0.28",
     "expo-font": "~13.0.3",
