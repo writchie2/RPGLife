@@ -21,7 +21,7 @@ import {
   Image,
 } from "react-native";
 import { auth } from "../../FirebaseConfig";
-import { validatePassword } from "firebase/auth";
+import { validatePassword, sendEmailVerification } from "firebase/auth";
 import React, { useState } from "react";
 import { db } from "../../FirebaseConfig";
 import { setDoc, doc, query, where } from "firebase/firestore";
@@ -30,34 +30,17 @@ import DatePickerComponent from "../../components/DatePickerComponent";
 import { useEffect } from "react";
 import { BackHandler } from "react-native";
 
-// -TEST------------------------------
-
+// import Fonts
 import { useFonts } from "expo-font";
 import { Metamorphous_400Regular } from "@expo-google-fonts/metamorphous";
-
-// -TEST- choose a font that works inside input
 import { Alegreya_400Regular } from "@expo-google-fonts/alegreya";
-import { Almendra_400Regular } from "@expo-google-fonts/almendra";
-import { ArefRuqaa_400Regular } from "@expo-google-fonts/aref-ruqaa";
-import { Laila_400Regular } from "@expo-google-fonts/laila";
-
-// ------------------------------TEST-
 
 export default function RegisterScreen() {
-  // -TEST------------------------------
-  // useFonts({ Metamorphous_400Regular});
+  // load fonts
   const [fontsLoaded] = useFonts({
     Metamorphous_400Regular,
     Alegreya_400Regular,
-    Almendra_400Regular,
-    ArefRuqaa_400Regular,
-    Laila_400Regular,
   });
-
-  // if (!fontsLoaded) {
-  //   return null; // or a loading indicator
-  // }
-  // ------------------------------TEST-
 
   useEffect(() => {
     const backAction = () => {
@@ -111,35 +94,55 @@ export default function RegisterScreen() {
     try {
       const user = await createUserWithEmailAndPassword(auth, email, password);
       if (user) {
-        alert("Account created succesfully!");
-        if (auth.currentUser?.uid) {
-          await setDoc(doc(db, "users", auth.currentUser.uid), {
+        const curUser = auth.currentUser;
+
+        if (curUser?.uid) {
+          await setDoc(doc(db, "users", curUser.uid), {
             username: userName,
             email: email,
             birthday: date.toDateString(),
           });
+          try {
+            const verStatus = sendEmailVerification(curUser);
+          } catch (error: any) {
+            console.log(error);
+            alert(
+              "Email verfication failed: " +
+                error.message +
+                "\nPlease contact support."
+            );
+          }
         } else {
           alert("Database did not create a new doc for new user");
         }
+
+        alert(
+          "Account created succesfully!\nVerification email sent to " +
+            curUser?.email
+        );
         auth.signOut();
         router.replace("/(login)");
       }
     } catch (error: any) {
       console.log(error);
-      alert("Sign in failed: " + error.message);
+      alert("Account creation failed: " + error.message);
     }
   };
 
-  // -TEST- if else
+  // ensure fonts are loaded
   if (!fontsLoaded) {
-    return null; // or a loading indicator -> makes sure fonts are loaded before opening screen
+    return null; // or add a loading indicator in future!
   } else {
     return (
       <SafeAreaView style={styles.container}>
         <Text style={styles.title}>Create Account</Text>
-        <Image
+        {/* <Image
           style={styles.logo}
           source={require("../../assets/images/RPGicon-sm.png")}
+        /> */}
+        <Image
+          style={styles.logo}
+          source={require("../../assets/images/RPGiconLine-sm.png")}
         />
 
         <SafeAreaView style={styles.form}>
@@ -172,7 +175,7 @@ export default function RegisterScreen() {
               <Text style={styles.inputLabel}>Birthday:</Text>
               <DatePickerComponent
                 style={styles.inputDate}
-                label="Birthday"
+                label="mm/dd/yyyy"
                 dateSelected={dateSelected}
                 onDateChange={(date: Date) => {
                   setDate(date);
@@ -210,70 +213,6 @@ export default function RegisterScreen() {
           <Text style={styles.buttonText}>Create</Text>
         </TouchableOpacity>
       </SafeAreaView>
-      // /*
-      // <SafeAreaView style={styles.container}>
-      //   <Text style={styles.title}>Create Account</Text>
-      //   <SafeAreaView style={styles.formContainer}>
-      //     <Text style={styles.label}>Username:</Text>
-      //     <TextInput
-      //       style={styles.textInputFull}
-      //       placeholder="Username"
-      //       placeholderTextColor={"#D3D3D3"}
-      //       autoCapitalize="none"
-      //       value={userName}
-      //       onChangeText={setUserName}
-      //     />
-      //     <SafeAreaView style={styles.labelRow}>
-      //       <Text style={styles.label}>Email:</Text>
-      //       <Text style={styles.label}>Birthday:</Text>
-      //     </SafeAreaView>
-      //     <SafeAreaView style={styles.row}>
-      //       <TextInput
-      //         style={styles.textInputRow}
-      //         placeholder="Email"
-      //         placeholderTextColor={"#D3D3D3"}
-      //         autoCapitalize="none"
-      //         value={email}
-      //         onChangeText={setEmail}
-      //       />
-      //       <DatePickerComponent
-      //         style={styles.textInputRow}
-      //         label="Birthday"
-      //         dateSelected={dateSelected}
-      //         onDateChange={(date: Date) => {
-      //           setDate(date);
-      //           setDateSelected(true);
-      //         }}
-      //       />
-      //     </SafeAreaView>
-      //     <SafeAreaView style={styles.labelRow}>
-      //       <Text style={styles.label}>Password:</Text>
-      //       <Text style={styles.label}>Confirm Password:</Text>
-      //     </SafeAreaView>
-      //     <SafeAreaView style={styles.row}>
-      //       <TextInput
-      //         style={styles.textInputRow}
-      //         placeholder="Password"
-      //         placeholderTextColor={"#D3D3D3"}
-      //         value={password}
-      //         onChangeText={setPassword}
-      //         secureTextEntry
-      //       />
-      //       <TextInput
-      //         style={styles.textInputRow}
-      //         placeholder="Confirm Password"
-      //         placeholderTextColor={"#D3D3D3"}
-      //         value={confirmPassword}
-      //         onChangeText={setConfirmPassword}
-      //         secureTextEntry
-      //       />
-      //     </SafeAreaView>
-      //   </SafeAreaView>
-      //   <TouchableOpacity style={styles.button} onPress={signUp}>
-      //     <Text style={styles.text}>Create</Text>
-      //   </TouchableOpacity>
-      // </SafeAreaView>
-      // */
     );
   }
 }
@@ -283,7 +222,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    // backgroundColor: '#FAFAFA', // A softer white for a modern, minimalist background
     backgroundColor: "#E4EAD6", // main background color
     padding: 20,
   },
@@ -293,11 +231,14 @@ const styles = StyleSheet.create({
     color: "#394022E6",
   },
   logo: {
-    height: 200,
-    // width: 220,
-    aspectRatio: 1.1, // maintains width aspectRation = width/height
-    marginTop: 15,
-    marginBottom: 5,
+    // height: 200,
+    // aspectRatio: 1.1, // maintains correct image width -> aspectRation = width/height
+    // marginTop: 15,
+    // marginBottom: 5,
+    height: 80,
+    aspectRatio: 4.75, // maintains correct image width -> aspectRation = width/height
+    marginTop: 20,
+    marginBottom: 14,
   },
   form: {
     backgroundColor: "#C2CFA0",
@@ -305,7 +246,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     width: "100%",
-    shadowColor: "#777", // Shadow color to match the button for a cohesive look
+    shadowColor: "#777", // Shadow color
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
@@ -334,38 +275,34 @@ const styles = StyleSheet.create({
   },
   inputField: {
     fontFamily: "Alegreya_400Regular",
-    // fontFamily: "ArefRuqaa_400Regular",
-    // fontFamily: "Laila_400Regular",
-    // fontFamily: "Almendra_400Regular",
-    fontSize: 16,
+    fontSize: 18,
     color: "#394022CC",
     paddingHorizontal: 10,
     backgroundColor: "#E4EAD6",
-    height: 45,
+    height: 48,
     borderColor: "#656E4A",
     borderWidth: 2,
     borderRadius: 6,
   },
   inputDate: {
     // DONE INSIDE DATE-PICKER-COMPONENT
-    // fontSize: 16,
+    // fontFamily: "Alegreya_400Regular",
+    // fontSize: 18,
     // color: "#394022CC",
     backgroundColor: "#E4EAD6",
-    height: 45,
+    height: 48,
     borderColor: "#656E4A",
     borderWidth: 2,
     borderRadius: 6,
     paddingHorizontal: 10,
-    // width: "35%",
+    // width: "35%", // handled by inputGroupRowRight style
   },
   button: {
     width: "40%",
     marginVertical: 15,
-    backgroundColor: "#C2CFA0", // A lighter indigo to complement the title color
+    backgroundColor: "#C2CFA0",
     padding: 15,
-    borderRadius: 100, // Matching rounded corners for consistency
-    // borderWidth: 2,
-    // borderColor: "#656E4A",
+    borderRadius: 100, // full rounded corners
     alignSelf: "flex-end",
     alignItems: "center",
     justifyContent: "center",
@@ -377,99 +314,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontFamily: "Metamorphous_400Regular",
-    color: "#394022", // Maintained white for clear visibility
+    color: "#394022", // match title color, slightly darker due to being on darker bg
     fontSize: 20, // Slightly larger for emphasis
   },
 });
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     // backgroundColor: '#FAFAFA', // A softer white for a modern, minimalist background
-//     backgroundColor: "#E4EAD6", // main background color
-//     padding: 20,
-//   },
-//   formContainer: {
-//     backgroundColor: "#C2CFA0",
-//     padding: 15,
-//     borderRadius: 8,
-//     width: "100%",
-//   },
-//   row: {
-//     flexDirection: "row",
-//     justifyContent: "space-between", // Optional, for spacing between inputs
-//     gap: "05%",
-//   },
-//   labelRow: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "flex-start",
-//     width: "100%",
-//   },
-//   label: {
-//     fontFamily: "Metamorphous_400Regular",
-//     fontSize: 16,
-//     color: "#394022",
-//   },
-//   title: {
-//     fontFamily: "Metamorphous_400Regular",
-//     fontSize: 36,
-//     color: "#394022",
-//     // fontSize: 28, // A bit larger for a more striking appearance
-//     // fontWeight: "800", // Extra bold for emphasis -NOTE- cant use it will remove font style
-//     marginBottom: 40, // Increased space for a more airy, open feel
-//     // color: "#1A237E", // A deep indigo for a sophisticated, modern look
-//   },
-//   textInputFull: {
-//     height: 50, // Standard height for elegance and simplicity
-//     width: "100%", // Full width for a more expansive feel
-//     backgroundColor: "#FFFFFF", // Pure white for contrast against the container
-//     borderColor: "#E8EAF6", // A very light indigo border for subtle contrast
-//     borderWidth: 2,
-//     borderRadius: 6, // Softly rounded corners for a modern, friendly touch
-//     paddingHorizontal: 10, // Generous padding for ease of text entry
-//     fontSize: 16, // Comfortable reading size
-//     color: "#3C4858", // A dark gray for readability with a hint of warmth
-//     shadowColor: "#9E9E9E", // A medium gray shadow for depth
-//     shadowOffset: { width: 0, height: 4 },
-//     shadowOpacity: 0.3,
-//     shadowRadius: 4,
-//     elevation: 4, // Slightly elevated for a subtle 3D effect
-//   },
-//   textInputRow: {
-//     height: 50, // Standard height for elegance and simplicity
-//     width: "45%", // Full width for a more expansive feel
-//     backgroundColor: "#FFFFFF", // Pure white for contrast against the container
-//     borderColor: "#E8EAF6", // A very light indigo border for subtle contrast
-//     borderWidth: 2,
-//     borderRadius: 6, // Softly rounded corners for a modern, friendly touch
-//     paddingHorizontal: 10, // Generous padding for ease of text entry
-//     fontSize: 16, // Comfortable reading size
-//     color: "#3C4858", // A dark gray for readability with a hint of warmth
-//     shadowColor: "#9E9E9E", // A medium gray shadow for depth
-//     shadowOffset: { width: 0, height: 4 },
-//     shadowOpacity: 0.3,
-//     shadowRadius: 4,
-//     elevation: 4, // Slightly elevated for a subtle 3D effect
-//   },
-//   button: {
-//     width: "90%",
-//     marginVertical: 15,
-//     backgroundColor: "#5C6BC0", // A lighter indigo to complement the title color
-//     padding: 20,
-//     borderRadius: 15, // Matching rounded corners for consistency
-//     alignItems: "center",
-//     justifyContent: "center",
-//     shadowColor: "#5C6BC0", // Shadow color to match the button for a cohesive look
-//     shadowOffset: { width: 0, height: 4 },
-//     shadowOpacity: 0.4,
-//     shadowRadius: 5,
-//     elevation: 5,
-//   },
-//   text: {
-//     color: "#FFFFFF", // Maintained white for clear visibility
-//     fontSize: 18, // Slightly larger for emphasis
-//     fontWeight: "600", // Semi-bold for a balanced weight
-//   },
-// });

@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import DateTimePicker, {
-  DateTimePickerEvent,
-} from "@react-native-community/datetimepicker";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 interface DatePickerProps {
   style: any;
@@ -19,49 +17,42 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
 }) => {
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
-  //const [dateSelected, setDateSelected] = useState(false);
+  const [isDateSelected, setisDateSelected] = useState(false);
+
   const maxDate = new Date();
   maxDate.setFullYear(maxDate.getFullYear() - 13);
 
-  const handleDateChange = (
-    event: DateTimePickerEvent,
-    selectedDate?: Date
-  ) => {
+  const handleConfirm = (date: Date) => {
+    setDate(date);
+    setisDateSelected(true);
+    onDateChange?.(date);
     setShowPicker(false);
-    if (selectedDate) {
-      setDate(selectedDate);
-      //setDateSelected(true);
-      onDateChange?.(selectedDate);
-    }
   };
 
   return (
     <View style={style}>
-      {/* Button to Show Date Picker */}
-      {!showPicker && (
-        <TouchableOpacity
-          style={styles.container}
-          onPress={() => setShowPicker(true)}
-        >
-          <Text style={styles.text}>
-            {/* sets look of date */}
-            {dateSelected ? date.toDateString() : "Month Day Year"}
+      <TouchableOpacity
+        style={styles.container}
+        onPress={() => setShowPicker(true)}
+      >
+        {isDateSelected && (
+          // <Text style={styles.textSelected}>{date.toDateString()}</Text>
+          <Text style={styles.textSelected}>
+            {date.toLocaleDateString("en-US", {
+              month: "2-digit",
+              day: "2-digit",
+              year: "numeric",
+            })}
           </Text>
-        </TouchableOpacity>
-      )}
-
-      {/* Date Picker (Only shown when triggered) */}
-      {showPicker && (
-        <View style={styles.container}>
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display="default"
-            maximumDate={maxDate}
-            onChange={handleDateChange}
-          />
-        </View>
-      )}
+        )}
+        {!isDateSelected && <Text style={styles.textLabel}>{label}</Text>}
+      </TouchableOpacity>
+      <DateTimePickerModal
+        isVisible={showPicker}
+        mode="date"
+        onConfirm={handleConfirm}
+        onCancel={() => setShowPicker(false)}
+      />
     </View>
   );
 };
@@ -72,9 +63,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     // alignItems: "center",
   },
-  text: {
-    // fontSize: 16,
+  textLabel: {
+    fontFamily: "Alegreya_400Regular",
+    fontSize: 18,
     color: "#39402260",
+  },
+  textSelected: {
+    fontFamily: "Alegreya_400Regular",
+    fontSize: 18,
+    color: "#394022CC",
   },
 });
 
