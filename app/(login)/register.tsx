@@ -17,8 +17,10 @@ import {
   TextInput,
   TouchableOpacity,
   SafeAreaView,
+  ScrollView,
   View,
   Image,
+  Modal,
 } from "react-native";
 import { auth } from "../../FirebaseConfig";
 import { validatePassword, sendEmailVerification } from "firebase/auth";
@@ -27,8 +29,8 @@ import { db } from "../../FirebaseConfig";
 import { setDoc, doc, query, where } from "firebase/firestore";
 import DatePickerComponent from "../../components/DatePickerComponent";
 
-import { useEffect } from "react";
-import { BackHandler } from "react-native";
+import { useEffect} from "react";
+import { BackHandler, Alert } from "react-native";
 
 // import Fonts
 import { useFonts } from "expo-font";
@@ -53,19 +55,15 @@ export default function RegisterScreen() {
       backAction
     );
 
-    return () => backHandler.remove(); // Cleanup
+    return () => backHandler.remove(); 
   }, []);
 
   const [userName, setUserName] = useState("");
-  //const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState("");
   const [date, setDate] = useState(new Date());
   const [dateSelected, setDateSelected] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
-  const regex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/;
 
   const signUp = async () => {
     if (
@@ -74,21 +72,32 @@ export default function RegisterScreen() {
       password.trim().length === 0 ||
       !dateSelected
     ) {
-      alert("Please fill out all fields!");
+      Alert.alert("Error", "Please fill out all fields!");
       return;
     }
     if (!(password === confirmPassword)) {
-      alert("Passwords do not match!");
+      Alert.alert("Error", "Passwords do not match!")
       return;
     }
     const status = await validatePassword(auth, password);
     if (!status.isValid) {
-      alert("Password does not meet requirements!");
-      // This stuff we can use later to show a more detailed message
       const needsLowerCase = status.containsLowercaseLetter !== true;
       const needsUpperCase = status.containsUppercaseLetter !== true;
       const needsNumericCase = status.containsNumericCharacter !== true;
       const needsSpecialCase = status.containsNonAlphanumericCharacter !== true;
+
+      let errors = [];
+
+      if (password.length < 8) errors.push("at least 8 characters");
+      if (needsUpperCase) errors.push("one uppercase letter");
+      if (needsLowerCase) errors.push("one lowercase letter");
+      if (needsNumericCase) errors.push("one number");
+      if (needsSpecialCase) errors.push("one special character");
+
+      const errorMessage = "Your password must contain " + errors.join(", ") + ".";
+      Alert.alert("Error", errorMessage);
+      return;
+      
     }
 
     try {
@@ -106,26 +115,18 @@ export default function RegisterScreen() {
             const verStatus = sendEmailVerification(curUser);
           } catch (error: any) {
             console.log(error);
-            alert(
-              "Email verfication failed: " +
-                error.message +
-                "\nPlease contact support."
-            );
+            Alert.alert("Failed to Send Email Verification", error.message + "\nPlease contact support.");
           }
         } else {
-          alert("Database did not create a new doc for new user");
+          Alert.alert("Database Error", "Document not created for user.\nPlease contact support.");
         }
-
-        alert(
-          "Account created succesfully!\nVerification email sent to " +
-            curUser?.email
-        );
+        Alert.alert("Account created succesfully!", "Verification email sent to " + curUser?.email);
         auth.signOut();
         router.replace("/(login)");
       }
     } catch (error: any) {
       console.log(error);
-      alert("Account creation failed: " + error.message);
+      Alert.alert("Account Creation Failed", error.message + "\nPlease contact support.");
     }
   };
 
@@ -134,85 +135,87 @@ export default function RegisterScreen() {
     return null; // or add a loading indicator in future!
   } else {
     return (
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.title}>Create Account</Text>
-        {/* <Image
-          style={styles.logo}
-          source={require("../../assets/images/RPGicon-sm.png")}
-        /> */}
-        <Image
-          style={styles.logo}
-          source={require("../../assets/images/RPGiconLine-sm.png")}
-        />
 
-        <SafeAreaView style={styles.form}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Username:</Text>
-            <TextInput
-              style={styles.inputField}
-              placeholder="Username..."
-              placeholderTextColor={"#39402260"}
-              autoCapitalize="none"
-              value={userName}
-              onChangeText={setUserName}
-            />
-          </View>
+        <SafeAreaView style={styles.container}>
+          <Text style={styles.title}>Create Account</Text>
+          {/* <Image
+            style={styles.logo}
+            source={require("../../assets/images/RPGicon-sm.png")}
+          /> */}
+          <Image
+            style={styles.logo}
+            source={require("../../assets/images/RPGiconLine-sm.png")}
+          />
 
-          <View style={styles.inputRow}>
-            <View style={styles.inputGroupRowLeft}>
-              <Text style={styles.inputLabel}>Email:</Text>
+          <SafeAreaView style={styles.form}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Username:</Text>
               <TextInput
                 style={styles.inputField}
-                placeholder="Email..."
+                placeholder="Username..."
                 placeholderTextColor={"#39402260"}
                 autoCapitalize="none"
-                value={email}
-                onChangeText={setEmail}
+                autoCorrect={false}
+                value={userName}
+                onChangeText={setUserName}
               />
             </View>
 
-            <View style={styles.inputGroupRowRight}>
-              <Text style={styles.inputLabel}>Birthday:</Text>
-              <DatePickerComponent
-                style={styles.inputDate}
-                label="mm/dd/yyyy"
-                dateSelected={dateSelected}
-                onDateChange={(date: Date) => {
-                  setDate(date);
-                  setDateSelected(true);
-                }}
+            <View style={styles.inputRow}>
+              <View style={styles.inputGroupRowLeft}>
+                <Text style={styles.inputLabel}>Email:</Text>
+                <TextInput
+                  style={styles.inputField}
+                  placeholder="Email..."
+                  placeholderTextColor={"#39402260"}
+                  autoCapitalize="none"
+                  value={email}
+                  onChangeText={setEmail}
+                />
+              </View>
+
+              <View style={styles.inputGroupRowRight}>
+                <Text style={styles.inputLabel}>Birthday:</Text>
+                <DatePickerComponent
+                  style={styles.inputDate}
+                  label="mm/dd/yyyy"
+                  dateSelected={dateSelected}
+                  onDateChange={(date: Date) => {
+                    setDate(date);
+                    setDateSelected(true);
+                  }}
+                />
+              </View>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Password:</Text>
+              <TextInput
+                style={styles.inputField}
+                placeholder="Password..."
+                placeholderTextColor={"#39402260"}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
               />
             </View>
-          </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Password:</Text>
-            <TextInput
-              style={styles.inputField}
-              placeholder="Password..."
-              placeholderTextColor={"#39402260"}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Confirm Password:</Text>
-            <TextInput
-              style={styles.inputField}
-              placeholder="Confirm Password..."
-              placeholderTextColor={"#39402260"}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry
-            />
-          </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Confirm Password:</Text>
+              <TextInput
+                style={styles.inputField}
+                placeholder="Confirm Password..."
+                placeholderTextColor={"#39402260"}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+              />
+            </View>
+          </SafeAreaView>
+          <TouchableOpacity style={styles.button} onPress={signUp}>
+            <Text style={styles.buttonText}>Create</Text>
+          </TouchableOpacity>
         </SafeAreaView>
-        <TouchableOpacity style={styles.button} onPress={signUp}>
-          <Text style={styles.buttonText}>Create</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
     );
   }
 }
@@ -245,7 +248,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
     padding: 15,
     borderRadius: 8,
-    width: "100%",
+    width: "90%",
     shadowColor: "#777", // Shadow color
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,
