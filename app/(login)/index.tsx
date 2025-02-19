@@ -49,6 +49,15 @@ const index = () => {
     }
   }
 
+  const resetPassword = async () => {
+    try {
+      router.push('/(login)/password_reset');
+    } catch (error: any) {
+      console.log(error)
+      alert('Sign in failed: ' + error.message);
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Login</Text>
@@ -60,7 +69,11 @@ const index = () => {
       <TouchableOpacity style={styles.button} onPress={signUp}>
         <Text style={styles.text}>Make Account</Text>
       </TouchableOpacity>
-      
+
+      <TouchableOpacity style={styles.button} onPress={resetPassword}>
+        <Text style={styles.text}>Reset Password</Text>
+      </TouchableOpacity>
+
     </SafeAreaView>
   )
 }
