@@ -8,10 +8,10 @@
 * 
 */
 
-import { Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView } from 'react-native'
+import { Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, Alert } from 'react-native'
 import React,{ useState, useEffect } from 'react'
 import { auth } from '../../FirebaseConfig'
-import * as Google from "expo-auth-session/providers/google";
+import { sendEmailVerification } from "firebase/auth";
 
 import { signInWithEmailAndPassword, signInWithCredential, GoogleAuthProvider } from 'firebase/auth'
 import { router } from 'expo-router'
@@ -30,22 +30,24 @@ const index = () => {
           router.replace('/(tabs)');
         }
         else{
-          alert('Your email is not authenticated: ' + auth.currentUser?.email + '\nSend new link? (TODO)');
-          auth.signOut()
+          Alert.alert('Login Failed', 'Your email is not authenticated: ' + auth.currentUser?.email, [
+            {text: 'OK', onPress : () => {auth.signOut()}},
+            {text: "Resend Email", onPress: () => {
+              try {
+                if (auth.currentUser) {
+                  const verStatus = sendEmailVerification(auth.currentUser)
+                }
+              } catch (error: any) {
+                  console.log(error);
+                  Alert.alert("Failed to Send Email Verification", error.message + "\nPlease contact support.");
+                }
+              auth.signOut();}}
+          ])
         }
       } 
     } catch (error: any) {
       console.log(error)
-      alert('Sign in failed: ' + error.message);
-    }
-  }
-
-  const signUp = async () => {
-    try {
-      router.push('/(login)/register');
-    } catch (error: any) {
-      console.log(error)
-      alert('Sign in failed: ' + error.message);
+      Alert.alert('Login Failed', error.message)
     }
   }
 
@@ -57,7 +59,7 @@ const index = () => {
       <TouchableOpacity style={styles.button} onPress={signIn}>
         <Text style={styles.text}>Login</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={signUp}>
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/(login)/register')}>
         <Text style={styles.text}>Make Account</Text>
       </TouchableOpacity>
       
