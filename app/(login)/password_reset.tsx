@@ -33,59 +33,44 @@ import { BackHandler } from "react-native";
 import colors from "@/constants/colors";
 
 export default function PasswordReset() {
-  useEffect(() => {
-    const backAction = () => {
-      router.back(); // Navigate back to login
-      return true; // Prevent default behavior
-    };
+    useEffect(() => {
+            const backAction = () => {
+              router.back(); // Navigate back to login
+              return true; // Prevent default behavior
+            };
+        
+            const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+        
+            return () => backHandler.remove(); // Cleanup
+          }, []);
 
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
+    const [email, setEmail] = useState('');
 
-    return () => backHandler.remove(); // Cleanup
-  }, []);
-
-  const [email, setEmail] = useState("");
-
-  const forgotPassword = async () => {
+const forgotPassword = async () => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailRegex.test(email)){
+    alert("Please enter a valid email.");
+    return;
+  }
     try {
-      sendPasswordResetEmail(auth, email);
-      alert("Password reset email has been sent.");
-    } catch (error: any) {
-      console.log(error);
-      alert("Password reset email failed to send: " + error.message);
+        sendPasswordResetEmail(auth, email);
+        alert("Password reset email has been sent.");
+        } catch (error: any) {
+            console.log(error)
+            alert('Password reset email failed to send: ' + error.message);
+            return;
+        }
     }
-  };
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Reset Password</Text>
-
-      <Image
-        style={styles.logo}
-        source={require("../../assets/images/RPGiconShield.png")}
-      />
-
-      <SafeAreaView style={styles.form}>
-        <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>Email:</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="account email..."
-            placeholderTextColor={colors.textPlaceholder}
-            value={email}
-            onChangeText={setEmail}
-          />
-        </View>
-      </SafeAreaView>
-
-      <TouchableOpacity style={styles.button} onPress={forgotPassword}>
-        <Text style={styles.buttonText}>Send reset email</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
-  );
+    
+    return (
+          <SafeAreaView style={styles.container}>
+            <Text style={styles.title}>Reset Password</Text>
+            <TextInput style={styles.textInput} placeholder="email" value={email} autoCapitalize="none" autoCorrect={false} onChangeText={setEmail} />
+            <TouchableOpacity style={styles.button} onPress={forgotPassword}>
+              <Text style={styles.text}>Get Password Reset Email</Text>
+            </TouchableOpacity>
+          </SafeAreaView>
+        )
 }
 
 const styles = StyleSheet.create({
