@@ -32,19 +32,25 @@ export default function PasswordReset() {
     const [email, setEmail] = useState('');
 
 const forgotPassword = async () => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailRegex.test(email)){
+    alert("Please enter a valid email.");
+    return;
+  }
     try {
         sendPasswordResetEmail(auth, email);
         alert("Password reset email has been sent.");
         } catch (error: any) {
             console.log(error)
             alert('Password reset email failed to send: ' + error.message);
+            return;
         }
     }
     
     return (
           <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Reset Password</Text>
-            <TextInput style={styles.textInput} placeholder="email" value={email} onChangeText={setEmail} />
+            <TextInput style={styles.textInput} placeholder="email" value={email} autoCapitalize="none" autoCorrect={false} onChangeText={setEmail} />
             <TouchableOpacity style={styles.button} onPress={forgotPassword}>
               <Text style={styles.text}>Get Password Reset Email</Text>
             </TouchableOpacity>
