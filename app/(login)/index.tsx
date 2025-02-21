@@ -15,6 +15,8 @@ import { useFonts } from "expo-font";
 import { Metamorphous_400Regular } from "@expo-google-fonts/metamorphous";
 import { useRouter } from "expo-router";
 
+import colors from "@/constants/colors";
+
 export default function LoginScreen() {
   const [fontsLoaded] = useFonts({ Metamorphous_400Regular });
   const router = useRouter();
@@ -50,32 +52,28 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#E4EAD6",
+    backgroundColor: colors.bgPrimary,
   },
   title: {
     fontFamily: "Metamorphous_400Regular",
-    // fontSize: 36,
     fontSize: 48,
-    color: "#394022",
+    color: colors.textDark,
   },
   logo: {
-    // height: 120,
-    // width: 120,
-    // marginVertical: 20,
     height: 190,
     aspectRatio: 2.2, // maintains correct image width -> aspectRation = width/height
-    marginTop: 36,
-    marginBottom: 32,
+    marginTop: 54,
+    marginBottom: 42,
   },
   loginButton: {
     width: "32%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#C2CFA0",
+    backgroundColor: colors.bgSecondary,
     padding: 12,
     borderRadius: 100,
     marginTop: 25,
-    shadowColor: "#555", // Shadow color to match the button for a cohesive look
+    shadowColor: colors.shadow, // Shadow color to match the button for a cohesive look
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
@@ -84,19 +82,19 @@ const styles = StyleSheet.create({
   loginText: {
     fontFamily: "Metamorphous_400Regular",
     fontSize: 20,
-    color: "#394022",
+    color: colors.textDark,
   },
   signUpButton: {
     width: "38%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#E4EAD6",
-    borderColor: "#394022E6",
+    backgroundColor: colors.bgPrimary,
+    borderColor: colors.textLight,
     borderWidth: 1.5,
     padding: 12,
     borderRadius: 100,
     marginTop: 25,
-    shadowColor: "#555", // Shadow color to match the button for a cohesive look
+    shadowColor: colors.shadow, // Shadow color to match the button for a cohesive look
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
@@ -105,11 +103,14 @@ const styles = StyleSheet.create({
   signUpText: {
     fontFamily: "Metamorphous_400Regular",
     fontSize: 20,
-    color: "#394022E6",
+    color: colors.text,
   },
   guestText: {
-    fontStyle: "italic",
     marginTop: 20,
-    color: "#394022",
+    fontFamily: "Alegreya_400Regular",
+    fontSize: 16,
+    color: colors.textLight,
+    // borderBottomWidth: 0.5,
+    // borderColor: colors.textLight,
   },
 });

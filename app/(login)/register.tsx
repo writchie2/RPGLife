@@ -3,7 +3,7 @@
  *
  * TODO:
  * Add alternate register options
- * Style and logo
+ * Add Cancel Button
  *
  */
 import {
@@ -31,6 +31,8 @@ import DatePickerComponent from "../../components/DatePickerComponent";
 
 import { useEffect } from "react";
 import { BackHandler, Alert } from "react-native";
+
+import colors from "@/constants/colors";
 
 // import Fonts
 import { useFonts } from "expo-font";
@@ -149,10 +151,7 @@ export default function RegisterScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <Text style={styles.title}>Create Account</Text>
-        {/* <Image
-            style={styles.logo}
-            source={require("../../assets/images/RPGicon-sm.png")}
-          /> */}
+
         <Image
           style={styles.logo}
           source={require("../../assets/images/RPGiconLine-sm.png")}
@@ -163,8 +162,8 @@ export default function RegisterScreen() {
             <Text style={styles.inputLabel}>Username:</Text>
             <TextInput
               style={styles.inputField}
-              placeholder="Username..."
-              placeholderTextColor={"#39402260"}
+              placeholder="username..."
+              placeholderTextColor={colors.textPlaceholder}
               autoCapitalize="none"
               autoCorrect={false}
               value={userName}
@@ -177,8 +176,8 @@ export default function RegisterScreen() {
               <Text style={styles.inputLabel}>Email:</Text>
               <TextInput
                 style={styles.inputField}
-                placeholder="Email..."
-                placeholderTextColor={"#39402260"}
+                placeholder="email..."
+                placeholderTextColor={colors.textPlaceholder}
                 autoCapitalize="none"
                 value={email}
                 onChangeText={setEmail}
@@ -189,7 +188,7 @@ export default function RegisterScreen() {
               <Text style={styles.inputLabel}>Birthday:</Text>
               <DatePickerComponent
                 style={styles.inputDate}
-                label="mm/dd/yyyy"
+                label="- select -"
                 dateSelected={dateSelected}
                 onDateChange={(date: Date) => {
                   setDate(date);
@@ -203,8 +202,8 @@ export default function RegisterScreen() {
             <Text style={styles.inputLabel}>Password:</Text>
             <TextInput
               style={styles.inputField}
-              placeholder="Password..."
-              placeholderTextColor={"#39402260"}
+              placeholder="password..."
+              placeholderTextColor={colors.textPlaceholder}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -215,8 +214,8 @@ export default function RegisterScreen() {
             <Text style={styles.inputLabel}>Confirm Password:</Text>
             <TextInput
               style={styles.inputField}
-              placeholder="Confirm Password..."
-              placeholderTextColor={"#39402260"}
+              placeholder="confirm password..."
+              placeholderTextColor={colors.textPlaceholder}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               secureTextEntry
@@ -236,31 +235,27 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#E4EAD6", // main background color
+    backgroundColor: colors.bgPrimary, // main background color
     padding: 20,
   },
   title: {
     fontFamily: "Metamorphous_400Regular",
     fontSize: 36,
-    color: "#394022E6",
+    color: colors.text,
   },
   logo: {
-    // height: 200,
-    // aspectRatio: 1.1, // maintains correct image width -> aspectRation = width/height
-    // marginTop: 15,
-    // marginBottom: 5,
     height: 80,
     aspectRatio: 4.75, // maintains correct image width -> aspectRation = width/height
     marginTop: 36,
     marginBottom: 32,
   },
   form: {
-    backgroundColor: "#C2CFA0",
+    backgroundColor: colors.bgSecondary,
     marginTop: 15,
     padding: 15,
     borderRadius: 8,
     width: "90%",
-    shadowColor: "#777", // Shadow color
+    shadowColor: colors.shadowLight, // Shadow color
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
@@ -284,17 +279,17 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontFamily: "Metamorphous_400Regular",
     fontSize: 18,
-    color: "#394022E6",
+    color: colors.text,
     marginBottom: 2,
   },
   inputField: {
     fontFamily: "Alegreya_400Regular",
     fontSize: 18,
-    color: "#394022CC",
+    color: colors.textInput,
     paddingHorizontal: 10,
-    backgroundColor: "#E4EAD6",
+    backgroundColor: colors.bgPrimary,
     height: 48,
-    borderColor: "#656E4A",
+    borderColor: colors.borderInput,
     borderWidth: 2,
     borderRadius: 6,
   },
@@ -302,24 +297,24 @@ const styles = StyleSheet.create({
     // DONE INSIDE DATE-PICKER-COMPONENT
     // fontFamily: "Alegreya_400Regular",
     // fontSize: 18,
-    // color: "#394022CC",
-    backgroundColor: "#E4EAD6",
+    // color: colors.textInput,
+    backgroundColor: colors.bgPrimary,
     height: 48,
-    borderColor: "#656E4A",
+    borderColor: colors.borderInput,
     borderWidth: 2,
     borderRadius: 6,
     paddingHorizontal: 10,
     // width: "35%", // handled by inputGroupRowRight style
   },
   button: {
-    width: "60%",
+    width: "56%",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#C2CFA0",
+    backgroundColor: colors.bgSecondary,
     borderRadius: 100, // full rounded corners
     marginTop: 25,
     padding: 15,
-    shadowColor: "#555", // Shadow color to match the button for a cohesive look
+    shadowColor: colors.shadow, // Shadow color to match the button for a cohesive look
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
@@ -327,7 +322,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontFamily: "Metamorphous_400Regular",
-    color: "#394022", // match title color, slightly darker due to being on darker bg
+    color: colors.textDark, // match title color, slightly darker due to being on darker bg
     fontSize: 20, // Slightly larger for emphasis
   },
 });
