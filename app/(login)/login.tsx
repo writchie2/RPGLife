@@ -29,6 +29,8 @@ import {
 } from "firebase/auth";
 import { router } from "expo-router";
 
+import colors from "@/constants/colors";
+
 // import Fonts
 import { useFonts } from "expo-font";
 import { Metamorphous_400Regular } from "@expo-google-fonts/metamorphous";
@@ -113,8 +115,8 @@ const index = () => {
             <Text style={styles.inputLabel}>Email:</Text>
             <TextInput
               style={styles.inputField}
-              placeholder="Email..."
-              placeholderTextColor={"#39402260"}
+              placeholder="email..."
+              placeholderTextColor={colors.textPlaceholder}
               value={email}
               onChangeText={setEmail}
             />
@@ -123,8 +125,8 @@ const index = () => {
             <Text style={styles.inputLabel}>Password:</Text>
             <TextInput
               style={styles.inputField}
-              placeholder="Password..."
-              placeholderTextColor={"#39402260"}
+              placeholder="password..."
+              placeholderTextColor={colors.textPlaceholder}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -157,12 +159,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#E4EAD6", // A softer white for a modern, minimalist background
+    backgroundColor: colors.bgPrimary, // A softer white for a modern, minimalist background
   },
   title: {
     fontFamily: "Metamorphous_400Regular",
     fontSize: 36,
-    color: "#394022E6",
+    color: colors.text,
   },
   logo: {
     height: 200,
@@ -171,14 +173,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   form: {
-    backgroundColor: "#C2CFA0",
+    backgroundColor: colors.bgSecondary,
     marginTop: 15,
     padding: 15,
     paddingTop: 18,
     paddingBottom: 10,
     borderRadius: 8,
     width: "90%",
-    shadowColor: "#777", // Shadow color
+    shadowColor: colors.shadowLight, // Shadow color
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
@@ -190,45 +192,45 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontFamily: "Metamorphous_400Regular",
     fontSize: 18,
-    color: "#394022E6",
+    color: colors.text,
     marginBottom: 2,
   },
   inputField: {
     fontFamily: "Alegreya_400Regular",
     fontSize: 18,
-    color: "#394022CC",
+    color: colors.textInput,
     paddingHorizontal: 10,
-    backgroundColor: "#E4EAD6",
+    backgroundColor: colors.bgPrimary,
     height: 48,
-    borderColor: "#656E4A",
+    borderColor: colors.borderInput,
     borderWidth: 2,
     borderRadius: 6,
   },
   button: {
-    width: "50%",
+    width: "48%",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#C2CFA0",
+    backgroundColor: colors.bgSecondary,
     borderRadius: 100, // full rounded corners
     marginTop: 25,
     padding: 15,
-    shadowColor: "#555", // Shadow color to match the button for a cohesive look
+    shadowColor: colors.shadow, // Shadow color to match the button for a cohesive look
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 5,
   },
   button2: {
-    width: "60%",
+    width: "56%",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#E4EAD6",
-    borderColor: "#394022E6",
+    backgroundColor: colors.bgPrimary,
+    borderColor: colors.textLight,
     borderWidth: 1.5,
     borderRadius: 100, // full rounded corners
     marginTop: 25,
     padding: 15,
-    shadowColor: "#555", // Shadow color to match the button for a cohesive look
+    shadowColor: colors.shadow, // Shadow color to match the button for a cohesive look
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
@@ -236,12 +238,12 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontFamily: "Metamorphous_400Regular",
-    color: "#394022", // match title color, slightly darker due to being on darker bg
+    color: colors.textDark, // match title color, slightly darker due to being on darker bg
     fontSize: 20, // Slightly larger for emphasis
   },
   buttonText2: {
     fontFamily: "Metamorphous_400Regular",
-    color: "#394022E6", // match title color, slightly darker due to being on darker bg
+    color: colors.text, // match title color, slightly darker due to being on darker bg
     fontSize: 20, // Slightly larger for emphasis
   },
   link: {
@@ -250,14 +252,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "transparent",
     borderRadius: 100, // full rounded corners
-    marginTop: 25,
+    marginTop: 20,
     padding: 15,
   },
   linkText: {
     fontFamily: "Alegreya_400Regular",
     fontSize: 18,
-    color: "#394022CC",
+    color: colors.textLight,
     borderBottomWidth: 0.5,
-    borderColor: "#394022CC",
+    borderColor: colors.textLight,
   },
 });
