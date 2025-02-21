@@ -29,7 +29,7 @@ import { db } from "../../FirebaseConfig";
 import { setDoc, doc, query, where } from "firebase/firestore";
 import DatePickerComponent from "../../components/DatePickerComponent";
 
-import { useEffect} from "react";
+import { useEffect } from "react";
 import { BackHandler, Alert } from "react-native";
 
 // import Fonts
@@ -55,7 +55,7 @@ export default function RegisterScreen() {
       backAction
     );
 
-    return () => backHandler.remove(); 
+    return () => backHandler.remove();
   }, []);
 
   const [userName, setUserName] = useState("");
@@ -76,7 +76,7 @@ export default function RegisterScreen() {
       return;
     }
     if (!(password === confirmPassword)) {
-      Alert.alert("Error", "Passwords do not match!")
+      Alert.alert("Error", "Passwords do not match!");
       return;
     }
     const status = await validatePassword(auth, password);
@@ -94,10 +94,10 @@ export default function RegisterScreen() {
       if (needsNumericCase) errors.push("one number");
       if (needsSpecialCase) errors.push("one special character");
 
-      const errorMessage = "Your password must contain " + errors.join(", ") + ".";
+      const errorMessage =
+        "Your password must contain " + errors.join(", ") + ".";
       Alert.alert("Error", errorMessage);
       return;
-      
     }
 
     try {
@@ -115,18 +115,30 @@ export default function RegisterScreen() {
             const verStatus = sendEmailVerification(curUser);
           } catch (error: any) {
             console.log(error);
-            Alert.alert("Failed to Send Email Verification", error.message + "\nPlease contact support.");
+            Alert.alert(
+              "Failed to Send Email Verification",
+              error.message + "\nPlease contact support."
+            );
           }
         } else {
-          Alert.alert("Database Error", "Document not created for user.\nPlease contact support.");
+          Alert.alert(
+            "Database Error",
+            "Document not created for user.\nPlease contact support."
+          );
         }
-        Alert.alert("Account created succesfully!", "Verification email sent to " + curUser?.email);
+        Alert.alert(
+          "Account created succesfully!",
+          "Verification email sent to " + curUser?.email
+        );
         auth.signOut();
         router.replace("/(login)");
       }
     } catch (error: any) {
       console.log(error);
-      Alert.alert("Account Creation Failed", error.message + "\nPlease contact support.");
+      Alert.alert(
+        "Account Creation Failed",
+        error.message + "\nPlease contact support."
+      );
     }
   };
 
@@ -135,87 +147,86 @@ export default function RegisterScreen() {
     return null; // or add a loading indicator in future!
   } else {
     return (
-
-        <SafeAreaView style={styles.container}>
-          <Text style={styles.title}>Create Account</Text>
-          {/* <Image
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.title}>Create Account</Text>
+        {/* <Image
             style={styles.logo}
             source={require("../../assets/images/RPGicon-sm.png")}
           /> */}
-          <Image
-            style={styles.logo}
-            source={require("../../assets/images/RPGiconLine-sm.png")}
-          />
+        <Image
+          style={styles.logo}
+          source={require("../../assets/images/RPGiconLine-sm.png")}
+        />
 
-          <SafeAreaView style={styles.form}>
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Username:</Text>
+        <SafeAreaView style={styles.form}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>Username:</Text>
+            <TextInput
+              style={styles.inputField}
+              placeholder="Username..."
+              placeholderTextColor={"#39402260"}
+              autoCapitalize="none"
+              autoCorrect={false}
+              value={userName}
+              onChangeText={setUserName}
+            />
+          </View>
+
+          <View style={styles.inputRow}>
+            <View style={styles.inputGroupRowLeft}>
+              <Text style={styles.inputLabel}>Email:</Text>
               <TextInput
                 style={styles.inputField}
-                placeholder="Username..."
+                placeholder="Email..."
                 placeholderTextColor={"#39402260"}
                 autoCapitalize="none"
-                autoCorrect={false}
-                value={userName}
-                onChangeText={setUserName}
+                value={email}
+                onChangeText={setEmail}
               />
             </View>
 
-            <View style={styles.inputRow}>
-              <View style={styles.inputGroupRowLeft}>
-                <Text style={styles.inputLabel}>Email:</Text>
-                <TextInput
-                  style={styles.inputField}
-                  placeholder="Email..."
-                  placeholderTextColor={"#39402260"}
-                  autoCapitalize="none"
-                  value={email}
-                  onChangeText={setEmail}
-                />
-              </View>
-
-              <View style={styles.inputGroupRowRight}>
-                <Text style={styles.inputLabel}>Birthday:</Text>
-                <DatePickerComponent
-                  style={styles.inputDate}
-                  label="mm/dd/yyyy"
-                  dateSelected={dateSelected}
-                  onDateChange={(date: Date) => {
-                    setDate(date);
-                    setDateSelected(true);
-                  }}
-                />
-              </View>
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Password:</Text>
-              <TextInput
-                style={styles.inputField}
-                placeholder="Password..."
-                placeholderTextColor={"#39402260"}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
+            <View style={styles.inputGroupRowRight}>
+              <Text style={styles.inputLabel}>Birthday:</Text>
+              <DatePickerComponent
+                style={styles.inputDate}
+                label="mm/dd/yyyy"
+                dateSelected={dateSelected}
+                onDateChange={(date: Date) => {
+                  setDate(date);
+                  setDateSelected(true);
+                }}
               />
             </View>
+          </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Confirm Password:</Text>
-              <TextInput
-                style={styles.inputField}
-                placeholder="Confirm Password..."
-                placeholderTextColor={"#39402260"}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry
-              />
-            </View>
-          </SafeAreaView>
-          <TouchableOpacity style={styles.button} onPress={signUp}>
-            <Text style={styles.buttonText}>Create</Text>
-          </TouchableOpacity>
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>Password:</Text>
+            <TextInput
+              style={styles.inputField}
+              placeholder="Password..."
+              placeholderTextColor={"#39402260"}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>Confirm Password:</Text>
+            <TextInput
+              style={styles.inputField}
+              placeholder="Confirm Password..."
+              placeholderTextColor={"#39402260"}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry
+            />
+          </View>
         </SafeAreaView>
+        <TouchableOpacity style={styles.button} onPress={signUp}>
+          <Text style={styles.buttonText}>Create</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
     );
   }
 }
@@ -240,8 +251,8 @@ const styles = StyleSheet.create({
     // marginBottom: 5,
     height: 80,
     aspectRatio: 4.75, // maintains correct image width -> aspectRation = width/height
-    marginTop: 20,
-    marginBottom: 14,
+    marginTop: 36,
+    marginBottom: 32,
   },
   form: {
     backgroundColor: "#C2CFA0",
@@ -301,14 +312,13 @@ const styles = StyleSheet.create({
     // width: "35%", // handled by inputGroupRowRight style
   },
   button: {
-    width: "40%",
-    marginVertical: 15,
-    backgroundColor: "#C2CFA0",
-    padding: 15,
-    borderRadius: 100, // full rounded corners
-    alignSelf: "flex-end",
+    width: "60%",
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#C2CFA0",
+    borderRadius: 100, // full rounded corners
+    marginTop: 25,
+    padding: 15,
     shadowColor: "#555", // Shadow color to match the button for a cohesive look
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,
