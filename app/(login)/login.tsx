@@ -51,7 +51,7 @@ const index = () => {
       const user = await signInWithEmailAndPassword(auth, email, password);
       if (user) {
         if (auth.currentUser?.emailVerified) {
-          router.replace("/(tabs)");
+          router.replace("/(main)");
         } else {
           Alert.alert(
             "Login Failed",
