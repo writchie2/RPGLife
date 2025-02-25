@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import colors from "@/constants/colors";
 
 interface DatePickerProps {
   style: any;
@@ -50,6 +51,7 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
       <DateTimePickerModal
         isVisible={showPicker}
         mode="date"
+        date={maxDate}
         onConfirm={handleConfirm}
         onCancel={() => setShowPicker(false)}
       />
@@ -66,12 +68,12 @@ const styles = StyleSheet.create({
   textLabel: {
     fontFamily: "Alegreya_400Regular",
     fontSize: 18,
-    color: "#39402260",
+    color: colors.textPlaceholder,
   },
   textSelected: {
     fontFamily: "Alegreya_400Regular",
     fontSize: 18,
-    color: "#394022CC",
+    color: colors.textInput,
   },
 });
 

@@ -1,132 +1,116 @@
 /*
-* First page for login. 
-*
-* TODO: 
-* Move register account to own page.
-* Add alternate login options
-* Style and logo
-* 
-*/
+ * Where a user can log in to their account
+ */
 
-import { Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView } from 'react-native'
-import React,{ useState, useEffect } from 'react'
-import { auth } from '../../FirebaseConfig'
-import * as Google from "expo-auth-session/providers/google";
+import React from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+} from "react-native";
+import { useFonts } from "expo-font";
+import { Metamorphous_400Regular } from "@expo-google-fonts/metamorphous";
+import { useRouter } from "expo-router";
 
-import { signInWithEmailAndPassword, signInWithCredential, GoogleAuthProvider } from 'firebase/auth'
-import { router } from 'expo-router'
+import colors from "@/constants/colors";
 
+export default function LoginScreen() {
+  const [fontsLoaded] = useFonts({ Metamorphous_400Regular });
+  const router = useRouter();
 
-const index = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  
-
-  const signIn = async () => {
-    try {
-      const user = await signInWithEmailAndPassword(auth, email, password)
-      if (user){
-        if (auth.currentUser?.emailVerified){
-          router.replace('/(tabs)');
-        }
-        else{
-          alert('Your email is not authenticated: ' + auth.currentUser?.email + '\nSend new link? (TODO)');
-          auth.signOut()
-        }
-      } 
-    } catch (error: any) {
-      console.log(error)
-      alert('Sign in failed: ' + error.message);
-    }
-  }
-
-  const signUp = async () => {
-    try {
-      router.push('/(login)/register');
-    } catch (error: any) {
-      console.log(error)
-      alert('Sign in failed: ' + error.message);
-    }
-  }
-
-  const resetPassword = async () => {
-    try {
-      router.push('/(login)/password_reset');
-    } catch (error: any) {
-      console.log(error)
-      alert('Sign in failed: ' + error.message);
-    }
-  }
+  if (!fontsLoaded) return null;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <TextInput style={styles.textInput} placeholder="email" value={email} onChangeText={setEmail} />
-      <TextInput style={styles.textInput} placeholder="password" value={password} onChangeText={setPassword} secureTextEntry/>
-      <TouchableOpacity style={styles.button} onPress={signIn}>
-        <Text style={styles.text}>Login</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>RPG LIFE</Text>
+      <Image
+        source={require("../../assets/images/RPGiconFull-sm.png")}
+        style={styles.logo}
+      />
+      <TouchableOpacity
+        style={styles.loginButton}
+        onPress={() => router.push("/(login)/login")}
+      >
+        <Text style={styles.loginText}>Login</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={signUp}>
-        <Text style={styles.text}>Make Account</Text>
+      <TouchableOpacity
+        style={styles.signUpButton}
+        onPress={() => router.push("/(login)/register")}
+      >
+        <Text style={styles.signUpText}>Sign Up</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={resetPassword}>
-        <Text style={styles.text}>Reset Password</Text>
-      </TouchableOpacity>
-
-    </SafeAreaView>
-  )
+      <Text style={styles.guestText}>Continue as guest</Text>
+    </View>
+  );
 }
-
-export default index
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FAFAFA', // A softer white for a modern, minimalist background
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.bgPrimary,
   },
   title: {
-    fontSize: 28, // A bit larger for a more striking appearance
-    fontWeight: '800', // Extra bold for emphasis
-    marginBottom: 40, // Increased space for a more airy, open feel
-    color: '#1A237E', // A deep indigo for a sophisticated, modern look
+    fontFamily: "Metamorphous_400Regular",
+    fontSize: 48,
+    color: colors.textDark,
   },
-  textInput: {
-    height: 50, // Standard height for elegance and simplicity
-    width: '90%', // Full width for a more expansive feel
-    backgroundColor: '#FFFFFF', // Pure white for contrast against the container
-    borderColor: '#E8EAF6', // A very light indigo border for subtle contrast
-    borderWidth: 2,
-    borderRadius: 15, // Softly rounded corners for a modern, friendly touch
-    marginVertical: 15,
-    paddingHorizontal: 25, // Generous padding for ease of text entry
-    fontSize: 16, // Comfortable reading size
-    color: '#3C4858', // A dark gray for readability with a hint of warmth
-    shadowColor: '#9E9E9E', // A medium gray shadow for depth
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+  logo: {
+    height: 190,
+    aspectRatio: 2.2, // maintains correct image width -> aspectRation = width/height
+    marginTop: 54,
+    marginBottom: 42,
+  },
+  loginButton: {
+    width: "32%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.bgSecondary,
+    padding: 12,
+    borderRadius: 100,
+    marginTop: 25,
+    shadowColor: colors.shadow, // Shadow color to match the button for a cohesive look
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
     shadowRadius: 4,
-    elevation: 4, // Slightly elevated for a subtle 3D effect
-  },
-  button: {
-    width: '90%',
-    marginVertical: 15,
-    backgroundColor: '#5C6BC0', // A lighter indigo to complement the title color
-    padding: 20,
-    borderRadius: 15, // Matching rounded corners for consistency
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#5C6BC0', // Shadow color to match the button for a cohesive look
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 5,
     elevation: 5,
   },
-  text: {
-    color: '#FFFFFF', // Maintained white for clear visibility
-    fontSize: 18, // Slightly larger for emphasis
-    fontWeight: '600', // Semi-bold for a balanced weight
-  }
+  loginText: {
+    fontFamily: "Metamorphous_400Regular",
+    fontSize: 20,
+    color: colors.textDark,
+  },
+  signUpButton: {
+    width: "38%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.bgPrimary,
+    borderColor: colors.textLight,
+    borderWidth: 1.5,
+    padding: 12,
+    borderRadius: 100,
+    marginTop: 25,
+    shadowColor: colors.shadow, // Shadow color to match the button for a cohesive look
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  signUpText: {
+    fontFamily: "Metamorphous_400Regular",
+    fontSize: 20,
+    color: colors.text,
+  },
+  guestText: {
+    marginTop: 20,
+    fontFamily: "Alegreya_400Regular",
+    fontSize: 16,
+    color: colors.textLight,
+    // borderBottomWidth: 0.5,
+    // borderColor: colors.textLight,
+  },
 });
