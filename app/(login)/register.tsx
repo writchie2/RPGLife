@@ -112,6 +112,7 @@ export default function RegisterScreen() {
             username: userName,
             email: email,
             birthday: date.toDateString(),
+            exp: 0,
           });
           try {
             const verStatus = sendEmailVerification(curUser);
