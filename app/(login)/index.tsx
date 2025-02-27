@@ -70,7 +70,9 @@ const styles = StyleSheet.create({
     color: colors.textDark,
   },
   logo: {
-    height: 190,
+    resizeMode: "contain",
+    // height: 190,
+    height: "20%",
     aspectRatio: 2.2, // maintains correct image width -> aspectRation = width/height
     marginTop: 54,
     marginBottom: 42,
