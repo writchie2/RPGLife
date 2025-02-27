@@ -50,12 +50,18 @@ export default function PasswordReset() {
   const [email, setEmail] = useState("");
 
   const forgotPassword = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email.");
+      return;
+    }
     try {
       sendPasswordResetEmail(auth, email);
       alert("Password reset email has been sent.");
     } catch (error: any) {
       console.log(error);
       alert("Password reset email failed to send: " + error.message);
+      return;
     }
   };
 
@@ -68,7 +74,7 @@ export default function PasswordReset() {
         source={require("../../assets/images/RPGiconShield.png")}
       />
 
-      <SafeAreaView style={styles.form}>
+      <View style={styles.form}>
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>Email:</Text>
           <TextInput
@@ -79,7 +85,7 @@ export default function PasswordReset() {
             onChangeText={setEmail}
           />
         </View>
-      </SafeAreaView>
+      </View>
 
       <TouchableOpacity style={styles.button} onPress={forgotPassword}>
         <Text style={styles.buttonText}>Send reset email</Text>

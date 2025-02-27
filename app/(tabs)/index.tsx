@@ -58,6 +58,9 @@ export default function MainScreen() {
       <TouchableOpacity style={styles.button} onPress={() => testDatabase()}>
         <Text style={styles.text}>Test Database</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={() => router.replace('../(main)')}>
+        <Text style={styles.text}>New Home Page</Text>
+      </TouchableOpacity>
     </View>
   );
 }
