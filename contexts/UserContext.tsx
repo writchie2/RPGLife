@@ -20,18 +20,18 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   useEffect(() => {
 
     const loadUserData = async () => {
-    if (!auth.currentUser) {
+    
+      if (!auth.currentUser) {
         console.error('User ID is undefined, cannot fetch user data.');
         return;
       }
+      
       try {
         let data = await getUserData(); // Try AsyncStorage first
-        if (!data) {
-            console.log('No cached data, fetching from Firestore...');
-            //alert("Not found, fetching from firestore");
+        if (!data || data.email !== auth.currentUser.email) {
+            console.log('No cached data for user, fetching from Firestore...');
             data = await fetchUserData(auth.currentUser.uid); // Fetch from Firestore
             if (data) {
-              //alert("firstore pull: " + JSON.stringify(data));
               await saveUserData(data); // Cache it for next time
             }
           }
