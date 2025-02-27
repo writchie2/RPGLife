@@ -110,7 +110,7 @@ const index = () => {
           style={styles.logo}
           source={require("../../assets/images/RPGiconAlt-sm.png")}
         />
-        <SafeAreaView style={styles.form}>
+        <View style={styles.form}>
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Email:</Text>
             <TextInput
@@ -132,7 +132,7 @@ const index = () => {
               secureTextEntry
             />
           </View>
-        </SafeAreaView>
+        </View>
 
         <TouchableOpacity style={styles.button} onPress={signIn}>
           <Text style={styles.buttonText}>Login</Text>
