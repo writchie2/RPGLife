@@ -32,48 +32,55 @@ type RootStackParamList = {
   };
 
 
-
+// TODO Implement Quest Page functionality
 export default function QuestPage() {
   const user = auth.currentUser;
-
-  const usersCollection = collection(db, 'users');
-  getAuth().onAuthStateChanged((user) => {
-    if (!user) router.replace('/(login)');
-  });
 
   const [questListVisible, setQuestListVisible] = useState(false);
   const [pastQuestListVisible, setPastQuestListVisible] = useState(false);
 
   return (
-      <View style={styles.container}>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quests</Text>
-        </View>
-
-        {/* copying home page quest style for now*/}
-        <TouchableOpacity 
-        style={styles.section} 
-        onPress={() => setQuestListVisible(!questListVisible)}
-        >
-        <Text style={styles.sectionTitle}>
-          {questListVisible ? 'Hide Quests ▲' : 'Quests ▼'}
-        </Text>
-        </TouchableOpacity>
-        {/*TODO fix QuestList and userData parts here once necessary components are added*/}
-         {/* {questListVisible && ( <QuestsList quests={userData?.quests || []} mode="active" />)} */}
-
-      {/*TODO add additional drop menu for past quests, also fix once necessary components are added */}
-      
-      <TouchableOpacity 
-        style={styles.section} 
-        onPress={() => setPastQuestListVisible(!pastQuestListVisible)}
-        >
-        <Text style={styles.sectionTitle}>
-          {pastQuestListVisible ? 'Hide Past Quests ▲' : 'Past Quests ▼'}
-        </Text>
-        </TouchableOpacity>
-        {/*{pastQuestListVisible && (<PastQuestsList pastquests={userData?.pastquests || []} mode="active" />*/}
+    <View style={styles.container}>
+    {/* User section similar to home page user section */}
+    <View style={styles.userSection}>
+      <View style={styles.avatar}></View>
+      <View>
+        {/* TODO Default spots for user data for now, add actual data connection later */}
+        <Text style={styles.username}>Username{}</Text>
+        <Text style={styles.level}>Level {}</Text>
+        <Text style={styles.experience}>exp</Text>
       </View>
+    </View>
+
+    {/* copying home page quest style for now*/}
+    <TouchableOpacity 
+      style={styles.section} 
+      onPress={() => setQuestListVisible(!questListVisible)}
+    > 
+    <Text style={styles.sectionTitle}>
+      {questListVisible ? 'Active Quests ▲' : 'Active Quests ▼'}
+    </Text>
+    </TouchableOpacity>
+      {/*TODO fix QuestList and userData parts here once necessary components are added*/}
+      {/* {questListVisible && ( <QuestsList quests={userData?.quests || []} mode="active" />)} */}
+
+      {/*TODO fix once necessary components for pastQuestList */}
+      
+    <TouchableOpacity 
+      style={styles.section} 
+      onPress={() => setPastQuestListVisible(!pastQuestListVisible)}
+    >
+      <Text style={styles.sectionTitle}>
+        {pastQuestListVisible ? 'Completed ▲' : 'Completed ▼'}
+      </Text>
+    </TouchableOpacity>
+      {/*{pastQuestListVisible && (<PastQuestsList pastquests={userData?.pastquests || []} mode="active" />*/}
+      
+    {/* Add Button */}
+    <Pressable style={styles.addButton} onPress={() => router.push("/(quest)/create_quest")}>
+      <Text style={styles.addButtonText}>+</Text>
+    </Pressable>
+    </View>
     );
 }
 
@@ -81,9 +88,35 @@ export default function QuestPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     backgroundColor: colors.bgPrimary,
+  },
+  userSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    backgroundColor: "#c2c8a0",
+    padding: 10,
+    borderRadius: 10,
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    backgroundColor: "#e4e7d1",
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  username: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#4a503d",
+  },
+  level: {
+    fontSize: 14,
+    color: "#4a503d",
+  },
+  experience: {
+    fontSize: 14,
+    color: "#4a503d",
   },
   title: {
     fontFamily: "Metamorphous_400Regular",
