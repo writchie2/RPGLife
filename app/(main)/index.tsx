@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Button, StyleSheet, Pressable, ScrollViewBase, TouchableOpacity, FlatList, ScrollView } from "react-native";
+import { View, Text, Button, StyleSheet, Pressable, ScrollViewBase, TouchableOpacity, FlatList, ScrollView, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { auth } from '../../FirebaseConfig';
@@ -92,17 +92,25 @@ export default function HomePage() {
   const [navVisible, setNavVisible] = useState(false);
 
   const [loading, setLoading] = useState(true); // Not used currently. could be implemented later.
-  
-  //Context for main folder that has the user data. 
   const userData = useUserData();
+  //Context for main folder that has the user data. 
 
   // Firebase implementation moved to "@/contexts/UserContext"
   useEffect(() => {
+    if (userData){
+      setLoading(false)
+    }
+  }, [userData]);
 
-    
-  }, []);
+  if (loading) {
+    return (
+      <View>
+        <ActivityIndicator size="large" />
+        <Text>Loading user data...</Text>
+      </View>
+    );
+  }
 
-  
   return (
     <SafeAreaView style={styles.container}>
       {/* User Section */}

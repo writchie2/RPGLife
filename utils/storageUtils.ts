@@ -8,7 +8,7 @@ const USER_DATA_KEY = 'user_data';
 //Ouputs: None
 //Function saves a copy of the user data locally so it can be used
 //Without querying database
-export const saveUserData = async (userData: UserData) => {
+export const saveUserData = async (userData: UserData | null) => {
   try {
     await AsyncStorage.setItem('userData', JSON.stringify(userData));
   } catch (error) {

@@ -7,7 +7,7 @@ import { UserData } from '@/utils/types';
 
 
 // Create a context with undefined as the default value
-const UserContext = createContext<UserData | null>(null);
+const UserContext = createContext< UserData | null | undefined>(undefined);
 
 interface UserProviderProps {
     children: ReactNode;  // ReactNode can represent any valid React child, including strings, numbers, JSX, etc.
@@ -18,7 +18,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [userData, setUserData] = useState<UserData | null>(null);
 
   useEffect(() => {
-    
+
     const loadUserData = async () => {
     if (!auth.currentUser) {
         console.error('User ID is undefined, cannot fetch user data.');
@@ -35,7 +35,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
               await saveUserData(data); // Cache it for next time
             }
           }
-  
+
           setUserData(data);
         } catch (error) {
           console.error('Error loading user data:', error);
@@ -52,10 +52,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 };
 
 // Create a custom hook to access the user data
-export const useUserData = (): UserData | null => {
-  const context = useContext(UserContext);
-  if (!context) {
-    throw new Error('useUserData must be used within a UserProvider');
-  }
-  return context;
+export const useUserData = () => {
+    const context = useContext(UserContext);
+    //console.log("Checking UserContext:", context);
+    
+    if (context === undefined) {
+      //console.error("useUserData was called outside of UserProvider!");
+      throw new Error("useUserData must be used within a UserProvider");
+    }
+    return context;
 };

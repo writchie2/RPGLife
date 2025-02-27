@@ -15,7 +15,7 @@ import Colors from "@/constants/colors";
 import { useColorScheme } from "@/components/useColorScheme";
 
 
-export default function HomeLayout() {
+export default function MainLayout() {
   const colorScheme = useColorScheme();
 
   return (
