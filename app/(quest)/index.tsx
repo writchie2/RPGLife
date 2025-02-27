@@ -64,17 +64,15 @@ export default function QuestPage() {
 
       {/*TODO add additional drop menu for past quests, also fix once necessary components are added */}
       
-      {/* <TouchableOpacity 
+      <TouchableOpacity 
         style={styles.section} 
-        onPress={() => setPastQuestListVisible(!passQuestListVisible)}
+        onPress={() => setPastQuestListVisible(!pastQuestListVisible)}
         >
         <Text style={styles.sectionTitle}>
           {pastQuestListVisible ? 'Hide Past Quests ▲' : 'Past Quests ▼'}
         </Text>
         </TouchableOpacity>
-        {pastQuestListVisible && (
-        <PastQuestsList pastquests={userData?.pastquests || []} mode="active" />
-      )} */}
+        {/*{pastQuestListVisible && (<PastQuestsList pastquests={userData?.pastquests || []} mode="active" />*/}
       </View>
     );
 }
@@ -94,6 +92,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
+    top: 0,
     fontWeight: "bold",
     color: "#4a503d",
   },
