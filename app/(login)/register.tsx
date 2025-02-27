@@ -158,7 +158,7 @@ export default function RegisterScreen() {
           source={require("../../assets/images/RPGiconLine-sm.png")}
         />
 
-        <SafeAreaView style={styles.form}>
+        <View style={styles.form}>
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Username:</Text>
             <TextInput
@@ -222,7 +222,7 @@ export default function RegisterScreen() {
               secureTextEntry
             />
           </View>
-        </SafeAreaView>
+        </View>
         <TouchableOpacity style={styles.button} onPress={signUp}>
           <Text style={styles.buttonText}>Create</Text>
         </TouchableOpacity>
