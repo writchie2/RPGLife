@@ -50,7 +50,7 @@ export default function LoginScreen() {
         works on emulator but in expo go app doesnt?... Does work in expo go if you login then go back and try to use it?
         maybe need to use NavigationContainer instead of useRouter for page naviagtion? 
       */}
-      <TouchableOpacity onPress={() => router.push("/(main)")}>
+      <TouchableOpacity onPress={() => router.replace("/(main)")}>
         <Text style={styles.guestText}>Continue as guest</Text>
       </TouchableOpacity>
     </View>

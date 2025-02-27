@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   FlatList,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -132,6 +133,7 @@ export default function HomePage() {
   const user = auth.currentUser;
 
   const usersCollection = collection(db, "users");
+  
   getAuth().onAuthStateChanged((user) => {
     if (!user) router.replace("/(login)");
   });
@@ -156,7 +158,7 @@ export default function HomePage() {
   if (loading) {
     return (
       <View>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator style={styles.loading} size="large" />
         <Text>Loading user data...</Text>
       </View>
     );
@@ -373,5 +375,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "#4a503d",
+  },
+  loading: {
+    backgroundColor: "#f1f3de",
+    height: "100%"
   },
 });
