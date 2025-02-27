@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+
 import {
   View,
   Text,
@@ -27,11 +28,15 @@ import {
 import { db } from "../../FirebaseConfig";
 import { getAuth } from "firebase/auth";
 
-import { fetchUserData } from "../../utils/firestoreUtils";
-import { saveUserData, getUserData } from "../../utils/storageUtils";
-import { UserData, Quest, Skill, Checkpoint } from "../../utils/types";
-import SkillsList from "../../components/SkillsList";
-import QuestsList from "../../components/QuestsList";
+
+import { fetchUserData } from '../../utils/firestoreUtils';
+import { saveUserData, getUserData } from '../../utils/storageUtils';
+import { UserData, Quest, Skill, Checkpoint } from '../../utils/types';
+import SkillsList  from '../../components/SkillsList'
+import QuestsList  from '../../components/QuestsList'
+import NavigationModal  from '../../components/NavigationModal'
+import { useUserData } from '@/contexts/UserContext';
+
 
 import colors from "@/constants/colors";
 
@@ -125,79 +130,47 @@ experienceNeeded(simulatedUserData.exp); // calculate levels and experience need
 
 export default function HomePage() {
   const user = auth.currentUser;
+
   const usersCollection = collection(db, "users");
   getAuth().onAuthStateChanged((user) => {
     if (!user) router.replace("/(login)");
   });
+  
 
   const [skillListVisible, setSkillListVisible] = useState(false);
   const [questListVisible, setQuestListVisible] = useState(false);
+  const [navVisible, setNavVisible] = useState(false);
 
-  const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true); // Not used currently. could be implemented later.
+  const userData = useUserData();
+  //Context for main folder that has the user data. 
 
+
+  // Firebase implementation moved to "@/contexts/UserContext"
   useEffect(() => {
-    // There are two versions of this for testing.
-    // First one pulls data from firebase to populate
-    // Second one uses dummy data to test lists
+    if (userData){
+      setLoading(false)
+    }
+  }, [userData]);
 
-    // Firebase implementation
-    /*
-    const loadUserData = async () => {
-      if (!user?.uid) {
-        console.error('User ID is undefined, cannot fetch user data.');
-        return;
-      }
-      try {
-        setLoading(true);
-        let data = await getUserData(); // Try AsyncStorage first
-        //alert("async storage pull: " + JSON.stringify(data));
-        if (!data) {
-          console.log('No cached data, fetching from Firestore...');
-          //alert("Not found, fetching from firestore");
-          data = await fetchUserData(user?.uid); // Fetch from Firestore
-          if (data) {
-            //alert("firstore pull: " + JSON.stringify(data));
-            await saveUserData(data); // Cache it for next time
-          }
-        }
-
-        setUserData(data);
-      } catch (error) {
-        console.error('Error loading user data:', error);
-      } finally {
-        setLoading(false);
-      };
-    };
-    loadUserData();
-    */
-
-    // Hard coded implementation
-
-    const loadUserData = async () => {
-      try {
-        setLoading(true);
-
-        const data = simulatedUserData; // Hard-coded above
-        setUserData(data);
-      } catch (error) {
-        console.error("Error loading user data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUserData();
-  }, []);
+  if (loading) {
+    return (
+      <View>
+        <ActivityIndicator size="large" />
+        <Text>Loading user data...</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* User Section */}
       <View style={styles.headerRow}>
         {/* User Section */}
         <View style={styles.userSection}>
           <View style={styles.avatar}></View>
           <View style={styles.userInfo}>
-            <Text style={styles.username}>{userData?.username}</Text>
+            <Text style={styles.username}>{simulatedUserData.username}</Text>
             {/* exp bar */}
             <View style={styles.expBar}>
               <View style={styles.expProgressBar}></View>
@@ -210,48 +183,45 @@ export default function HomePage() {
             </View>
           </View>
         </View>
-        {/* Buttons */}
-        <View style={styles.buttonContainer}>
-          <Pressable
-            style={styles.menuButton}
-            onPress={() => alert("Need to implement")}
-          >
-            <Text style={styles.menuButtonText}>☰</Text>
-          </Pressable>
-          <Pressable
-            style={styles.iconButton}
-            onPress={() => alert("Need to implement")}
-          >
-            <Text style={styles.iconButtonText}>★</Text>
-          </Pressable>
-        </View>
-      </View>
+      
 
+      {/* Buttons */}
+      <Pressable style={styles.iconButton} onPress={() => alert("Need to implement")}>
+        <Text style={styles.iconButtonText}>★</Text>
+      </Pressable>
+      <Pressable style={styles.menuButton} onPress={() => setNavVisible(true)}>
+        <Text style={styles.menuButtonText}>☰</Text>
+      </Pressable>
+      </View>
+      <NavigationModal visible={navVisible} onClose={() => setNavVisible(false)}>
+
+      </NavigationModal>
+      
       <View>
         {/* Skills Section */}
-        <TouchableOpacity
-          style={styles.section}
+        <TouchableOpacity 
+          style={styles.section} 
           onPress={() => setSkillListVisible(!skillListVisible)}
         >
           <Text style={styles.sectionTitle}>
-            {skillListVisible ? "Hide Skills ▲" : "Skills ▼"}
+            {skillListVisible ? 'Hide Skills ▲' : 'Skills ▼'}
           </Text>
         </TouchableOpacity>
         {skillListVisible && (
-          <SkillsList skills={userData?.skills || []} mode="active" />
+          <SkillsList skills={simulatedUserData.skills || []} mode="active" />
         )}
 
         {/* Quests Section */}
-        <TouchableOpacity
-          style={styles.section}
+        <TouchableOpacity 
+          style={styles.section} 
           onPress={() => setQuestListVisible(!questListVisible)}
         >
           <Text style={styles.sectionTitle}>
-            {questListVisible ? "Hide Quests ▲" : "Quests ▼"}
+            {questListVisible ? 'Hide Quests ▲' : 'Quests ▼'}
           </Text>
         </TouchableOpacity>
         {questListVisible && (
-          <QuestsList quests={userData?.quests || []} mode="active" />
+          <QuestsList quests={simulatedUserData.quests || []} mode="active" />
         )}
       </View>
 
@@ -264,10 +234,7 @@ export default function HomePage() {
       >
         <Text style={styles.addButtonText}>+</Text>
       </Pressable>
-      {/* Logout Button */}
-      <Pressable style={styles.logoutButton} onPress={() => auth.signOut()}>
-        <Text>Logout</Text>
-      </Pressable>
+      
     </SafeAreaView>
   );
 }
