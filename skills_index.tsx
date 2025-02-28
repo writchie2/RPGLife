@@ -4,7 +4,7 @@ that shows active skills and archived skills
 TODO later date: design and make the page look pretty
 */
 
-import React, { useState, useEffec } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Button, StyleSheet, Pressable, ScrollViewBase, TouchableOpacity, FlatList, ScrollView } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -13,68 +13,136 @@ import { collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, 
 import { db } from '../../FirebaseConfig';
 import { getAuth } from 'firebase/auth';
 
-const SkillsPage = () => {
-    const [skills, setSkills] = useState([
-        { name: "Workout", level: 5, exp: "5100/6000", traits: "STR, VIT", archived: false },
-        { name: "Running", level: 3, exp: "2700/3300", traits: "AGI, VIT", archived: false },
-        { name: "React Native", level: 4, exp: "3300/4600", traits: "INT", archived: false },
-        { name: "Web Development", level: 11, exp: "14825/16500", traits: "INT", archived: false },
-        { name: "Drawing", level: 2, exp: "1200/2000", traits: "CHR", archived: true },
-    ]);
+//import { fetchUserData } from '../../utils/firestoreUtils';
+//import { saveUserData, getUserData } from '../../utils/storageUtils';
+import { UserData, Skill, Checkpoint } from '../../utils/types';
 
-    const editSkill = (index) => {
-        const newName = prompt("Edit Skill Name:", skills[index].name);
-        if (newName) {
-            const updatedSkills = [...skills];
-            updatedSkills[index].name = newName;
-            setSkills(updatedSkills);
-        }
-    };
+import colors from "@/constants/colors";
 
-    const archiveSkill = (index) => {
-        const updatedSkills = [...skills];
-        updatedSkills[index].archived = !updatedSkills[index].archived;
-        setSkills(updatedSkills);
-    };
+type RootStackParamList = {
+    Home: undefined;
+    Skills: undefined;
+    Quests: undefined;
+    Stats: undefined;
+  };
 
-    const addSkill = () => {
-        const skillName = prompt("Enter new skill name:");
-        if (skillName) {
-            setSkills([...skills, { name: skillName, level: 1, exp: "0/1000", traits: "N/A", archived: false }]);
-        }
-    };
+// TODO Implement Skills Page functionality
+export default function SkillsPage() {
+  const user = auth.currentUser;
 
-    return (
-        <div>
-            <h2>Active Skills</h2>
-            <div>
-                {skills.filter(skill => !skill.archived).map((skill, index) => (
-                    <div key={index} className="skill-item">
-                        <p><strong>{skill.name}</strong> (Level {skill.level})</p>
-                        <p>EXP: {skill.exp}</p>
-                        <p>Traits: {skill.traits}</p>
-                        <button onClick={() => editSkill(index)}>Edit</button>
-                        <button onClick={() => archiveSkill(index)}>Archive</button>
-                    </div>
-                ))}
-            </div>
+  const [skillsListVisible, setSkillsListVisible] = useState(false);
+  const [pastSkillsListVisible, setPastSkillsListVisible] = useState(false);
 
-            <h2>Archived Skills</h2>
-            <div>
-                {skills.filter(skill => skill.archived).map((skill, index) => (
-                    <div key={index} className="skill-item">
-                        <p><strong>{skill.name}</strong> (Level {skill.level})</p>
-                        <p>EXP: {skill.exp}</p>
-                        <p>Traits: {skill.traits}</p>
-                        <button onClick={() => editSkill(index)}>Edit</button>
-                        <button onClick={() => archiveSkill(index)}>Unarchive</button>
-                    </div>
-                ))}
-            </div>
+  return (
+    <View style={styles.container}>
+    {/* User section similar to home page user section */}
+    <View style={styles.userSection}>
+      <View style={styles.avatar}></View>
+      <View>
+        {/* TODO Default spots for user data for now, add actual data connection later */}
+        <Text style={styles.username}>Username{}</Text>
+        <Text style={styles.level}>Level {}</Text>
+        <Text style={styles.experience}>exp</Text>
+      </View>
+    </View>
 
-            <button onClick={addSkill}>Add Skill</button>
-        </div>
+    {/*skills style for now*/}
+    <TouchableOpacity 
+      style={styles.section} 
+      onPress={() => setSkillsListVisible(!skillsListVisible)}
+    > 
+    <Text style={styles.sectionTitle}>
+      {skillsListVisible ? 'Active Skills ▲' : 'Active Skills ▼'}
+    </Text>
+    </TouchableOpacity>
+      {/*TODO fix SkillsList and userData parts here once necessary components are added*/}
+      {/* {skillsListVisible && ( <SkillsList skills={userData?.skills || []} mode="active" />)} */}
+
+      {/*TODO fix once necessary components for pastSkillsList */}
+      
+    <TouchableOpacity 
+      style={styles.section} 
+      onPress={() => setPastSkillsListVisible(!pastSkillsListVisible)}
+    >
+      <Text style={styles.sectionTitle}>
+        {pastSkillsListVisible ? 'Completed ▲' : 'Completed ▼'}
+      </Text>
+    </TouchableOpacity>
+      {/*{pastSkillsListVisible && (<PastSkillsList pastskills={userData?.pastskills || []} mode="active" />*/}
+      
+    {/* Add Button */}
+    <Pressable style={styles.addButton} onPress={() => router.push("/(skills)/create_skills")}>
+      <Text style={styles.addButtonText}>+</Text>
+    </Pressable>
+    </View>
     );
-};
+}
 
-export default SkillsPage;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.bgPrimary,
+  },
+  userSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    backgroundColor: "#c2c8a0",
+    padding: 10,
+    borderRadius: 10,
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    backgroundColor: "#e4e7d1",
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  username: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#4a503d",
+  },
+  level: {
+    fontSize: 14,
+    color: "#4a503d",
+  },
+  experience: {
+    fontSize: 14,
+    color: "#4a503d",
+  },
+  title: {
+    fontFamily: "Metamorphous_400Regular",
+    fontSize: 48,
+    color: colors.textDark,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    top: 0,
+    fontWeight: "bold",
+    color: "#4a503d",
+  },
+  section: {
+    backgroundColor: "#c2c8a0",
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  addButton: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    backgroundColor: "#c2c8a0",
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  addButtonText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#4a503d",
+  },
+});
