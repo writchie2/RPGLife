@@ -4,10 +4,16 @@ import { fetchUserData } from '@/utils/firestoreUtils';
 import { auth } from "../FirebaseConfig"
 import { saveUserData, getUserData } from '../utils/storageUtils';
 import { UserData } from '@/utils/types';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../FirebaseConfig';
 
 
-// Create a context with undefined as the default value
-const UserContext = createContext< UserData | null | undefined>(undefined);
+interface UserContextType {
+  userData: UserData | null;
+  setAvatar: (index: number) => void;
+}
+
+const UserContext = createContext<UserContextType | undefined>(undefined);
 
 interface UserProviderProps {
     children: ReactNode;  // ReactNode can represent any valid React child, including strings, numbers, JSX, etc.
@@ -16,6 +22,25 @@ interface UserProviderProps {
 // Create a provider component
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [userData, setUserData] = useState<UserData | null>(null);
+  
+  
+  const setAvatar = async (index: number) => {
+    if (!userData) return;
+    const updatedUser = { ...userData, avatarIndex: index };
+    setUserData(updatedUser);
+
+    try {
+      await saveUserData(updatedUser);
+      if (auth.currentUser) {
+        const userDoc = doc(db, "users", auth.currentUser.uid)
+        await updateDoc(userDoc, {
+          avatarIndex: index, 
+        })
+      }
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+    }
+  };
 
   useEffect(() => {
 
@@ -45,7 +70,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={userData}>
+    <UserContext.Provider value={{userData, setAvatar}}>
       {children}
     </UserContext.Provider>
   );

@@ -24,6 +24,9 @@ export default function MainLayout() {
         <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="settings" options={{ headerShown: false }} />
+        <Stack.Screen name="quests_main" options={{ headerShown: false }} />
+        <Stack.Screen name="create_quest" options={{ headerShown: false }} />
+        <Stack.Screen name="skills_main" options={{ headerShown: false }} />
         </Stack>
       </ThemeProvider>
     </UserProvider>

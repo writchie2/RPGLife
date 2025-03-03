@@ -20,7 +20,7 @@ export interface Quest {
     name: string;
     description: string;
     trait: string;
-    exp: Int32;
+    exp: number;
     active: boolean;
   }
   
@@ -29,7 +29,8 @@ export interface Quest {
     username: string;
     birthdate: string; // Change to date? Firestore normally stores dates as strings. 
     email: string;
-    exp: Int32;
+    exp: number;
+    avatarIndex: number;
     quests?: Quest[]; // Optional quests list (can be empty)
     skills?: Skill[]; // Optional skills list (can be empty)
   }

@@ -56,7 +56,7 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
                     
                     {/* Skills Button */}
                     <TouchableOpacity style={styles.navButton} onPress={() => { 
-                        //router.push("/(main)/skills");  
+                        router.push("/(main)/skills_main");  
                         setTimeout(() => {
                             onClose(); 
                             }, 100);
@@ -67,7 +67,7 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
                   
                     {/* Quests Button */}
                     <TouchableOpacity style={styles.navButton} onPress={() => { 
-                        //router.push("/(main)/quests");  
+                        router.push("/(main)/quests_main");  
                         setTimeout(() => {
                             onClose(); 
                             }, 100);
