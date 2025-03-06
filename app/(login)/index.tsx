@@ -14,6 +14,7 @@ import {
 import { useFonts } from "expo-font";
 import { Metamorphous_400Regular } from "@expo-google-fonts/metamorphous";
 import { useRouter } from "expo-router";
+import { auth } from "@/FirebaseConfig";
 
 import colors from "@/constants/colors";
 
@@ -22,6 +23,9 @@ export default function LoginScreen() {
   const router = useRouter();
 
   if (!fontsLoaded) return null;
+  if (auth.currentUser) {
+    auth.signOut;
+  }
 
   return (
     <View style={styles.container}>

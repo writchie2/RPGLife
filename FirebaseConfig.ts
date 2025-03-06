@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { initializeAuth, getReactNativePersistence} from 'firebase/auth'
+//@ts-ignore
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";

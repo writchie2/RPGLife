@@ -8,8 +8,8 @@ import {
   Pressable,
   ScrollViewBase,
   TouchableOpacity,
-  FlatList,
-  ScrollView,
+  TouchableWithoutFeedback,
+  Modal,
   ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
@@ -40,6 +40,7 @@ import { useUserData } from '@/contexts/UserContext';
 
 
 import colors from "@/constants/colors";
+import UserHeader from "@/components/UserHeader";
 
 // moved dummy data outside, otherwise function for lvl/exp stuff was launching twice for some reason, idk why :P
 // Hard-coded data for testing. Simulates the data that will be retreived from firestore.
@@ -100,34 +101,7 @@ const simulatedUserData = {
   ],
 };
 
-// Used for experience bar and level displays
-let neededEXP = 1000;
-let progressEXP = 0;
-let level = 0;
 
-function experienceNeeded(exp: number) {
-  /****************************************************
-   * for now to go from lvl 0 to lvl 1 will be 1000exp
-   * each lvl after will be 10% more than the lvl before
-   * To reach...
-   * lvl 1 = 1000exp, lvl 2 = 1100exp, lvl 3 = 1210exp, lvl 4 = 1331exp, ...
-   * total:  1000             2100             3310exp
-   * to determine experience needed take exp from user data and calculate lvl
-   *****************************************************/
-
-  progressEXP = exp;
-  while (progressEXP >= neededEXP) {
-    progressEXP -= neededEXP;
-    level++;
-    neededEXP = Math.floor(neededEXP + neededEXP * 0.1);
-    // console.log("step: " + level, neededEXP, progressEXP); // -TEST-
-  }
-  // // -TEST- print result
-  // console.log(
-  //   `>> [result] lvl: ${level}, neededEXP: ${neededEXP}, progressEXP: ${progressEXP}`
-  // );
-}
-experienceNeeded(simulatedUserData.exp); // calculate levels and experience needed
 
 export default function HomePage() {
   const user = auth.currentUser;
@@ -142,6 +116,7 @@ export default function HomePage() {
   const [skillListVisible, setSkillListVisible] = useState(false);
   const [questListVisible, setQuestListVisible] = useState(false);
   const [navVisible, setNavVisible] = useState(false);
+  const [addModalVisible, setAddModalVisible] = useState(false);
 
   const [loading, setLoading] = useState(true); // Not used currently. could be implemented later.
   const userData = useUserData();
@@ -165,39 +140,10 @@ export default function HomePage() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* User Section */}
-      <View style={styles.headerRow}>
-        {/* User Section */}
-        <View style={styles.userSection}>
-          <View style={styles.avatar}></View>
-          <View style={styles.userInfo}>
-            <Text style={styles.username}>{simulatedUserData.username}</Text>
-            {/* exp bar */}
-            <View style={styles.expBar}>
-              <View style={styles.expProgressBar}></View>
-            </View>
-            <View style={styles.levelInfo}>
-              <Text style={styles.levelText}>Level {level}</Text>
-              <Text style={styles.levelText}>
-                {progressEXP}/{neededEXP} exp
-              </Text>
-            </View>
-          </View>
-        </View>
+    <View style={styles.container}>
       
-
-      {/* Buttons */}
-      <Pressable style={styles.iconButton} onPress={() => alert("Need to implement")}>
-        <Text style={styles.iconButtonText}>★</Text>
-      </Pressable>
-      <Pressable style={styles.menuButton} onPress={() => setNavVisible(true)}>
-        <Text style={styles.menuButtonText}>☰</Text>
-      </Pressable>
-      </View>
-      <NavigationModal visible={navVisible} onClose={() => setNavVisible(false)}>
-
-      </NavigationModal>
+      {/* Header Component */}
+      <UserHeader></UserHeader>
       
       <View>
         {/* Skills Section */}
@@ -231,13 +177,42 @@ export default function HomePage() {
       <Pressable
         style={styles.addButton}
         onPress={() =>
-          alert("Note - this is currently a test!" + JSON.stringify(userData))
+          setAddModalVisible(true)
         }
       >
         <Text style={styles.addButtonText}>+</Text>
       </Pressable>
+
+      {/* Modal for Add Button */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={addModalVisible}
+        onRequestClose={ () => setAddModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setAddModalVisible(false)}>
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback>
+              <View style={styles.modalContent}>
+                <TouchableOpacity style={styles.modalButton} onPress={() => {
+                  setAddModalVisible(false);
+                  alert("launching add skill modal (TODO)");
+                }}>
+                  <Text style={styles.modalButtonText}>Add Skill</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.modalButton} onPress={() => {
+                  setAddModalVisible(false);
+                  alert("launching add quest modal (TODO)");
+                }}>
+                  <Text style={styles.modalButtonText}>Add Quest</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
       
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -246,97 +221,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f1f3de",
     padding: 20,
-  },
-  headerRow: {
-    flexDirection: "row",
-    gap: 12,
-    width: "100%",
-    marginBottom: 20,
-  },
-  userSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-    gap: 10,
-    // marginBottom: 20,
-    backgroundColor: "#c2c8a0",
-    padding: 10,
-    // paddingRight: 15,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-  },
-  avatar: {
-    width: 50,
-    height: 50,
-    backgroundColor: "#e4e7d1",
-    borderRadius: 25,
-  },
-  userInfo: {
-    flex: 1,
-    flexDirection: "column",
-    position: "relative",
-  },
-  username: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#4a503d",
-  },
-  expBar: {
-    marginTop: 5,
-    height: 14,
-    backgroundColor: colors.bgPrimary,
-    borderWidth: 2,
-    borderColor: colors.borderInput,
-    borderRadius: 99,
-    justifyContent: "center",
-  },
-  expProgressBar: {
-    height: "100%",
-    // width: "50%",
-    width: `${(progressEXP / neededEXP) * 100}%`,
-    backgroundColor: colors.text,
-    borderRadius: 99,
-  },
-  levelInfo: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  levelText: {
-    fontSize: 14,
-    color: "#4a503d",
-  },
-  buttonContainer: {
-    gap: 10, // create/set min gap between buttons w/ flexbox
-  },
-  iconButton: {
-    backgroundColor: "#c2c8a0",
-    padding: 10,
-    borderRadius: 6,
-
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  iconButtonText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#4a503d",
-  },
-  menuButton: {
-    backgroundColor: "#c2c8a0",
-    padding: 10,
-    borderRadius: 6,
-
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  menuButtonText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#4a503d",
   },
   section: {
     backgroundColor: "#c2c8a0",
@@ -380,4 +264,38 @@ const styles = StyleSheet.create({
     backgroundColor: "#f1f3de",
     height: "100%"
   },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    position: "absolute",
+    bottom: 0, 
+    height: "30%",
+    width: "100%",
+    backgroundColor: colors.bgSecondary,
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalButton: {
+    width: "70%",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.bgPrimary,
+    borderRadius: 100,
+    shadowColor: colors.shadow, 
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 5,
+    height: 50,
+    margin:"5%"  
+      },
+  modalButtonText: {
+    fontFamily: "Metamorphous_400Regular",
+    color: colors.textDark, 
+    fontSize: 20, 
+    },
 });

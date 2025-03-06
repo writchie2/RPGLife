@@ -1,13 +1,3 @@
-/*
-* Page that shows all info for a quest 
-*
-* TODO: 
-* Impliment page
-* Impliment database loding
-* Styling 
-* 
-*/
-
 import React, { useState, useEffect } from "react";
 import { View, Text, Button, StyleSheet, Pressable, ScrollViewBase, TouchableOpacity, FlatList, ScrollView } from "react-native";
 import { router } from "expo-router";
@@ -16,6 +6,9 @@ import { auth } from '../../FirebaseConfig';
 import { collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
 import { db } from '../../FirebaseConfig';
 import { getAuth } from 'firebase/auth';
+import QuestsList  from '../../components/QuestsList'
+import { useUserData } from '@/contexts/UserContext';
+import { BackHandler, Alert } from "react-native";
 
 //import { fetchUserData } from '../../utils/firestoreUtils';
 //import { saveUserData, getUserData } from '../../utils/storageUtils';
@@ -25,54 +18,62 @@ import { UserData, Quest, Skill, Checkpoint } from '../../utils/types';
 import colors from "@/constants/colors";
 import UserHeader from "@/components/UserHeader";
 
-type RootStackParamList = {
-    Home: undefined;
-    Skills: undefined;
-    Quests: undefined;
-    Stats: undefined;
-  };
-
-
 // TODO Implement Quest Page functionality
-export default function QuestPage() {
+export default function QuestMainPage() {
   const user = auth.currentUser;
+  const userData = useUserData();
 
   const [questListVisible, setQuestListVisible] = useState(false);
   const [pastQuestListVisible, setPastQuestListVisible] = useState(false);
 
+  useEffect(() => {
+          const backAction = () => {
+            router.replace("/(main)"); // Navigate back to home
+            return true; // Prevent default behavior
+          };
+          const backHandler = BackHandler.addEventListener(
+                "hardwareBackPress",
+                backAction
+              );
+          
+              return () => backHandler.remove();
+      }, []);
+
   return (
     <View style={styles.container}>
-    {/* User section similar to home page user section */}
-    <UserHeader></UserHeader>
+      {/* User section similar to home page user section */}
+      <UserHeader></UserHeader>
 
-    {/* copying home page quest style for now*/}
-    <TouchableOpacity 
-      style={styles.section} 
-      onPress={() => setQuestListVisible(!questListVisible)}
-    > 
-    <Text style={styles.sectionTitle}>
-      {questListVisible ? 'Active Quests ▲' : 'Active Quests ▼'}
-    </Text>
-    </TouchableOpacity>
-      {/*TODO fix QuestList and userData parts here once necessary components are added*/}
-      {/* {questListVisible && ( <QuestsList quests={userData?.quests || []} mode="active" />)} */}
+      {/* copying home page quest style for now*/}
+      <TouchableOpacity 
+        style={styles.section} 
+        onPress={() => setQuestListVisible(!questListVisible)}
+      > 
+        <Text style={styles.sectionTitle}>
+          {questListVisible ? 'Active Quests ▲' : 'Active Quests ▼'}
+        </Text>
+      </TouchableOpacity>
+        {questListVisible && 
+          ( <QuestsList quests={userData.userData?.quests || []} mode="active" />
 
-      {/*TODO fix once necessary components for pastQuestList */}
-      
-    <TouchableOpacity 
-      style={styles.section} 
-      onPress={() => setPastQuestListVisible(!pastQuestListVisible)}
-    >
-      <Text style={styles.sectionTitle}>
-        {pastQuestListVisible ? 'Completed ▲' : 'Completed ▼'}
-      </Text>
-    </TouchableOpacity>
-      {/*{pastQuestListVisible && (<PastQuestsList pastquests={userData?.pastquests || []} mode="active" />*/}
-      
-    {/* Add Button */}
-    <Pressable style={styles.addButton} onPress={() => router.push("/(quest)/create_quest")}>
-      <Text style={styles.addButtonText}>+</Text>
-    </Pressable>
+          )}
+
+      <TouchableOpacity 
+        style={styles.section} 
+        onPress={() => setPastQuestListVisible(!pastQuestListVisible)}
+      >
+        <Text style={styles.sectionTitle}>
+          {pastQuestListVisible ? 'Completed ▲' : 'Completed ▼'}
+        </Text>
+      </TouchableOpacity>
+        {pastQuestListVisible && 
+        (<QuestsList quests={userData.userData?.quests || []} mode="inactive" />
+        )}
+        
+      {/* Add Button */}
+      <Pressable style={styles.addButton} onPress={() => router.push("/(main)/create_quest")}>
+        <Text style={styles.addButtonText}>+</Text>
+      </Pressable>
     </View>
     );
 }
@@ -82,6 +83,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bgPrimary,
+    padding: 20
   },
   userSection: {
     flexDirection: "row",

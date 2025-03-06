@@ -113,6 +113,7 @@ export default function RegisterScreen() {
             email: email,
             birthday: date.toDateString(),
             exp: 0,
+            iconIdex: 0,
           });
           try {
             const verStatus = sendEmailVerification(curUser);

@@ -36,7 +36,7 @@ import colors from "@/constants/colors";
 export default function Settings() {
     useEffect(() => {
             const backAction = () => {
-              router.back(); // Navigate back to login
+              router.replace("/(main)"); // Navigate back to home
               return true; // Prevent default behavior
             };
         
@@ -67,7 +67,8 @@ export default function Settings() {
     headerContainer:{
         flex: 1,
         backgroundColor: colors.bgPrimary,
-        alignItems: "center",
+        //alignItems: "center",
+        padding: 20,
     },
     container: {
         flex: 1,
