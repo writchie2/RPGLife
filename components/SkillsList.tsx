@@ -20,7 +20,7 @@ interface SkillsListProps {
       <TouchableOpacity style={styles.skillItem} onPress={() => alert("You selected skill with id:" + item.id)}>
         <Text style={styles.skillName}>{item.name}</Text>
         <Text style={styles.skillDescription}>{item.description}</Text>
-        <Text style={styles.skillTrait}>Trait: {item.trait}</Text>
+        <Text style={styles.skillTrait}>Trait: {item.primaryTrait}</Text>
         <Text style={styles.expTrait}>Level {Math.floor((item.exp || 1)/ 100)} {(item.exp || 0) % 100} exp</Text>
       </TouchableOpacity>
     );
