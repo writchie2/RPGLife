@@ -1,11 +1,7 @@
 /*
-* Page that shows all info for a quest 
-*
-* TODO: 
-* Impliment page
-* Impliment database loding
-* Styling 
-* 
+simple skeleton of the skills page
+that shows active skills and archived skills
+TODO later date: design and make the page look pretty
 */
 
 import React, { useState, useEffect } from "react";
@@ -19,11 +15,9 @@ import { getAuth } from 'firebase/auth';
 
 //import { fetchUserData } from '../../utils/firestoreUtils';
 //import { saveUserData, getUserData } from '../../utils/storageUtils';
-import { UserData, Quest, Skill, Checkpoint } from '../../utils/types';
-
+import { UserData, Skill, Checkpoint } from '../../utils/types';
 
 import colors from "@/constants/colors";
-import UserHeader from "@/components/UserHeader";
 
 type RootStackParamList = {
     Home: undefined;
@@ -32,45 +26,52 @@ type RootStackParamList = {
     Stats: undefined;
   };
 
-
-// TODO Implement Quest Page functionality
-export default function QuestPage() {
+// TODO Implement Skills Page functionality
+export default function SkillsPage() {
   const user = auth.currentUser;
 
-  const [questListVisible, setQuestListVisible] = useState(false);
-  const [pastQuestListVisible, setPastQuestListVisible] = useState(false);
+  const [skillsListVisible, setSkillsListVisible] = useState(false);
+  const [pastSkillsListVisible, setPastSkillsListVisible] = useState(false);
 
   return (
     <View style={styles.container}>
     {/* User section similar to home page user section */}
-    <UserHeader></UserHeader>
+    <View style={styles.userSection}>
+      <View style={styles.avatar}></View>
+      <View>
+        {/* TODO Default spots for user data for now, add actual data connection later */}
+        <Text style={styles.username}>Username{}</Text>
+        <Text style={styles.level}>Level {}</Text>
+        <Text style={styles.experience}>exp</Text>
+      </View>
+    </View>
 
-    {/* copying home page quest style for now*/}
+    {/*skills style for now*/}
     <TouchableOpacity 
       style={styles.section} 
-      onPress={() => setQuestListVisible(!questListVisible)}
+      onPress={() => setSkillsListVisible(!skillsListVisible)}
     > 
     <Text style={styles.sectionTitle}>
-      {questListVisible ? 'Active Quests ▲' : 'Active Quests ▼'}
+      {skillsListVisible ? 'Active Skills ▲' : 'Active Skills ▼'}
     </Text>
     </TouchableOpacity>
-      {/*TODO fix QuestList and userData parts here once necessary components are added*/}
-      {/* {questListVisible && ( <QuestsList quests={userData?.quests || []} mode="active" />)} */}
+      {/*TODO fix SkillsList and userData parts here once necessary components are added*/}
+      {/* {skillsListVisible && ( <SkillsList skills={userData?.skills || []} mode="active" />)} */}
 
-      {/*TODO fix once necessary components for pastQuestList */}
+      {/*TODO fix once necessary components for pastSkillsList */}
       
     <TouchableOpacity 
       style={styles.section} 
-      onPress={() => setPastQuestListVisible(!pastQuestListVisible)}
+      onPress={() => setPastSkillsListVisible(!pastSkillsListVisible)}
     >
       <Text style={styles.sectionTitle}>
-        {pastQuestListVisible ? 'Completed ▲' : 'Completed ▼'}
+        {pastSkillsListVisible ? 'Completed ▲' : 'Completed ▼'}
       </Text>
     </TouchableOpacity>
-      {/*{pastQuestListVisible && (<PastQuestsList pastquests={userData?.pastquests || []} mode="active" />*/}
+      {/*{pastSkillsListVisible && (<PastSkillsList pastskills={userData?.pastskills || []} mode="active" />*/}
       
     {/* Add Button */}
-    <Pressable style={styles.addButton} onPress={() => router.push("/(quest)/create_quest")}>
+    <Pressable style={styles.addButton} onPress={() => router.push("/(skills)/create_skills")}>
       <Text style={styles.addButtonText}>+</Text>
     </Pressable>
     </View>
