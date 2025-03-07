@@ -13,52 +13,63 @@ import {
 } from "react-native";
 import { useFonts } from "expo-font";
 import { Metamorphous_400Regular } from "@expo-google-fonts/metamorphous";
+import {
+  Alegreya_400Regular,
+  Alegreya_500Medium,
+} from "@expo-google-fonts/alegreya";
 import { useRouter } from "expo-router";
 import { auth } from "@/FirebaseConfig";
 
 import colors from "@/constants/colors";
 
 export default function LoginScreen() {
-  const [fontsLoaded] = useFonts({ Metamorphous_400Regular });
+  const [fontsLoaded] = useFonts({
+    Metamorphous_400Regular,
+    Alegreya_400Regular,
+    Alegreya_500Medium,
+  });
   const router = useRouter();
 
-  if (!fontsLoaded) return null;
   if (auth.currentUser) {
     auth.signOut;
   }
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>RPG LIFE</Text>
-      <Image
-        source={require("../../assets/images/RPGiconFull-sm.png")}
-        style={styles.logo}
-      />
-      <TouchableOpacity
-        style={styles.loginButton}
-        onPress={() => router.push("/(login)/login")}
-      >
-        <Text style={styles.loginText}>Login</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.signUpButton}
-        onPress={() => router.push("/(login)/register")}
-      >
-        <Text style={styles.signUpText}>Sign Up</Text>
-      </TouchableOpacity>
-      {/* 
+  if (!fontsLoaded) {
+    return null;
+  } else {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>RPG LIFE</Text>
+        <Image
+          source={require("../../assets/images/RPGiconFull-sm.png")}
+          style={styles.logo}
+        />
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => router.push("/(login)/login")}
+        >
+          <Text style={styles.loginText}>Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.signUpButton}
+          onPress={() => router.push("/(login)/register")}
+        >
+          <Text style={styles.signUpText}>Sign Up</Text>
+        </TouchableOpacity>
+        {/* 
         TESTING -- CONTINUE AS GUEST -- WIP (still needs to generated a user account/id to track data just w/o login???)
         - have it prompt for a userID?... just not a password? 
         - for now gives shortcut to homescreen so we dont have to sign in 
         NOTE: 
         works on emulator but in expo go app doesnt?... Does work in expo go if you login then go back and try to use it?
         maybe need to use NavigationContainer instead of useRouter for page naviagtion? 
-      */}
-      <TouchableOpacity onPress={() => router.replace("/(main)")}>
-        <Text style={styles.guestText}>Continue as guest</Text>
-      </TouchableOpacity>
-    </View>
-  );
+        */}
+        <TouchableOpacity onPress={() => router.replace("/(main)")}>
+          <Text style={styles.guestText}>Continue as guest</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
