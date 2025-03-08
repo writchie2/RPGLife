@@ -202,57 +202,15 @@ export default function HomePage() {
             </View>
           </View>
 
-          {/* Add Button */}
-          <Pressable
-            style={styles.addButton}
-            onPress={() => setAddModalVisible(true)}
-          >
-            <Text style={styles.addButtonText}>+</Text>
-          </Pressable>
-
-          {/* Modal for Add Button */}
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={addModalVisible}
-            onRequestClose={() => setAddModalVisible(false)}
-          >
-            <TouchableWithoutFeedback onPress={() => setAddModalVisible(false)}>
-              <View style={styles.modalOverlay}>
-                <TouchableWithoutFeedback>
-                  <View style={styles.modalContent}>
-                    <TouchableOpacity
-                      style={styles.modalButton}
-                      onPress={() => {
-                        setAddModalVisible(false);
-                        alert("launching add skill modal (TODO)");
-                      }}
-                    >
-                      <Text style={styles.modalButtonText}>Add Skill</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.modalButton}
-                      onPress={() => {
-                        setAddModalVisible(false);
-                        alert("launching add quest modal (TODO)");
-                      }}
-                    >
-                      <Text style={styles.modalButtonText}>Add Quest</Text>
-                    </TouchableOpacity>
-                  </View>
-                </TouchableWithoutFeedback>
-              </View>
-            </TouchableWithoutFeedback>
-          </Modal>
-        
-    
-
 
         {/* Add Button */}
         <Pressable
           style={styles.addButton}
-          onPress={() =>
-            setAddModalVisible(true)
+          onPress={() =>{
+            //setSkillsModalVisible(true);
+            setAddModalVisible(true);
+            console.log("1");
+          }
           }
         >
           <Text style={styles.addButtonText}>+</Text>
@@ -272,16 +230,18 @@ export default function HomePage() {
             <View style={styles.modalOverlay}>
               <TouchableWithoutFeedback>
                 <View style={styles.modalContent}>
-                  <TouchableOpacity style={styles.modalButton} onPress={() => {
+                <TouchableOpacity style={styles.modalButton} onPress={() => {
                     setAddModalVisible(false);
                     setSkillsModalVisible(true);
                     //alert("launching add skill modal (TODO)");
+                    console.log("2");
                   }}>
                     <Text style={styles.modalButtonText}>Add Skill</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.modalButton} onPress={() => {
                     setAddModalVisible(false);
                     alert("launching add quest modal (TODO)");
+                    console.log("3");
                   }}>
                     <Text style={styles.modalButtonText}>Add Quest</Text>
                   </TouchableOpacity>
