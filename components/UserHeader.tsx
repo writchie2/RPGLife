@@ -201,7 +201,7 @@ const UserHeader: React.FC<UserHeaderProps> = ({}) => {
 const styles = StyleSheet.create({
   headerContainer: {
     // marginBottom: 20,
-    // marginTop: 45,
+     marginTop: "10%",
     // padding: 10,
     // gap: "2%",
     // height: 130,
