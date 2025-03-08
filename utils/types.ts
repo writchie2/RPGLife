@@ -18,8 +18,9 @@ export interface Quest {
   export interface Skill {
     id: string;
     name: string;
-    description: string;
-    trait: string;
+    description?: string;
+    primaryTrait: string;
+    secondaryTrait?: string;
     exp: number;
     active: boolean;
   }
