@@ -151,92 +151,138 @@ export default function HomePage() {
     return null;
   } else {
     return (
-      <View style={styles.container}>
-        {/* Header Component */}
-        <UserHeader></UserHeader>
+        <View style={styles.container}>
+          {/* Header Component */}
+          <UserHeader></UserHeader>
 
-        <View>
-          {/* Skills Section */}
-          <View style={styles.dropdownContainer}>
-            <TouchableOpacity
-              style={styles.section}
-              onPress={() => setSkillListVisible(!skillListVisible)}
-            >
-              <View style={styles.sectionTitleContainer}>
-                <Text style={styles.sectionTitle}>
-                  {skillListVisible ? "Hide Skills" : "Skills"}
-                </Text>
-                <Text style={styles.sectionTitle}>
-                  {skillListVisible ? "▲" : "▼"}
-                </Text>
-              </View>
-            </TouchableOpacity>
-            {skillListVisible && (
-              <SkillsList
-                skills={simulatedUserData.skills || []}
-                mode="active"
-              />
-            )}
+          <View>
+            {/* Skills Section */}
+            <View style={styles.dropdownContainer}>
+              <TouchableOpacity
+                style={styles.section}
+                onPress={() => setSkillListVisible(!skillListVisible)}
+              >
+                <View style={styles.sectionTitleContainer}>
+                  <Text style={styles.sectionTitle}>
+                    {skillListVisible ? "Hide Skills" : "Skills"}
+                  </Text>
+                  <Text style={styles.sectionTitle}>
+                    {skillListVisible ? "▲" : "▼"}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              {skillListVisible && (
+                <SkillsList
+                  skills={simulatedUserData.skills || []}
+                  mode="active"
+                />
+              )}
+            </View>
+            {/* Quests Section */}
+            <View style={styles.dropdownContainer}>
+              <TouchableOpacity
+                style={styles.section}
+                onPress={() => setQuestListVisible(!questListVisible)}
+              >
+                <View style={styles.sectionTitleContainer}>
+                  <Text style={styles.sectionTitle}>
+                    {questListVisible ? "Hide Quests" : "Quests"}
+                  </Text>
+                  <Text style={styles.sectionTitle}>
+                    {questListVisible ? "▲" : "▼"}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              {questListVisible && (
+                <QuestsList
+                  quests={simulatedUserData.quests || []}
+                  mode="active"
+                />
+              )}
+            </View>
           </View>
-          {/* Quests Section */}
-          <View style={styles.dropdownContainer}>
-            <TouchableOpacity
-              style={styles.section}
-              onPress={() => setQuestListVisible(!questListVisible)}
-            >
-              <View style={styles.sectionTitleContainer}>
-                <Text style={styles.sectionTitle}>
-                  {questListVisible ? "Hide Quests" : "Quests"}
-                </Text>
-                <Text style={styles.sectionTitle}>
-                  {questListVisible ? "▲" : "▼"}
-                </Text>
+
+          {/* Add Button */}
+          <Pressable
+            style={styles.addButton}
+            onPress={() => setAddModalVisible(true)}
+          >
+            <Text style={styles.addButtonText}>+</Text>
+          </Pressable>
+
+          {/* Modal for Add Button */}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={addModalVisible}
+            onRequestClose={() => setAddModalVisible(false)}
+          >
+            <TouchableWithoutFeedback onPress={() => setAddModalVisible(false)}>
+              <View style={styles.modalOverlay}>
+                <TouchableWithoutFeedback>
+                  <View style={styles.modalContent}>
+                    <TouchableOpacity
+                      style={styles.modalButton}
+                      onPress={() => {
+                        setAddModalVisible(false);
+                        alert("launching add skill modal (TODO)");
+                      }}
+                    >
+                      <Text style={styles.modalButtonText}>Add Skill</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.modalButton}
+                      onPress={() => {
+                        setAddModalVisible(false);
+                        alert("launching add quest modal (TODO)");
+                      }}
+                    >
+                      <Text style={styles.modalButtonText}>Add Quest</Text>
+                    </TouchableOpacity>
+                  </View>
+                </TouchableWithoutFeedback>
               </View>
-            </TouchableOpacity>
-            {questListVisible && (
-              <QuestsList
-                quests={simulatedUserData.quests || []}
-                mode="active"
-              />
-            )}
-          </View>
-        </View>
+            </TouchableWithoutFeedback>
+          </Modal>
+        
+    
+
 
         {/* Add Button */}
         <Pressable
           style={styles.addButton}
-          onPress={() => setAddModalVisible(true)}
+          onPress={() =>
+            setAddModalVisible(true)
+          }
         >
           <Text style={styles.addButtonText}>+</Text>
         </Pressable>
+          
+        <CreateSkillModal visible={skillsModalVisible} onClose={() => setSkillsModalVisible(false)}></CreateSkillModal>
+        
 
         {/* Modal for Add Button */}
         <Modal
           animationType="slide"
           transparent={true}
           visible={addModalVisible}
-          onRequestClose={() => setAddModalVisible(false)}
+          onRequestClose={ () => setAddModalVisible(false)}
         >
           <TouchableWithoutFeedback onPress={() => setAddModalVisible(false)}>
             <View style={styles.modalOverlay}>
               <TouchableWithoutFeedback>
                 <View style={styles.modalContent}>
-                  <TouchableOpacity
-                    style={styles.modalButton}
-                    onPress={() => {
-                      setAddModalVisible(false);
-                      alert("launching add skill modal (TODO)");
-                    }}
-                  >
+                  <TouchableOpacity style={styles.modalButton} onPress={() => {
+                    setAddModalVisible(false);
+                    setSkillsModalVisible(true);
+                    //alert("launching add skill modal (TODO)");
+                  }}>
                     <Text style={styles.modalButtonText}>Add Skill</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.modalButton}
-                    onPress={() => {
-                      setAddModalVisible(false);
-                      alert("launching add quest modal (TODO)");
-                    }}
-                  >
+                  <TouchableOpacity style={styles.modalButton} onPress={() => {
+                    setAddModalVisible(false);
+                    alert("launching add quest modal (TODO)");
+                  }}>
                     <Text style={styles.modalButtonText}>Add Quest</Text>
                   </TouchableOpacity>
                 </View>
@@ -244,53 +290,10 @@ export default function HomePage() {
             </View>
           </TouchableWithoutFeedback>
         </Modal>
-      </View>
-
-      {/* Add Button */}
-      <Pressable
-        style={styles.addButton}
-        onPress={() =>
-          setAddModalVisible(true)
-        }
-      >
-        <Text style={styles.addButtonText}>+</Text>
-      </Pressable>
         
-      <CreateSkillModal visible={skillsModalVisible} onClose={() => setSkillsModalVisible(false)}></CreateSkillModal>
-      
-
-      {/* Modal for Add Button */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={addModalVisible}
-        onRequestClose={ () => setAddModalVisible(false)}
-      >
-        <TouchableWithoutFeedback onPress={() => setAddModalVisible(false)}>
-          <View style={styles.modalOverlay}>
-            <TouchableWithoutFeedback>
-              <View style={styles.modalContent}>
-                <TouchableOpacity style={styles.modalButton} onPress={() => {
-                  setAddModalVisible(false);
-                  setSkillsModalVisible(true);
-                  //alert("launching add skill modal (TODO)");
-                }}>
-                  <Text style={styles.modalButtonText}>Add Skill</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.modalButton} onPress={() => {
-                  setAddModalVisible(false);
-                  alert("launching add quest modal (TODO)");
-                }}>
-                  <Text style={styles.modalButtonText}>Add Quest</Text>
-                </TouchableOpacity>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
-      
-    </View>
-  );
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
