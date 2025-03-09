@@ -29,13 +29,16 @@ import {
 import { db } from "../../FirebaseConfig";
 import { getAuth } from "firebase/auth";
 
-import { fetchUserData } from "../../utils/firestoreUtils";
-import { saveUserData, getUserData } from "../../utils/storageUtils";
-import { UserData, Quest, Skill, Checkpoint } from "../../utils/types";
-import SkillsList from "../../components/SkillsList";
-import QuestsList from "../../components/QuestsList";
-import NavigationModal from "../../components/NavigationModal";
-import { useUserData } from "@/contexts/UserContext";
+import { fetchUserData } from '../../utils/firestoreUtils';
+import { saveUserData, getUserData } from '../../utils/storageUtils';
+import { UserData, Quest, Skill, Checkpoint } from '../../utils/types';
+import SkillsList  from '../../components/SkillsList'
+import QuestsList  from '../../components/QuestsList'
+import CreateSkillModal from "@/components/CreateSkillModal";
+import NavigationModal  from '../../components/NavigationModal'
+import { useUserData } from '@/contexts/UserContext';
+
+
 
 import colors from "@/constants/colors";
 import UserHeader from "@/components/UserHeader";
@@ -82,7 +85,7 @@ const simulatedUserData = {
       id: "1",
       name: "JavaScript",
       description: "Programming language for building web applications.",
-      trait: "Core",
+      primaryTrait: "Core",
       exp: 200,
       active: false,
     },
@@ -90,7 +93,7 @@ const simulatedUserData = {
       id: "2",
       name: "React",
       description: "JavaScript library for building user interfaces.",
-      trait: "Frontend",
+      primaryTrait: "Frontend",
       exp: 100,
       active: true,
     },
@@ -98,7 +101,7 @@ const simulatedUserData = {
       id: "3",
       name: "Node.js",
       description: "JavaScript runtime for building server-side applications.",
-      trait: "Backend",
+      primaryTrait: "Backend",
       exp: 20,
       active: true,
     },
@@ -122,8 +125,8 @@ export default function HomePage() {
 
   const [skillListVisible, setSkillListVisible] = useState(false);
   const [questListVisible, setQuestListVisible] = useState(false);
-  const [navVisible, setNavVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
+  const [skillsModalVisible, setSkillsModalVisible] = useState(false);
 
   const [loading, setLoading] = useState(true); // Not used currently. could be implemented later.
   const userData = useUserData();
@@ -148,92 +151,98 @@ export default function HomePage() {
     return null;
   } else {
     return (
-      <View style={styles.container}>
-        {/* Header Component */}
-        <UserHeader></UserHeader>
+        <View style={styles.container}>
+          {/* Header Component */}
+          <UserHeader></UserHeader>
 
-        <View>
-          {/* Skills Section */}
-          <View style={styles.dropdownContainer}>
-            <TouchableOpacity
-              style={styles.section}
-              onPress={() => setSkillListVisible(!skillListVisible)}
-            >
-              <View style={styles.sectionTitleContainer}>
-                <Text style={styles.sectionTitle}>
-                  {skillListVisible ? "Hide Skills" : "Skills"}
-                </Text>
-                <Text style={styles.sectionTitle}>
-                  {skillListVisible ? "▲" : "▼"}
-                </Text>
-              </View>
-            </TouchableOpacity>
-            {skillListVisible && (
-              <SkillsList
-                skills={simulatedUserData.skills || []}
-                mode="active"
-              />
-            )}
+          <View>
+            {/* Skills Section */}
+            <View style={styles.dropdownContainer}>
+              <TouchableOpacity
+                style={styles.section}
+                onPress={() => setSkillListVisible(!skillListVisible)}
+              >
+                <View style={styles.sectionTitleContainer}>
+                  <Text style={styles.sectionTitle}>
+                    {skillListVisible ? "Hide Skills" : "Skills"}
+                  </Text>
+                  <Text style={styles.sectionTitle}>
+                    {skillListVisible ? "▲" : "▼"}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              {skillListVisible && (
+                <SkillsList
+                  skills={simulatedUserData.skills || []}
+                  mode="active"
+                />
+              )}
+            </View>
+            {/* Quests Section */}
+            <View style={styles.dropdownContainer}>
+              <TouchableOpacity
+                style={styles.section}
+                onPress={() => setQuestListVisible(!questListVisible)}
+              >
+                <View style={styles.sectionTitleContainer}>
+                  <Text style={styles.sectionTitle}>
+                    {questListVisible ? "Hide Quests" : "Quests"}
+                  </Text>
+                  <Text style={styles.sectionTitle}>
+                    {questListVisible ? "▲" : "▼"}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              {questListVisible && (
+                <QuestsList
+                  quests={simulatedUserData.quests || []}
+                  mode="active"
+                />
+              )}
+            </View>
           </View>
-          {/* Quests Section */}
-          <View style={styles.dropdownContainer}>
-            <TouchableOpacity
-              style={styles.section}
-              onPress={() => setQuestListVisible(!questListVisible)}
-            >
-              <View style={styles.sectionTitleContainer}>
-                <Text style={styles.sectionTitle}>
-                  {questListVisible ? "Hide Quests" : "Quests"}
-                </Text>
-                <Text style={styles.sectionTitle}>
-                  {questListVisible ? "▲" : "▼"}
-                </Text>
-              </View>
-            </TouchableOpacity>
-            {questListVisible && (
-              <QuestsList
-                quests={simulatedUserData.quests || []}
-                mode="active"
-              />
-            )}
-          </View>
-        </View>
+
 
         {/* Add Button */}
         <Pressable
           style={styles.addButton}
-          onPress={() => setAddModalVisible(true)}
+          onPress={() =>{
+            //setSkillsModalVisible(true);
+            setAddModalVisible(true);
+            console.log("1");
+          }
+          }
         >
           <Text style={styles.addButtonText}>+</Text>
         </Pressable>
+          
+        <CreateSkillModal visible={skillsModalVisible} onClose={() => setSkillsModalVisible(false)}></CreateSkillModal>
+        
 
         {/* Modal for Add Button */}
         <Modal
           animationType="slide"
           transparent={true}
           visible={addModalVisible}
-          onRequestClose={() => setAddModalVisible(false)}
+          onRequestClose={ () => setAddModalVisible(false)}
         >
           <TouchableWithoutFeedback onPress={() => setAddModalVisible(false)}>
             <View style={styles.modalOverlay}>
               <TouchableWithoutFeedback>
                 <View style={styles.modalContent}>
-                  <TouchableOpacity
-                    style={styles.modalButton}
-                    onPress={() => {
-                      setAddModalVisible(false);
-                      alert("launching add skill modal (TODO)");
-                    }}
-                  >
+                <TouchableOpacity style={styles.modalButton} onPress={() => {
+                    setAddModalVisible(false);
+                    setSkillsModalVisible(true);
+                    //alert("launching add skill modal (TODO)");
+                    console.log("2");
+                  }}>
                     <Text style={styles.modalButtonText}>Add Skill</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.modalButton}
-                    onPress={() => {
-                      setAddModalVisible(false);
-                      alert("launching add quest modal (TODO)");
-                    }}
-                  >
+                  <TouchableOpacity style={styles.modalButton} onPress={() => {
+                    setAddModalVisible(false);
+                    alert("launching add quest modal (TODO)");
+                    console.log("3");
+                  }}>
                     <Text style={styles.modalButtonText}>Add Quest</Text>
                   </TouchableOpacity>
                 </View>
@@ -241,6 +250,7 @@ export default function HomePage() {
             </View>
           </TouchableWithoutFeedback>
         </Modal>
+        
       </View>
     );
   }

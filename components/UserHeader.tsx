@@ -201,7 +201,7 @@ const UserHeader: React.FC<UserHeaderProps> = ({}) => {
 const styles = StyleSheet.create({
   headerContainer: {
     // marginBottom: 20,
-    // marginTop: 45,
+     marginTop: "10%",
     // padding: 10,
     // gap: "2%",
     // height: 130,
@@ -308,8 +308,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   pickAvatar: {
-    width: 110,
-    height: 110,
+    width: 100,
+    height: 100,
     backgroundColor: colors.bgSecondary,
     borderRadius: 25,
     margin: 3,
@@ -321,8 +321,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   pickAvatarLocked: {
-    width: 110,
-    height: 110,
+    width: 100,
+    height: 100,
     backgroundColor: colors.bgSecondary,
     borderRadius: 25,
     margin: 3,

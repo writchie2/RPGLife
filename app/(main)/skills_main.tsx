@@ -16,6 +16,7 @@ import SkillsList  from '../../components/SkillsList'
 import { useUserData } from '@/contexts/UserContext';
 import { BackHandler, Alert } from "react-native";
 
+
 //import { fetchUserData } from '../../utils/firestoreUtils';
 //import { saveUserData, getUserData } from '../../utils/storageUtils';
 import { UserData, Skill, Checkpoint } from '../../utils/types';
@@ -27,6 +28,7 @@ import UserHeader from "@/components/UserHeader";
 export default function SkillsPage() {
   const user = auth.currentUser;
   const userData = useUserData();
+  
 
   useEffect(() => {
             const backAction = () => {
@@ -37,47 +39,50 @@ export default function SkillsPage() {
                   "hardwareBackPress",
                   backAction
                 );
-            
                 return () => backHandler.remove();
         }, []);
 
   const [skillsListVisible, setSkillsListVisible] = useState(false);
   const [pastSkillsListVisible, setPastSkillsListVisible] = useState(false);
 
+  
+  
+
   return (
     <View style={styles.container}>
     
         {/* User Header */}
         <UserHeader></UserHeader>
+        <View>
+            {/*skills style for now*/}
+            <TouchableOpacity 
+                style={styles.section} 
+                onPress={() => setSkillsListVisible(!skillsListVisible)}
+            > 
+                <Text style={styles.sectionTitle}>
+                    {skillsListVisible ? 'Active Skills ▲' : 'Active Skills ▼'}
+                </Text>
+            </TouchableOpacity>
+            {skillsListVisible && ( 
+                
+                <SkillsList skills={userData.userData?.skills || []} mode="active" />
+                )} 
 
-        {/*skills style for now*/}
-        <TouchableOpacity 
-            style={styles.section} 
-            onPress={() => setSkillsListVisible(!skillsListVisible)}
-        > 
+            
+            <TouchableOpacity 
+                style={styles.section} 
+                onPress={() => setPastSkillsListVisible(!pastSkillsListVisible)}
+            >
             <Text style={styles.sectionTitle}>
-                {skillsListVisible ? 'Active Skills ▲' : 'Active Skills ▼'}
+                {pastSkillsListVisible ? 'Completed ▲' : 'Completed ▼'}
             </Text>
-        </TouchableOpacity>
-        {skillsListVisible && ( 
-            <SkillsList skills={userData.userData?.skills || []} mode="active" />
-            )} 
-
-        
-        <TouchableOpacity 
-            style={styles.section} 
-            onPress={() => setPastSkillsListVisible(!pastSkillsListVisible)}
-        >
-        <Text style={styles.sectionTitle}>
-            {pastSkillsListVisible ? 'Completed ▲' : 'Completed ▼'}
-        </Text>
-        </TouchableOpacity>
-        {pastSkillsListVisible && (
-            <SkillsList skills={userData.userData?.skills || []} mode="inactive" />
-            )}
-        
+            </TouchableOpacity>
+            {pastSkillsListVisible && (
+                <SkillsList skills={userData.userData?.skills || []} mode="inactive" />
+                )}
+        </View>
         {/* Add Button */}
-        <Pressable style={styles.addButton} onPress={() => alert("To-Do skills create screen")}>
+        <Pressable style={styles.addButton} onPress={() => alert("TO-DO create skill")}>
         <Text style={styles.addButtonText}>+</Text>
         </Pressable>
     </View>

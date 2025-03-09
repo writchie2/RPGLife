@@ -46,7 +46,8 @@ export const fetchUserData = async (userId: string): Promise<UserData | null> =>
         id: doc.id,
         name: data.name || '',
         description: data.description || '',
-        trait: data.trait || '',
+        primaryTrait: data.primaryTrait || '',
+        secondaryTrait: data.secondaryTrait || '',
       } as Skill;
     });
   
