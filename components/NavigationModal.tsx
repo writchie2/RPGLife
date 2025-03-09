@@ -39,84 +39,88 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
                 style={styles.logo}
                 source={require("../assets/images/RPGiconLine-sm.png")}
               />
-              {/* Home Button */}
-              <TouchableOpacity
-                style={[styles.navButton, { paddingTop: "0%" }]}
-                onPress={() => {
-                  router.push("/(main)");
-                  setTimeout(() => {
-                    onClose();
-                  }, 100);
-                }}
-              >
-                <Text style={styles.navButtonText}>Home</Text>
-              </TouchableOpacity>
+        
+              <View style={styles.buttonContainer}>
+                {/* Home Button */}
+                <TouchableOpacity
+                    style={[styles.navButton, { borderTopWidth: 1 }]}
+                    onPress={() => {
+                    router.push("/(main)");
+                    setTimeout(() => {
+                        onClose();
+                    }, 100);
+                    }}
+                >
+                    <Text style={styles.navButtonText}>Home</Text>
+                </TouchableOpacity>
 
-              {/* Character Button */}
-              <TouchableOpacity
-                style={styles.navButton}
-                onPress={() => {
-                  //router.push("/(main)/character");
-                  setTimeout(() => {
-                    onClose();
-                  }, 100);
-                }}
-              >
-                <Text style={styles.navButtonText}>Character</Text>
-              </TouchableOpacity>
+                {/* Character Button */}
+                <TouchableOpacity
+                    style={styles.navButton}
+                    onPress={() => {
+                    //router.push("/(main)/character");
+                    setTimeout(() => {
+                        onClose();
+                    }, 100);
+                    }}
+                >
+                    <Text style={styles.navButtonText}>Character</Text>
+                </TouchableOpacity>
 
-              {/* Skills Button */}
-              <TouchableOpacity
-                style={styles.navButton}
-                onPress={() => {
-                  router.push("/(main)/skills_main");
-                  setTimeout(() => {
-                    onClose();
-                  }, 100);
-                }}
-              >
-                <Text style={styles.navButtonText}>Skills</Text>
-              </TouchableOpacity>
+                {/* Skills Button */}
+                <TouchableOpacity
+                    style={styles.navButton}
+                    onPress={() => {
+                    router.push("/(main)/skills_main");
+                    setTimeout(() => {
+                        onClose();
+                    }, 100);
+                    }}
+                >
+                    <Text style={styles.navButtonText}>Skills</Text>
+                </TouchableOpacity>
 
-              {/* Quests Button */}
-              <TouchableOpacity
-                style={styles.navButton}
-                onPress={() => {
-                  router.push("/(main)/quests_main");
-                  setTimeout(() => {
-                    onClose();
-                  }, 100);
-                }}
-              >
-                <Text style={styles.navButtonText}>Quests</Text>
-              </TouchableOpacity>
+                {/* Quests Button */}
+                <TouchableOpacity
+                    style={styles.navButton}
+                    onPress={() => {
+                    router.push("/(main)/quests_main");
+                    setTimeout(() => {
+                        onClose();
+                    }, 100);
+                    }}
+                >
+                    <Text style={styles.navButtonText}>Quests</Text>
+                </TouchableOpacity>
 
-              {/* Achievements Button */}
-              <TouchableOpacity
-                style={styles.navButton}
-                onPress={() => {
-                  //router.push("/(main)/achievements");
-                  setTimeout(() => {
-                    onClose();
-                  }, 100);
-                }}
-              >
-                <Text style={styles.navButtonText}>Achievements</Text>
-              </TouchableOpacity>
+                {/* Achievements Button */}
+                <TouchableOpacity
+                    style={styles.navButton}
+                    onPress={() => {
+                    //router.push("/(main)/achievements");
+                    setTimeout(() => {
+                        onClose();
+                    }, 100);
+                    }}
+                >
+                    <Text style={styles.navButtonText}>Achievements</Text>
+                </TouchableOpacity>
 
-              {/* Settings Button */}
-              <TouchableOpacity
-                style={[styles.navButton, { borderTopWidth: 0 }]}
-                onPress={() => {
-                  router.push("/(main)/settings");
-                  setTimeout(() => {
-                    onClose();
-                  }, 100);
-                }}
-              >
-                <Text style={styles.navButtonText}>Settings</Text>
-              </TouchableOpacity>
-
+                {/* Settings Button */}
+                <TouchableOpacity
+                    style={[styles.navButton, { borderTopWidth: 0 }]}
+                    onPress={() => {
+                    router.push("/(main)/settings");
+                    setTimeout(() => {
+                        onClose();
+                    }, 100);
+                    }}
+                >
+                    <Text style={styles.navButtonText}>Settings</Text>
+                </TouchableOpacity>
+              
+              </View>
+              
               {/* Close Button */}
               <TouchableOpacity style={styles.closeButton} onPress={onClose}>
                 <Text style={styles.closeButtonText}>X</Text>
@@ -149,27 +153,34 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContainer: {
-    // width: "90%",
-    // height: "80%",
-    // borderRadius: 10,
-    width: "100%",
-    height: "100%",
+     width: "90%",
+     height: "80%",
     backgroundColor: colors.bgPrimary,
     padding: 20,
     alignItems: "center",
+    flexDirection: "column",
   },
+  buttonContainer: {
+    flex: 1,
+    width: "100%",
+   backgroundColor: colors.bgPrimary,
+   alignItems: "center",
+   flexDirection: "column",
+ },
   navButton: {
+    flexGrow: 1,
     padding: "3%",
     marginTop: 0,
     backgroundColor: colors.bgPrimary,
     width: "100%",
     alignItems: "center",
+    justifyContent: "center",
     borderColor: colors.text,
     borderBottomWidth: 1,
   },
   navButtonText: {
     fontFamily: "Metamorphous_400Regular",
-    fontSize: 42,
+    fontSize: 36,
     color: colors.text,
   },
   closeButton: {
@@ -189,16 +200,12 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   closeButtonText: {
-    //fontFamily: "Metamorphous_400Regular",
-    // fontFamily: "Alegreya_400Regular",
-    // fontFamily: "Alegreya_500Medium",
     color: colors.textDark,
     fontSize: 28,
   },
   signoutButton: {
-    position: "absolute",
     width: "42%",
-    bottom: 40,
+    marginTop: "15%",
     padding: 6,
     alignItems: "center",
     justifyContent: "center",
@@ -221,8 +228,7 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: 4,
     marginBottom: 10,
-    borderColor: colors.text,
-    borderBottomWidth: 1,
+    flexDirection: "column",
   },
 });
 
