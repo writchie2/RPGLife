@@ -14,12 +14,16 @@ import { Alegreya_400Regular } from "@expo-google-fonts/alegreya";
 import { useEffect } from "react";
 import { BackHandler, Alert } from "react-native";
 import { useUserData } from "@/contexts/UserContext";
+import SkillsList from "./SkillsList";
 
 interface CreateQuestModalProps {
   visible: boolean;
   onModalHide?: () => void;
   onClose: () => void;
 }
+
+const userData = useUserData();
+const skills = SkillsList;
 
 const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
   visible,
@@ -34,10 +38,10 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
   const [difficulty, setDifficulty] = useState("");
   const [primarySkill, setPrimarySkill] = useState("");
   const [secondarySkill, setSecondarySkill] = useState("");
-  const [repeatable, setRepeatable] = useState("");
+  const [repeatable, setRepeatable] = useState(false);
   const [completionReward, setCompletionReward] = useState("");
 
-  const userData = useUserData();
+  
   
   const createQuest = () => {
         // Check to ensure quest has a name, description, and due date for now
@@ -46,7 +50,8 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
     let error = false;
     let errors = [];
 
-    if (questName.trim().length === 0 || questDescription.trim().length === 0 || !dateSelected) {
+    // Blanket if statement to check for errors for now. TODO: split this up for more precise error handling. See Henry's setup with CreateSkillModal for a way better example
+    if (questName.trim().length === 0 || questDescription.trim().length === 0 || !dateSelected || difficulty.trim().length === 0 || completionReward.trim().length === 0) {
       error = true;
     }
     
@@ -113,20 +118,28 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
             
         <View style={styles.fitToText}>
         <Text style={styles.inputLabel}>Difficulty:</Text>
-          {/* Buttons likely best method to establish difficulty. They don't do anything yet */}
-          <TouchableOpacity style={styles.difficultyButton} onPress={() => Alert.alert('Congrats! You pressed the button! It doesnt do anything yet :)')}>
+          {/* Buttons likely best method to establish difficulty */}
+          <TouchableOpacity style={styles.difficultyButton} onPress={() => 
+            setDifficulty("Easy")
+            }>
             <Text style={styles.difficultyButtonText}>Easy</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.difficultyButton} onPress={() => Alert.alert('Congrats! You pressed the button! It doesnt do anything yet :)')}>
+          <TouchableOpacity style={styles.difficultyButton} onPress={() => 
+            setDifficulty("Normal")
+            }>
             <Text style={styles.difficultyButtonText}>Normal</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.difficultyButton} onPress={() => Alert.alert('Congrats! You pressed the button! It doesnt do anything yet :)')}>
+          <TouchableOpacity style={styles.difficultyButton} onPress={() => 
+            setDifficulty("Hard")
+            }>
             <Text style={styles.difficultyButtonText}>Hard</Text>
           </TouchableOpacity>
         </View>
             
+
+        {/* TODO: Turn this into a drop down menu with all available skills*/}    
         <View style={styles.inputGroup}>
         <Text style={styles.inputLabel}>Primary Skill:</Text>
           <TextInput
@@ -138,8 +151,9 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
           />
         </View>
 
+        {/* TODO: Turn this into a drop down menu with all available skills*/}
         <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>Secondary Skill:</Text>
+        <Text style={styles.inputLabel}>Secondary Skill: (Optional)</Text>
           <TextInput
             style={styles.inputField}
             placeholder="Secondary Skill..."
@@ -148,23 +162,14 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
             onChangeText={setSecondarySkill}
           />
         </View>
-                      
-        <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>Secondary Skill:</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Secondary Skill..."
-            placeholderTextColor={colors.textPlaceholder}
-            value={secondarySkill}
-            onChangeText={setSecondarySkill}
-          />
-        </View>
+                    
+        {/* TODO: Add the Repeatable check box for the quest creation */}
 
         <View style={styles.inputGroup}>
         <Text style={styles.inputLabel}>Completion Reward:</Text>
           <TextInput
             style={styles.inputField}
-            placeholder="Completion reawrd..."
+            placeholder="Completion reward..."
             placeholderTextColor={colors.textPlaceholder}
             value={completionReward}
             onChangeText={setCompletionReward}
