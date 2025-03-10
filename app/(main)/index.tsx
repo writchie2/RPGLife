@@ -173,7 +173,7 @@ export default function HomePage() {
               </TouchableOpacity>
               {skillListVisible && (
                 <SkillsList
-                  skills={simulatedUserData.skills || []}
+                  skills={userData.userData?.skills || []}
                   mode="active"
                 />
               )}
@@ -195,7 +195,7 @@ export default function HomePage() {
               </TouchableOpacity>
               {questListVisible && (
                 <QuestsList
-                  quests={simulatedUserData.quests || []}
+                  quests={userData.userData?.quests || []}
                   mode="active"
                 />
               )}
