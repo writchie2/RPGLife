@@ -25,14 +25,11 @@ interface UserProviderProps {
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [userData, setUserData] = useState<UserData | null>(null);
   
-  
+  // Function updates the user's document to change the index of their avatar icon
+  // Input: index (for avatar array in UserHeader)
   const setAvatar = async (index: number) => {
     if (!userData) return;
-    const updatedUser = { ...userData, avatarIndex: index };
-    setUserData(updatedUser);
-
     try {
-      await saveUserData(updatedUser);
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
         await updateDoc(userDoc, {
@@ -44,10 +41,124 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
 
+  // Function adds an amount to the user's strengthEXP. 
+  // This amount is also added to the user's overall exp
+  // Input: increaseAmount (number added to strengthEXP)
+  const addStrengthEXP = async (increaseAmount : number) => {
+    if (!userData) return;
+    try {
+      if (auth.currentUser) {
+        const userDoc = doc(db, "users", auth.currentUser.uid)
+        await updateDoc(userDoc, {
+          strengthEXP: (userData.strengthEXP + increaseAmount),
+          exp: (userData.exp + increaseAmount) 
+        })
+      }
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+    }
+  }
+
+  // Function adds an amount to the user's vitalityEXP. 
+  // This amount is also added to the user's overall exp
+  // Input: increaseAmount (number added to vitalityEXP)
+  const addVitalityEXP = async (increaseAmount : number) => {
+    if (!userData) return;
+    try {
+      if (auth.currentUser) {
+        const userDoc = doc(db, "users", auth.currentUser.uid)
+        await updateDoc(userDoc, {
+          vitalityEXP: (userData.vitalityEXP + increaseAmount),
+          exp: (userData.exp + increaseAmount) 
+        })
+      }
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+    }
+  }
+
+  // Function adds an amount to the user's agilityEXP. 
+  // This amount is also added to the user's overall exp
+  // Input: increaseAmount (number added to agilityEXP)
+  const addAgilityEXP = async (increaseAmount : number) => {
+    if (!userData) return;
+    try {
+      if (auth.currentUser) {
+        const userDoc = doc(db, "users", auth.currentUser.uid)
+        await updateDoc(userDoc, {
+          agilityEXP: (userData.agilityEXP + increaseAmount),
+          exp: (userData.exp + increaseAmount) 
+        })
+      }
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+    }
+  }
+
+  // Function adds an amount to the user's staminaEXP. 
+  // This amount is also added to the user's overall exp
+  // Input: increaseAmount (number added to staminaEXP)
+  const addStaminaEXP = async (increaseAmount : number) => {
+    if (!userData) return;
+    try {
+      if (auth.currentUser) {
+        const userDoc = doc(db, "users", auth.currentUser.uid)
+        await updateDoc(userDoc, {
+          staminaEXP: (userData.staminaEXP + increaseAmount),
+          exp: (userData.exp + increaseAmount) 
+        })
+      }
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+    }
+  }
+
+  // Function adds an amount to the user's intelligenceEXP. 
+  // This amount is also added to the user's overall exp
+  // Input: increaseAmount (number added to intelligenceEXP)
+  const addIntelligenceEXP = async (increaseAmount : number) => {
+    if (!userData) return;
+    try {
+      if (auth.currentUser) {
+        const userDoc = doc(db, "users", auth.currentUser.uid)
+        await updateDoc(userDoc, {
+          intelligenceEXP: (userData.intelligenceEXP + increaseAmount),
+          exp: (userData.exp + increaseAmount) 
+        })
+      }
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+    }
+  }
+
+  // Function adds an amount to the user's charismaEXP. 
+  // This amount is also added to the user's overall exp
+  // Input: increaseAmount (number added to charismaEXP)
+  const addCharismaEXP = async (increaseAmount : number) => {
+    if (!userData) return;
+    try {
+      if (auth.currentUser) {
+        const userDoc = doc(db, "users", auth.currentUser.uid)
+        await updateDoc(userDoc, {
+          charismaEXP: (userData.charismaEXP + increaseAmount),
+          exp: (userData.exp + increaseAmount) 
+        })
+      }
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+    }
+  }
+
+  // Function that creates a new document in the "skills" collection of Firebase representing a new skill
+  // Validation of inputs is handled in the function that calls it in the CreateSkillModal 
+  // skillName, primaryTrait, and experiecne are required. The others are optional and may be blank strings 
   const addSkill = async (skillName: String, description: String, primaryTrait: String, secondaryTrait: String, experience: String) => {
     if (!auth.currentUser) {
       return;
     }
+
+    // Right now "novice" = 0 exp, "adept" = 1000 exp, "master" = 2200 exp
+    // This can all change when we re-balance how exp works
     let calcEXP = 0; 
     if (experience = "adept"){ calcEXP = 1000;}
     if (experience = "master"){ calcEXP = 2200;}
@@ -55,13 +166,15 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     try {
       const skillsCollectionRef = collection(db, "users", auth.currentUser.uid, "skills");
       
+      // New skill created as record with required fields
       const newSkill: Record<string, any> = {
         name: skillName,
         primaryTrait: primaryTrait,
         exp: calcEXP,
         active: true,
       };
-  
+      
+      // If secondary trait or description are not blank, add them as a field. 
       if (secondaryTrait !== "") {
         newSkill.secondaryTrait = secondaryTrait;
       }
@@ -69,9 +182,81 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         newSkill.description = description;
       }
       
-  
+      // Add the record to FireBase as a new document in the "skills" collection
       const docRef = await addDoc(skillsCollectionRef, newSkill);
       console.log("Skill added with ID:", docRef.id);
+
+      // Handles the experience gain when a new skill is created. 
+      // The user can select their expereince level when creating a skill, and that exp
+      // will be added to their overall exp and the respective traits
+
+      // If there is no secondary trait, the primary trait gets the entirety of the exp. 
+      if (secondaryTrait === "") {
+        switch (primaryTrait) {
+        case "Strength":
+          addStrengthEXP(calcEXP);
+          break;
+        case "Vitality":
+          addVitalityEXP(calcEXP);
+          break;
+        case "Agility":
+          addAgilityEXP(calcEXP);
+          break;
+        case "Stamina":
+          addStaminaEXP(calcEXP);
+          break;
+        case "Intelligence":
+          addIntelligenceEXP(calcEXP);
+          break;
+        case "Charisma":
+          addCharismaEXP(calcEXP);
+          break;
+        }
+      }
+      // If there is a secondary trait, the primary trait gets 60% of the exp and secondary trait gets 40%
+      else {
+        switch (primaryTrait) {
+          case "Strength":
+            addStrengthEXP((calcEXP * 0.6));
+            break;
+          case "Vitality":
+            addVitalityEXP((calcEXP * 0.6));
+            break;
+          case "Agility":
+            addAgilityEXP((calcEXP * 0.6));
+            break;
+          case "Stamina":
+            addStaminaEXP((calcEXP * 0.6));
+            break;
+          case "Intelligence":
+            addIntelligenceEXP((calcEXP * 0.6));
+            break;
+          case "Charisma":
+            addCharismaEXP((calcEXP * 0.6));
+            break;
+          }
+          switch (secondaryTrait) {
+            case "Strength":
+              addStrengthEXP((calcEXP * 0.4));
+              break;
+            case "Vitality":
+              addVitalityEXP((calcEXP * 0.4));
+              break;
+            case "Agility":
+              addAgilityEXP((calcEXP * 0.4));
+              break;
+            case "Stamina":
+              addStaminaEXP((calcEXP * 0.4));
+              break;
+            case "Intelligence":
+              addIntelligenceEXP((calcEXP * 0.4));
+              break;
+            case "Charisma":
+              addCharismaEXP((calcEXP * 0.4));
+              break;
+            }
+      }
+      
     } catch (error) {
       console.error("Error adding skill:", error);
     }
@@ -85,7 +270,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const questsCollectionRef = collection(db, 'users', auth.currentUser.uid, 'quests');
     const skillsCollectionRef = collection(db, 'users', auth.currentUser.uid, 'skills');
 
-    // Subscribe to Firestore changes
+    // Subscribes to user document to detect changes made and update the local data when detected
     const unsubscribeUser = onSnapshot(userDocRef, (docSnapshot) => {
       if (docSnapshot.exists()) {
         const updatedData = docSnapshot.data() as UserData;
@@ -96,21 +281,34 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       }
     });
 
+    // Subscribes to quests collection to detect changes made and update the local data when detected
     const unsubscribeQuests = onSnapshot(questsCollectionRef, (querySnapshot) => {
       const updatedQuests = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-      setUserData((prev) => (prev ? { ...prev, quests: updatedQuests as Quest[] } : null));
+      setUserData((prev) => {
+        if (!prev) return null;
+        const updatedData: UserData = { ...prev, quests: updatedQuests as Quest[] };
+        // Save to AsyncStorage
+        saveUserData(updatedData);
+        return updatedData; 
+      });
     });
 
+    // Subscribes to skills collection to detect changes made and update the local data when detected
     const unsubscribeSkills = onSnapshot(skillsCollectionRef, (querySnapshot) => {
       const updatedSkills = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-      setUserData((prev) => (prev ? { ...prev, skills: updatedSkills as Skill[] } : null));
-    
+      setUserData((prev) => {
+        if (!prev) return null;
+        const updatedData: UserData = { ...prev, skills: updatedSkills as Skill[] };
+        // Save to AsyncStorage
+        saveUserData(updatedData);
+        return updatedData; 
+      });
     });
 
     
