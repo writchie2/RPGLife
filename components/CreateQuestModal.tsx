@@ -1,8 +1,15 @@
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {Text, StyleSheet, TextInput, Button, TouchableOpacity, SafeAreaView, ScrollView, Pressable, View, Modal, TouchableWithoutFeedback} from "react-native";
+import { doc, updateDoc, onSnapshot, collection, query, addDoc } from 'firebase/firestore';
+import {getDoc, getDocs} from 'firebase/firestore';
+import { db } from '../FirebaseConfig';
+import { auth } from "../FirebaseConfig"
+
+import { fetchUserData } from "@/utils/firestoreUtils";
 import DatePickerComponent from "../components/DatePickerComponent";
 
+import { Dropdown } from 'react-native-element-dropdown';
 import colors from "@/constants/colors";
 
 // import Fonts
@@ -22,13 +29,19 @@ interface CreateQuestModalProps {
   onClose: () => void;
 }
 
-const userData = useUserData();
-const skills = SkillsList;
 
 const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
   visible,
   onClose,
 }) => {
+  if (!auth.currentUser) {
+        return;
+      }
+
+  // const skillsRef = collection(db, "users", auth.currentUser.uid, "skills");
+  
+  
+
   const [questName, setQuestName] = useState("");
   const [questDescription, setQuestDescription] = useState("");
   const [dueDate, setDate] = useState(new Date());
@@ -40,10 +53,12 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
   const [secondarySkill, setSecondarySkill] = useState("");
   const [repeatable, setRepeatable] = useState(false);
   const [completionReward, setCompletionReward] = useState("");
-
+  const [isFocus, setIsFocus] = useState(false);
+  const userData = useUserData();
+  const skills = userData.userData?.skills || []
   
   
-  const createQuest = () => {
+  const createQuest = async () => {
         // Check to ensure quest has a name, description, and due date for now
         // TODO: add more checks for difficulty, primarySkill, and completionReward
         // other fields should be optional(?) so don't need to check for them 
@@ -137,31 +152,48 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
             <Text style={styles.difficultyButtonText}>Hard</Text>
           </TouchableOpacity>
         </View>
-            
+             
+        <Text style={styles.inputLabel}>Primary Skill</Text>
+        <Dropdown
+          style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          inputSearchStyle={styles.inputSearchStyle}
+          iconStyle={styles.iconStyle}
+          data={skills}
+          maxHeight={300}
+          labelField="name"
+          valueField="name"
+          placeholder="Select Skill"  
+          value={primarySkill} 
+          onFocus={() => setIsFocus(true)}
+          onBlur={() => setIsFocus(false)}
+          onChange={item => {
+            setPrimarySkill(item.name);
+            setIsFocus(false);
+          }}
+        />
 
-        {/* TODO: Turn this into a drop down menu with all available skills*/}    
-        <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>Primary Skill:</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Primary Skill..."
-            placeholderTextColor={colors.textPlaceholder}
-            value={primarySkill}
-            onChangeText={setPrimarySkill}
-          />
-        </View>
-
-        {/* TODO: Turn this into a drop down menu with all available skills*/}
-        <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>Secondary Skill: (Optional)</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Secondary Skill..."
-            placeholderTextColor={colors.textPlaceholder}
-            value={secondarySkill}
-            onChangeText={setSecondarySkill}
-          />
-        </View>
+        <Text style={styles.inputLabel}>Secondary Skill</Text>
+        <Dropdown
+          style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          inputSearchStyle={styles.inputSearchStyle}
+          iconStyle={styles.iconStyle}
+          data={skills}
+          maxHeight={300}
+          labelField="name"
+          valueField="name"
+          placeholder="Select Skill"  
+          value={secondarySkill} 
+          onFocus={() => setIsFocus(true)}
+          onBlur={() => setIsFocus(false)}
+          onChange={item => {
+            setSecondarySkill(item.name);
+            setIsFocus(false);
+          }}
+        />
                     
         {/* TODO: Add the Repeatable check box for the quest creation */}
 
@@ -206,6 +238,13 @@ const styles = StyleSheet.create({
     aspectRatio: 4.75, // maintains correct image width -> aspectRation = width/height
     marginTop: 36,
     marginBottom: 32,
+  },
+  dropdown: {
+    height: 50,
+    borderColor: 'gray',
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
   },
   form: {
     backgroundColor: colors.bgSecondary,
@@ -322,6 +361,20 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "#4a503d",
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
   },
 });
 

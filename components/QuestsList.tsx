@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+import { Timestamp } from "firebase/firestore";
 
 import { Quest } from "../utils/types";
 import colors from "@/constants/colors";
@@ -23,15 +24,17 @@ const QuestsList: React.FC<QuestsListProps> = ({
   //Item that will be rendered for each quest
   //TO DO: styling
   //TO DO: change press action to route to quest page
-  const renderItem = ({ item }: { item: Quest }) => (
+  const renderItem = ({ item }: { item: Quest }) => {
+   // const time = new Timestamp(item.dueDate.getSeconds(), item.dueDate.getMilliseconds())
+   return (
     <TouchableOpacity
       style={styles.questItem}
-      onPress={() => alert("You selected quest with id:" + item.id)}
+      onPress={() => alert("You selected quest with id:" + JSON.stringify(item.dueDate))}
     >
       <Text style={styles.questName}>{item.name}</Text>
       <Text style={styles.questDescription}>{item.description}</Text>
       <Text style={styles.questDetails}>
-        Difficulty: {item.difficulty} | Due: {item.dueDate}
+        Difficulty: {item.difficulty} | Due: {/* WHAT THE FUCK */}
       </Text>
       <Text style={styles.questSkills}>
         Primary Skill: {item.primarySkill}{" "}
@@ -41,7 +44,7 @@ const QuestsList: React.FC<QuestsListProps> = ({
         Repeatable: {item.repeatable ? "Yes" : "No"}
       </Text>
     </TouchableOpacity>
-  );
+  );}
 
   let chosenQuests: Quest[] = quests;
   if (mode === "active") {

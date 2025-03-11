@@ -13,7 +13,7 @@ interface UserContextType {
   userData: UserData | null;
   setAvatar: (index: number) => void;
   addSkill: (skillName: String, description: String, primaryTrait: String, secondaryTrait: String, experience: String) => void;
-  addQuest: (questName: String, questDescription: String, dueDate: Date, difficulty: String, primarySkill: Skill, secondarySkill: Skill, repeatable: Boolean, completionReward: string) => void;
+  addQuest: (questName: String, questDescription: String, dueDate: Date, difficulty: String, primarySkill: String, secondarySkill: String, repeatable: Boolean, completionReward: string) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -78,7 +78,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   }
 
-  const addQuest = async (questName: String, questDescription: String, dueDate: Date, difficulty: String, primarySkill: Skill, secondarySkill: Skill, repeatable: Boolean, completionReward: String) => {
+  const addQuest = async (questName: String, questDescription: String, dueDate: Date, difficulty: String, primarySkill: String, secondarySkill: String, repeatable: Boolean, completionReward: String) => {
     if (!auth.currentUser) {
       return;
     }
@@ -88,14 +88,14 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       const newQuest: Record<string, any> = {
         name: questName,
         description: questDescription,
-        questDueDate: dueDate,
-        questDifficulty: difficulty,
-        questPrimarySkill: primarySkill,
+        dueDate: dueDate,
+        difficulty: difficulty,
+        primarySkill: primarySkill,
         reward: completionReward,
         active: true,
       };
   
-      if (secondarySkill !== null) {
+      if (secondarySkill !== "") {
         newQuest.secondarySkill = secondarySkill;
       }
       if (repeatable !== false) {
