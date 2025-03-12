@@ -1,15 +1,17 @@
+import { Timestamp } from "firebase/firestore";
 import { Int32 } from "react-native/Libraries/Types/CodegenTypes";
 
 // Define a quest structure
 export interface Quest {
     id: string;
     name: string;
-    dueDate: string; // Change to date? Firestore normally stores dates as strings. 
+    dueDate: Date; // Change to date? Firestore normally stores dates as strings. 
     description: string;
     difficulty: 'easy' | 'medium' | 'hard'; 
     primarySkill: string;
     secondarySkill?: string; // Optional secondary skill
     repeatable: boolean;
+    reward: string;
     checkpoints?: Checkpoint[]; // Optional checkpoints list (can be empty)
     active: boolean;
   }

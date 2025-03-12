@@ -35,6 +35,7 @@ import { UserData, Quest, Skill, Checkpoint } from '../../utils/types';
 import SkillsList  from '../../components/SkillsList'
 import QuestsList  from '../../components/QuestsList'
 import CreateSkillModal from "@/components/CreateSkillModal";
+import CreateQuestModal from "@/components/CreateQuestModal";
 import NavigationModal  from '../../components/NavigationModal'
 import { useUserData } from '@/contexts/UserContext';
 
@@ -127,6 +128,7 @@ export default function HomePage() {
   const [questListVisible, setQuestListVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [skillsModalVisible, setSkillsModalVisible] = useState(false);
+  const [questsModalVisible, setQuestsModalVisible] = useState(false);
 
   const [loading, setLoading] = useState(true); // Not used currently. could be implemented later.
   const userData = useUserData();
@@ -215,7 +217,7 @@ export default function HomePage() {
         </Pressable>
           
         <CreateSkillModal visible={skillsModalVisible} onClose={() => setSkillsModalVisible(false)}></CreateSkillModal>
-        
+        <CreateQuestModal visible={questsModalVisible} onClose={() => setQuestsModalVisible(false)}></CreateQuestModal>
 
         {/* Modal for Add Button */}
         <Modal
@@ -236,7 +238,7 @@ export default function HomePage() {
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.modalButton} onPress={() => {
                     setAddModalVisible(false);
-                    alert("launching add quest modal (TODO)");
+                    setQuestsModalVisible(true);
                   }}>
                     <Text style={styles.modalButtonText}>Add Quest</Text>
                   </TouchableOpacity>

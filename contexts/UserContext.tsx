@@ -13,6 +13,7 @@ interface UserContextType {
   userData: UserData | null;
   setAvatar: (index: number) => void;
   addSkill: (skillName: String, description: String, primaryTrait: String, secondaryTrait: String, experience: String) => void;
+  addQuest: (questName: String, questDescription: String, dueDate: Date, difficulty: String, primarySkill: String, secondarySkill: String, repeatable: Boolean, completionReward: string) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -262,6 +263,38 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   }
 
+  const addQuest = async (questName: String, questDescription: String, dueDate: Date, difficulty: String, primarySkill: String, secondarySkill: String, repeatable: Boolean, completionReward: String) => {
+    if (!auth.currentUser) {
+      return;
+    }
+    try {
+      const questsCollectionRef = collection(db, "users", auth.currentUser.uid, "quests");
+      
+      const newQuest: Record<string, any> = {
+        name: questName,
+        description: questDescription,
+        dueDate: dueDate,
+        difficulty: difficulty,
+        primarySkill: primarySkill,
+        reward: completionReward,
+        active: true,
+      };
+  
+      if (secondarySkill !== "") {
+        newQuest.secondarySkill = secondarySkill;
+      }
+      if (repeatable !== false) {
+        newQuest.repeatable = repeatable;
+      }
+      
+  
+      const docRef = await addDoc(questsCollectionRef, newQuest);
+      console.log("Skill added with ID:", docRef.id);
+    } catch (error) {
+      console.error("Error adding skill:", error);
+    }
+  }
+
   useEffect(() => {
 
     if (!auth.currentUser) return;
@@ -321,7 +354,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{userData, setAvatar, addSkill}}>
+    <UserContext.Provider value={{userData, setAvatar, addSkill, addQuest}}>
       {children}
     </UserContext.Provider>
   );
