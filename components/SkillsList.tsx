@@ -33,7 +33,7 @@ const SkillsList: React.FC<SkillsListProps> = ({
     >
       <View style={styles.splitRowContainer}>
         <Text style={styles.skillName}>{item.name}</Text>
-        <Text style={styles.skillTrait}>Traits: {item.trait}</Text>
+        <Text style={styles.skillTrait}>Traits: {item.primaryTrait}{item.secondaryTrait && `, ${item.secondaryTrait}`}</Text>
       </View>
       <Text style={styles.skillDescription}>{item.description}</Text>
       {/* exp bar */}

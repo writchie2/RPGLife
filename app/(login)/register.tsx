@@ -114,6 +114,12 @@ export default function RegisterScreen() {
             birthday: date.toDateString(),
             exp: 0,
             iconIdex: 0,
+            strengthEXP: 0,
+            vitalityEXP: 0,
+            agilityEXP: 0,
+            staminaEXP: 0,
+            inteligenceEXP: 0,
+            charismaEXP: 0,
           });
           try {
             const verStatus = sendEmailVerification(curUser);

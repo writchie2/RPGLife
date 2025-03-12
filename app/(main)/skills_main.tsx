@@ -23,6 +23,7 @@ import { UserData, Skill, Checkpoint } from '../../utils/types';
 
 import colors from "@/constants/colors";
 import UserHeader from "@/components/UserHeader";
+import CreateSkillModal from "@/components/CreateSkillModal";
 
 // TODO Implement Skills Page functionality
 export default function SkillsPage() {
@@ -44,7 +45,7 @@ export default function SkillsPage() {
 
   const [skillsListVisible, setSkillsListVisible] = useState(false);
   const [pastSkillsListVisible, setPastSkillsListVisible] = useState(false);
-
+  const [skillsModalVisible, setSkillsModalVisible] = useState(false);
   
   
 
@@ -81,8 +82,11 @@ export default function SkillsPage() {
                 <SkillsList skills={userData.userData?.skills || []} mode="inactive" />
                 )}
         </View>
+
+        <CreateSkillModal visible={skillsModalVisible} onClose={() => setSkillsModalVisible(false)}></CreateSkillModal>
+        
         {/* Add Button */}
-        <Pressable style={styles.addButton} onPress={() => alert("TO-DO create skill")}>
+        <Pressable style={styles.addButton} onPress={() => setSkillsModalVisible(true)}>
         <Text style={styles.addButtonText}>+</Text>
         </Pressable>
     </View>

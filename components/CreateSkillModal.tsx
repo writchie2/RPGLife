@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, TouchableWithoutFeedback, Image, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, TouchableWithoutFeedback, Image, TextInput, Alert, Keyboard } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import colors from "@/constants/colors";
 import { router } from "expo-router";
@@ -14,12 +14,12 @@ interface CreateSkillModalProps {
 }
 
 const traits = [
-    { label: 'Strength', value: 'strength' },
-    { label: 'Vitality', value: 'vitality' },
-    { label: 'Agility', value: 'agility' },
-    { label: 'Stamina', value: 'stamina' },
-    { label: 'Intelligence', value: 'intelligence' },
-    { label: 'Charisma', value: 'charisma' },
+    { label: 'Strength', value: 'Strength' },
+    { label: 'Vitality', value: 'Vitality' },
+    { label: 'Agility', value: 'Agility' },
+    { label: 'Stamina', value: 'Stamina' },
+    { label: 'Intelligence', value: 'Intelligence' },
+    { label: 'Charisma', value: 'Charisma' },
   ];
 
 const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
@@ -33,16 +33,26 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
     const [secondaryTrait, setSecondaryTrait] = useState("");
     const [experience, setExperience] = useState("");
 
-    const [isFocus, setIsFocus] = useState(false);
+    const [isFocusPrimary, setIsFocusPrimary] = useState(false);
+    const [isFocusSecondary, setIsFocusSecondary] = useState(false);
     const userData = useUserData();
 
+    // Function validates input and will call the "addSkill" function that exists in UserContext.tsx
+    // Errors will appear if name is blank, name is not unique, a primary trait isn't selected,
+    // or if starting exp isn't selected
     const createSkill = () => {
 
         let error = false;
         let errors = [];
-        if (skillName === "")
+        if (skillName.trim() === "")
         {
             errors.push("Skill Name cannot be blank");
+            error = true;
+        }
+        const skillExists = userData.userData?.skills?.some(skill => skill.name.toLowerCase() === skillName.toLowerCase());
+        if (skillExists)
+        {
+            errors.push("A skill with that name already exists");
             error = true;
         }
         if (primaryTrait === "")
@@ -57,11 +67,17 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
         }
         if (error){
             const errorMessage = errors.join(",\n") + ".";
-            Alert.alert("Please fill out all fields!", errorMessage);
+            Alert.alert("Error!", errorMessage);
             return;
         }
         
-        userData.addSkill(skillName, description, primaryTrait, secondaryTrait, experience);
+        userData.addSkill(skillName.trim(), description.trim(), primaryTrait, secondaryTrait, experience);
+        setSkillName("");
+        setDescription("");
+        setPrimaryTrait("");
+        setSecondaryTrait("");
+        setExperience("");
+        onClose();
     }
 
 
@@ -73,114 +89,141 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
           onRequestClose={onClose}
         >
           {/* TouchableWithoutFeedback to detect taps outside the modal. Also somewhat simulates slide to cancel for iOS. */}
-          <TouchableWithoutFeedback onPress={onClose}>
-            <View style={styles.overlay}>
-              <TouchableWithoutFeedback>
+          <TouchableWithoutFeedback  onPress={onClose}>
+            <View style={styles.overlay} >
+              <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <View style={styles.modalContainer}>
-                    
-                    {/* Close Button */}
-                
-                    <Text style={styles.title}>Create Skill</Text>
-
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.inputLabel}>Skill Name:</Text>
-                        <TextInput
-                            style={styles.inputField}
-                            placeholder="Skill name..."
-                            placeholderTextColor={colors.textPlaceholder}
-                            autoCorrect={false}
-                            value={skillName}
-                            onChangeText={setSkillName}
-                        />
-                        <TextInput
-                            style={styles.inputField}
-                            placeholder="Description (optional)..."
-                            placeholderTextColor={colors.textPlaceholder}
-                            autoCorrect={true}
-                            value={description}
-                            onChangeText={setDescription}
-                            multiline={true}
-                        />
+                    <View style={styles.formContainer}>
                         
-                        <Text style={styles.inputLabel}>Primary Trait</Text>
-                        <Dropdown
-                            style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-                            placeholderStyle={styles.placeholderStyle}
-                            selectedTextStyle={styles.selectedTextStyle}
-                            inputSearchStyle={styles.inputSearchStyle}
-                            iconStyle={styles.iconStyle}
-                            data={traits}
-                            maxHeight={300}
-                            labelField="label"
-                            valueField="value"
-                            placeholder="Select trait"  // Ensure the placeholder stays visible
-                            value={primaryTrait}  // Allow it to be null initially
-                            onFocus={() => setIsFocus(true)}
-                            onBlur={() => setIsFocus(false)}
-                            onChange={item => {
-                                setPrimaryTrait(item.value);
-                                setIsFocus(false);
-                            }}
-                        />
+                        {/* Title */}
+                        <View style={styles.titleContainer}>
+                            <Text style={styles.title}>Create Skill</Text>
+                        </View>
 
-                        <Text style={styles.inputLabel}>Secondary Trait (Optional)</Text>
-                        <Dropdown
-                            style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-                            placeholderStyle={styles.placeholderStyle}
-                            selectedTextStyle={styles.selectedTextStyle}
-                            inputSearchStyle={styles.inputSearchStyle}
-                            iconStyle={styles.iconStyle}
-                            data={traits}
-                            maxHeight={300}
-                            labelField="label"
-                            valueField="value"
-                            placeholder={!isFocus ? 'Select trait' : '...'}
-                            value={secondaryTrait}
-                            onFocus={() => setIsFocus(true)}
-                            onBlur={() => setIsFocus(false)}
-                            onChange={item => {
-                                setSecondaryTrait(item.value);
-                                setIsFocus(false);
-                            }}
+                        {/* Input */}
+                        <View style={styles.inputContainer}>
+                            
+                            {/* Skill Name */}
+                            <Text style={styles.inputLabel}>Skill Name:</Text>
+                            <TextInput
+                                style={styles.inputFieldName}
+                                placeholder="Skill name..."
+                                placeholderTextColor={colors.textPlaceholder}
+                                autoCorrect={false}
+                                value={skillName}
+                                onChangeText={setSkillName}
                             />
 
-                        <TouchableOpacity 
-                            style={ experience ==="novice"?  styles.experienceButton: styles.experienceButtonPressed} 
-                            onPress={() => { 
-                            setExperience("novice");
-                            }}
-                        >
-                            <Text>Novice</Text>
-                        </TouchableOpacity>
+                            {/* Description */}
+                            <Text style={styles.inputLabel}>Description:</Text>
+                            <TextInput
+                                style={styles.inputFieldDescription}
+                                placeholder="Description (optional)..."
+                                placeholderTextColor={colors.textPlaceholder}
+                                autoCorrect={true}
+                                value={description}
+                                onChangeText={setDescription}
+                                multiline={true}
+                            />
 
-                        <TouchableOpacity 
-                            style={ experience ==="adept"?  styles.experienceButton: styles.experienceButtonPressed} 
-                            onPress={() => { 
-                            setExperience("adept");
-                            }}
-                        >
-                            <Text>Adept</Text>
-                        </TouchableOpacity>
+                            {/* Primary Trait */}
+                            <View style={styles.traitGroup}>
+                                <Text style={styles.traitLabel}>Primary Trait:</Text>
+                                <Dropdown
+                                    style={[
+                                        styles.dropdown,
+                                        isFocusPrimary
+                                          ? { borderColor: colors.borderInput, backgroundColor: colors.bgQuaternary } // Color when focused
+                                          : { backgroundColor: colors.bgPrimary }, // Color when not focused
+                                      ]}
+                                    placeholderStyle={styles.placeholderStyle}
+                                    containerStyle={{ backgroundColor: colors.bgPrimary }}
+                                    itemTextStyle={{ fontFamily: "Metamorphous_400Regular", }}
+                                    selectedTextStyle={styles.selectedTextStyle}
+                                    inputSearchStyle={styles.inputSearchStyle}
+                                    iconStyle={styles.iconStyle}
+                                    data={traits}
+                                    maxHeight={300}
+                                    labelField="label"
+                                    valueField="value"
+                                    placeholder="Select trait"  
+                                    value={primaryTrait}
+                                    onFocus={() => setIsFocusPrimary(true)}
+                                    onBlur={() => setIsFocusPrimary(false)}
+                                    onChange={item => {
+                                        setPrimaryTrait(item.value);
+                                        setIsFocusPrimary(false);
+                                    }}
+                                />
+                            </View>
+                            
+                            {/* Secondary Trait */}
+                            <View style={styles.traitGroup}>
+                                <Text style={styles.traitLabel}>Secondary Trait:</Text>
+                                <Dropdown
+                                     style={[
+                                        styles.dropdown,
+                                        isFocusSecondary
+                                          ? { borderColor: colors.borderInput, backgroundColor: colors.bgQuaternary } // Color when focused
+                                          : { backgroundColor: colors.bgPrimary }, // Color when not focused
+                                      ]}
+                                    placeholderStyle={styles.placeholderStyle}
+                                    selectedTextStyle={styles.selectedTextStyle}
+                                    containerStyle={{ backgroundColor: colors.bgPrimary }}
+                                    itemTextStyle={{ fontFamily: "Metamorphous_400Regular", }}
+                                    inputSearchStyle={styles.inputSearchStyle}
+                                    iconStyle={styles.iconStyle}
+                                    data={traits}
+                                    maxHeight={300}
+                                    labelField="label"
+                                    valueField="value"
+                                    placeholder={'(Optional)'}
+                                    value={secondaryTrait}
+                                    onFocus={() => setIsFocusSecondary(true)}
+                                    onBlur={() => setIsFocusSecondary(false)}
+                                    onChange={item => {
+                                        setSecondaryTrait(item.value);
+                                        setIsFocusSecondary(false);
+                                    }}
+                                    />
+                            </View>
 
-                        <TouchableOpacity 
-                            style={ experience ==="master"?  styles.experienceButton: styles.experienceButtonPressed} 
-                            onPress={() => { 
-                            setExperience("master");
-                            }}
-                        >
-                            <Text>Master</Text>
-                        </TouchableOpacity>
+                            {/* Expereicne Buttons */}
+                            <View style={styles.experienceButtonContainer}>
+                                <Text style={styles.expereinceLabel}>Experience:</Text>
+                                <TouchableOpacity 
+                                    style={ experience ==="novice"?  styles.experienceButtonPressed : styles.experienceButton} 
+                                    onPress={() => { 
+                                    setExperience("novice");
+                                    }}
+                                >
+                                    <Text>Novice</Text>
+                                </TouchableOpacity>
 
-                        <TouchableOpacity 
-                            style={ styles.createButton} 
-                            onPress={() => {
-                                createSkill();
-                                onClose();
-                            }}
-                        >
-                            <Text>Create</Text>
-                        </TouchableOpacity>
+                                <TouchableOpacity 
+                                    style={ experience ==="adept"?  styles.experienceButtonPressed : styles.experienceButton} 
+                                    onPress={() => { 
+                                    setExperience("adept");
+                                    }}
+                                >
+                                    <Text>Adept</Text>
+                                </TouchableOpacity>
 
+                                <TouchableOpacity 
+                                    style={ experience ==="master"?  styles.experienceButtonPressed : styles.experienceButton} 
+                                    onPress={() => { 
+                                    setExperience("master");
+                                    }}
+                                >
+                                    <Text>Master</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+
+                    </View>
+
+                    {/* Create and Cancel Buttons */}
+                    <View style={styles.createCancelContainer}>
                         <TouchableOpacity 
                             style={ styles.cancelButton} 
                             onPress={() =>{
@@ -192,14 +235,16 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
                                 onClose();
                             }}
                         >
-                            <Text>Cancel</Text>
+                            <Text style={styles.createCancelText}>Cancel</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity 
                             style={ styles.createButton} 
-                            onPress={() => alert("name: " + skillName + " description: " + description + " primary: " + primaryTrait + " secondary: " + secondaryTrait + " exp: " + experience)}
+                            onPress={() => {
+                                createSkill();
+                            }}
                         >
-                            <Text>Test</Text>
+                            <Text style={styles.createCancelText}>Create</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -213,22 +258,40 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
 const styles = StyleSheet.create({
     overlay: {
         flex: 1,
-        backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
-        justifyContent: "center",
+        backgroundColor: colors.bgPrimary, 
+        justifyContent: "flex-end",
         alignItems: "center",
     },
     modalContainer: {
         width: "100%",
-        height: "100%",
+        height: "92%",
         backgroundColor: colors.bgPrimary,
         padding: 20,
         borderRadius: 10,
         alignItems: "center",
+        justifyContent: "space-between",
     },
-    // Copied
-    iconImage: {
+    formContainer: {
+        backgroundColor:colors.bgSecondary,
+        width: "100%",
         height: "60%",
-        width: "60%",
+        borderRadius:10,
+        paddingBottom:0,
+        flexGrow: 0,
+        
+    },
+
+    traitGroup: {
+        flexDirection: 'row',  
+        alignItems: 'center',  
+        marginTop: "1%",
+      },
+    traitLabel: {
+        fontFamily: "Metamorphous_400Regular",
+        fontSize: 18,
+        color: colors.text,
+        marginRight: 10,  
+        width: "50%",
     },
     dropdown: {
         height: 50,
@@ -236,24 +299,22 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderRadius: 8,
         paddingHorizontal: 8,
+        flex: 1,
+        backgroundColor: colors.textInput,
+        
       },
       icon: {
         marginRight: 5,
       },
-      label: {
-        position: 'absolute',
-        backgroundColor: 'white',
-        left: 22,
-        top: 8,
-        zIndex: 999,
-        paddingHorizontal: 8,
-        fontSize: 14,
-      },
       placeholderStyle: {
         fontSize: 16,
+        color: colors.textInput,
+        fontFamily: "Metamorphous_400Regular",
       },
       selectedTextStyle: {
         fontSize: 16,
+        color: colors.textInput,
+        fontFamily: "Metamorphous_400Regular",
       },
       iconStyle: {
         width: 20,
@@ -264,13 +325,23 @@ const styles = StyleSheet.create({
         fontSize: 16,
       },
 
-      //
-
     title: {
         fontFamily: "Metamorphous_400Regular",
         fontSize: 36,
         color: colors.text,
-        margin: "10%",
+    },
+    titleContainer: {
+        backgroundColor: colors.bgQuaternary,
+        width: "100%",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "5%",
+        borderRadius:10,
+        marginBottom:"2%"
+    },
+    inputContainer: {
+        paddingLeft: "2%",
+        paddingRight: "2%"
     },
     inputGroup: {
         marginBottom: 12,
@@ -281,13 +352,24 @@ const styles = StyleSheet.create({
         color: colors.text,
         marginBottom: 2,
     },
-    inputField: {
+    inputFieldName: {
         fontFamily: "Alegreya_400Regular",
         fontSize: 18,
         color: colors.textInput,
         paddingHorizontal: 10,
         backgroundColor: colors.bgPrimary,
-        height: 48,
+        height: "12%",
+        borderColor: colors.borderInput,
+        borderWidth: 2,
+        borderRadius: 6,
+    },
+    inputFieldDescription: {
+        fontFamily: "Alegreya_400Regular",
+        fontSize: 18,
+        color: colors.textInput,
+        paddingHorizontal: 10,
+        backgroundColor: colors.bgPrimary,
+        height: "24%",
         borderColor: colors.borderInput,
         borderWidth: 2,
         borderRadius: 6,
@@ -296,34 +378,23 @@ const styles = StyleSheet.create({
         height: 50, 
         width: 200 
     },
-    closeButton: {
-        position: "absolute",
-        top: 50,
-        right: 50,
-        backgroundColor: colors.bgSecondary,
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        justifyContent: "center",
-        alignItems: "center",
-        shadowColor: colors.shadow, 
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
+    experienceButtonContainer: {
+        flexDirection: 'row',  
+        alignItems: 'center',
     },
-    closeButtonText: {
-        //fontFamily: "Metamorphous_400Regular",
-        color: colors.textDark, 
-        fontSize: 20,
-        //fontWeight: "bold",
+    expereinceLabel: {
+        fontFamily: "Metamorphous_400Regular",
+        fontSize: 18,
+        color: colors.text,
+        width: "40%"
+        
     },
     experienceButton: {
-        width: 200,
+        width: "15%",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: colors.bgSecondary,
-        borderRadius: 100,
+        backgroundColor: colors.bgPrimary,
+        borderRadius: 5,
         shadowColor: colors.shadow, 
         shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.5,
@@ -333,11 +404,11 @@ const styles = StyleSheet.create({
         margin:"2%"   
     },
     experienceButtonPressed: {
-        width: 200,
+        width: "15%",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: colors.bgPrimary,
-        borderRadius: 100,
+        backgroundColor: colors.bgQuaternary,
+        borderRadius: 5,
         shadowColor: colors.shadow, 
         shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.5,
@@ -346,32 +417,41 @@ const styles = StyleSheet.create({
         height: 30,  
         margin:"2%" 
     },
+    createCancelContainer: {
+        flexDirection: 'row',
+        justifyContent: "flex-end", 
+    },
+    createCancelText: {
+        fontFamily: "Metamorphous_400Regular",
+        color: colors.textDark, 
+        fontSize: 20,
+    },
     createButton: {
-        width: 200,
+        width: "40%",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: colors.bgPrimary,
+        backgroundColor: colors.bgSecondary,
         borderRadius: 100,
         shadowColor: colors.shadow, 
         shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.5,
         shadowRadius: 4,
         elevation: 5,
-        height: 30,  
+        height: "30%",  
         margin:"2%" 
     },
     cancelButton: {
-        width: 200,
+        width: "40%",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "red",
+        backgroundColor: colors.cancel,
         borderRadius: 100,
         shadowColor: colors.shadow, 
         shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.5,
         shadowRadius: 4,
         elevation: 5,
-        height: 30,
+        height: "30%",
         margin:"2%"  
     },
     

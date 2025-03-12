@@ -173,7 +173,7 @@ export default function HomePage() {
               </TouchableOpacity>
               {skillListVisible && (
                 <SkillsList
-                  skills={simulatedUserData.skills || []}
+                  skills={userData.userData?.skills || []}
                   mode="active"
                 />
               )}
@@ -195,7 +195,7 @@ export default function HomePage() {
               </TouchableOpacity>
               {questListVisible && (
                 <QuestsList
-                  quests={simulatedUserData.quests || []}
+                  quests={userData.userData?.quests || []}
                   mode="active"
                 />
               )}
@@ -207,9 +207,7 @@ export default function HomePage() {
         <Pressable
           style={styles.addButton}
           onPress={() =>{
-            //setSkillsModalVisible(true);
             setAddModalVisible(true);
-            console.log("1");
           }
           }
         >
@@ -233,15 +231,12 @@ export default function HomePage() {
                 <TouchableOpacity style={styles.modalButton} onPress={() => {
                     setAddModalVisible(false);
                     setSkillsModalVisible(true);
-                    //alert("launching add skill modal (TODO)");
-                    console.log("2");
                   }}>
                     <Text style={styles.modalButtonText}>Add Skill</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.modalButton} onPress={() => {
                     setAddModalVisible(false);
                     alert("launching add quest modal (TODO)");
-                    console.log("3");
                   }}>
                     <Text style={styles.modalButtonText}>Add Quest</Text>
                   </TouchableOpacity>
