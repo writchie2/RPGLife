@@ -32,6 +32,12 @@ export interface Quest {
     username: string;
     birthdate: string; // Change to date? Firestore normally stores dates as strings. 
     email: string;
+    strengthEXP: number,
+    vitalityEXP: number,
+    agilityEXP: number,
+    staminaEXP: number,
+    intelligenceEXP: number,
+    charismaEXP: number,
     exp: number;
     avatarIndex: number;
     quests?: Quest[]; // Optional quests list (can be empty)
