@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import React, { useState } from "react";
-import {Text, StyleSheet, TextInput, Button, TouchableOpacity, SafeAreaView, ScrollView, Pressable, View, Modal, TouchableWithoutFeedback} from "react-native";
+import {Text, StyleSheet, TextInput, Button, TouchableOpacity, SafeAreaView, ScrollView, Pressable, View, Modal, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform} from "react-native";
 import { doc, updateDoc, onSnapshot, collection, query, addDoc } from 'firebase/firestore';
 import {getDoc, getDocs} from 'firebase/firestore';
 import { db } from '../FirebaseConfig';
@@ -38,10 +38,6 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
         return;
       }
 
-  // const skillsRef = collection(db, "users", auth.currentUser.uid, "skills");
-  
-  
-
   const [questName, setQuestName] = useState("");
   const [questDescription, setQuestDescription] = useState("");
   const [dueDate, setDate] = useState(new Date());
@@ -53,7 +49,8 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
   const [secondarySkill, setSecondarySkill] = useState("");
   const [repeatable, setRepeatable] = useState(false);
   const [completionReward, setCompletionReward] = useState("");
-  const [isFocus, setIsFocus] = useState(false);
+  const [isFocusPrimary, setIsFocusPrimary] = useState(false);
+  const [isFocusSecondary, setIsFocusSecondary] = useState(false);
   const userData = useUserData();
   const skills = userData.userData?.skills || []
   
@@ -64,18 +61,49 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
         // other fields should be optional(?) so don't need to check for them 
     let error = false;
     let errors = [];
-
-    // Blanket if statement to check for errors for now. TODO: split this up for more precise error handling. See Henry's setup with CreateSkillModal for a way better example
-    if (questName.trim().length === 0 || questDescription.trim().length === 0 || !dateSelected || difficulty.trim().length === 0 || completionReward.trim().length === 0) {
-      error = true;
-    }
     
-    if (error) {
-      Alert.alert("Error creating quest, please ensure every field is filled out correctly!");
-      return;
+    if (questName.trim() === "")
+    {
+        errors.push("Quest name cannot be blank");
+        error = true;
+    }
+    const questExists = userData.userData?.quests?.some(quest => quest.name.toLowerCase() === questName.trim().toLowerCase());
+    if (questExists)
+    {
+        errors.push("A quest with that name already exists");
+        error = true;
+    }
+    if (primarySkill === "")
+    {
+        errors.push("Must choose a primary skill");
+        error = true;
+    }
+    if (difficulty === "")
+    {
+        errors.push("Must choose the difficulty");
+        error = true;
+    }
+    if (completionReward.trim() === "")
+    {
+        errors.push("Must choose a completion reward");
+        error = true;
+    }
+    if (error){
+        const errorMessage = errors.join(",\n") + ".";
+        Alert.alert("Error!", errorMessage);
+        return;
     }
     
     userData.addQuest(questName, questDescription, dueDate, difficulty, primarySkill, secondarySkill, repeatable, completionReward);
+    setQuestName("");
+    setQuestDescription("");
+    setPrimarySkill("");
+    setSecondarySkill("");
+    setDateSelected(false);
+    setDifficulty("");
+    setRepeatable(false);
+    setCompletionReward("")
+    onClose();
   }
 
   return (
@@ -85,159 +113,308 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
     visible={visible}
     onRequestClose={onClose}
     >
-        
+    {/* TouchableWithoutFeedback to detect taps outside the modal. Also somewhat simulates slide to cancel for iOS. */}    
     <TouchableWithoutFeedback onPress={onClose}>
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.title}>Create Quest</Text>
-        <View style={styles.form}>
-          <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>Quest Name:</Text>
-            <TextInput
-              style={styles.inputField}
-              placeholder="Quest name..."
-              placeholderTextColor={colors.textPlaceholder}
-              autoCapitalize="none"
-              autoCorrect={false}
-              value={questName}
-              onChangeText={setQuestName}
-            />
-          </View>
+      <View style={styles.overlay} >
+          <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+            <View style={styles.modalContainer}>
+              {/* ScrollView makes the form scrollable if it does not fit fully on a small screen */} 
+              <ScrollView 
+                  contentContainerStyle={styles.scrollContainer} 
+                  keyboardShouldPersistTaps="handled"
+                  showsVerticalScrollIndicator={false}
+              >
+          
+              <View style={styles.formContainer}>
                 
+                {/* Title */}
+                <View style={styles.titleContainer}>
+                  <Text style={styles.title}>Create Quest</Text>
+                </View>
 
-        <View style={styles.inputGroup}>
-        <View style={styles.inputGroupRowLeft}>
-        <Text style={styles.inputLabel}>Description:</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Description..."
-            placeholderTextColor={colors.textPlaceholder}
-            autoCapitalize="none"
-            value={questDescription}
-            onChangeText={setQuestDescription}
-          />
-        </View>
+                {/* Input */}
+                <View style={styles.inputContainer}>
+
+                    {/* Quest Name */}
+                    <Text style={styles.inputLabel}>Quest Name:</Text>
+                      <TextInput
+                        style={styles.inputFieldName}
+                        placeholder="Quest name..."
+                        placeholderTextColor={colors.textPlaceholder}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        value={questName}
+                        onChangeText={setQuestName}
+                      />
+                  
+                  {/* Description */}
+                  <Text style={styles.inputLabel}>Description:</Text>
+                    <TextInput
+                      style={styles.inputFieldDescription}
+                      placeholder="Description (optional)..."
+                      placeholderTextColor={colors.textPlaceholder}
+                      autoCorrect={true}
+                      value={questDescription}
+                      onChangeText={setQuestDescription}
+                      multiline={true}
+                    />
+                
+                  {/* Due Date */} 
+                  <View style={styles.rowGroup}>
+                    <View style={styles.rowLeft}>
+                      <Text style={styles.rowLabel}>Due Date:</Text>
+                    </View>
+                    <View style={styles.rowRight}>
+                      <DatePickerComponent
+                        style={styles.inputDate}
+                        label="MM/DD/YYYY"
+                        dateSelected={dateSelected}
+                        onDateChange={(date: Date) => {
+                          setDate(date);
+                          setDateSelected(true);
+                        }}
+                      />
+                    </View>
+                  </View>
+
+                {/* Difficulty Selector */}  
+                <View style={styles.difficultyButtonContainer}>
+                  <Text style={styles.difficultyLabel}>Difficulty:</Text>
+                  {/* Buttons likely best method to establish difficulty */}
+                  <TouchableOpacity style={ difficulty === "Easy"? styles.difficultyButtonPressed : styles.difficultyButton} onPress={() => 
+                    setDifficulty("Easy")
+                    }>
+                    <Text style={styles.difficultyButtonText}>Easy</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={ difficulty === "Normal"? styles.difficultyButtonPressed : styles.difficultyButton} onPress={() => 
+                    setDifficulty("Normal")
+                    }>
+                    <Text style={styles.difficultyButtonText}>Normal</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={ difficulty === "Hard"? styles.difficultyButtonPressed : styles.difficultyButton} onPress={() => 
+                    setDifficulty("Hard")
+                    }>
+                    <Text style={styles.difficultyButtonText}>Hard</Text>
+                  </TouchableOpacity>
+                </View>
+                  
+
+                {/* Primary Skill */} 
+                <View style={styles.rowGroup}>
+                  <View style={styles.rowLeft}>   
+                    <Text style={styles.rowLabel}>Primary Skill:</Text>
+                  </View>
+                  <View style={styles.rowRight}>
+                    <Dropdown
+                      style={[
+                        styles.dropdown,
+                        isFocusPrimary
+                          ? { borderColor: colors.borderInput, backgroundColor: colors.bgQuaternary } // Color when focused
+                          : { backgroundColor: colors.bgPrimary }, // Color when not focused
+                      ]}
+                      placeholderStyle={styles.placeholderStyle}
+                      selectedTextStyle={styles.selectedTextStyle}
+                      containerStyle={{ backgroundColor: colors.bgPrimary }}
+                      itemTextStyle={{ fontFamily: "Metamorphous_400Regular", }}
+                      iconStyle={styles.iconStyle}
+                      data={skills}
+                      maxHeight={300}
+                      labelField="name"
+                      valueField="name"
+                      placeholder="Select Skill"  
+                      value={primarySkill} 
+                      onFocus={() => setIsFocusPrimary(true)}
+                      onBlur={() => setIsFocusPrimary(false)}
+                      onChange={item => {
+                        setPrimarySkill(item.name);
+                        setIsFocusPrimary(false);
+                      }}
+                    />
+                  </View>
+                </View>
+
+                {/* Secondary Skill */} 
+                <View style={styles.rowGroup}>
+                  <View style={styles.rowLeft}> 
+                    <Text style={styles.rowLabel}>Secondary Skill:</Text>
+                  </View>
+                  <View style={styles.rowRight}>
+                    <Dropdown
+                      style={[
+                        styles.dropdown,
+                        isFocusSecondary
+                          ? { borderColor: colors.borderInput, backgroundColor: colors.bgQuaternary } // Color when focused
+                          : { backgroundColor: colors.bgPrimary }, // Color when not focused
+                      ]}
+                      placeholderStyle={styles.placeholderStyle}
+                      selectedTextStyle={styles.selectedTextStyle}
+                      containerStyle={{ backgroundColor: colors.bgPrimary }}
+                      itemTextStyle={{ fontFamily: "Metamorphous_400Regular", }}
+                      iconStyle={styles.iconStyle}
+                      data={skills}
+                      maxHeight={300}
+                      labelField="name"
+                      valueField="name"
+                      placeholder="(Optional)"  
+                      value={secondarySkill} 
+                      onFocus={() => setIsFocusSecondary(true)}
+                      onBlur={() => setIsFocusSecondary(false)}
+                      onChange={item => {
+                        setSecondarySkill(item.name);
+                        setIsFocusSecondary(false);
+                      }}
+                    />
+                  </View>
+                </View>
+
+                {/* Repeatable Button */} 
+                <View style={styles.rowGroup}>
+                  <View style={styles.rowLeft}> 
+                    <Text style={styles.rowLabel}>Repeatable</Text>
+                  </View>
+                  <View style={styles.rowRight}>
+                    <TouchableOpacity style={ repeatable === true? styles.difficultyButtonPressed : styles.difficultyButton} onPress={() => {
+                      if (repeatable){
+                        setRepeatable(false);
+                      }
+                      else{
+                        setRepeatable(true);
+                      }
+                      }}>
+                      <Text style={styles.difficultyButtonText}>X</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                {/* Checkpoint Button */} 
+                <View style={styles.rowGroup}>
+                  <View style={styles.rowLeft}> 
+                    <Text style={styles.rowLabel}>CheckPoint</Text>
+                  </View>
+                  <View style={styles.rowRight}>
+                    <TouchableOpacity style={styles.difficultyButton} onPress={() => {
+                      alert("This button will make checkpoints once implemented");
+                      }}>
+                      <Text style={styles.difficultyButtonText}>+</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                {/* Completion Reward */}  
+                <Text style={[styles.inputLabel, {borderTopWidth : 1, marginTop: 10, paddingTop: 10}]}>Completion Reward:</Text>
+                <TextInput
+                  style={styles.inputField}
+                  placeholder="Completion reward..."
+                  placeholderTextColor={colors.textPlaceholder}
+                  value={completionReward}
+                  onChangeText={setCompletionReward}
+                />
+              </View>
+            </View>
+          </ScrollView>
             
-        <View style={styles.inputGroupRowRight}>
-            <Text style={styles.inputLabel}>Due Date:</Text>
-            <DatePickerComponent
-              style={styles.inputDate}
-              label="MM/DD/YYYY"
-              dateSelected={dateSelected}
-              onDateChange={(date: Date) => {
-                setDate(date);
-                setDateSelected(true);
-              }}
-            />
+          {/* Create and Cancel Buttons */}
+          <View style={styles.endButtons}>
+            <View style={styles.createCancelContainer}>
+              <TouchableOpacity 
+                style={ styles.cancelButton} 
+                onPress={() =>{
+                    setQuestName("");
+                    setQuestDescription("");
+                    setPrimarySkill("");
+                    setSecondarySkill("");
+                    setDateSelected(false);
+                    setDifficulty("");
+                    setRepeatable(false);
+                    setCompletionReward("")
+                    onClose();
+                }}
+              >
+                <Text style={styles.createCancelText}>Cancel</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.createButton} onPress={createQuest}>
+                <Text style={styles.createCancelText}>Create</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
-        </View>
-            
-        <View style={styles.fitToText}>
-        <Text style={styles.inputLabel}>Difficulty:</Text>
-          {/* Buttons likely best method to establish difficulty */}
-          <TouchableOpacity style={styles.difficultyButton} onPress={() => 
-            setDifficulty("Easy")
-            }>
-            <Text style={styles.difficultyButtonText}>Easy</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.difficultyButton} onPress={() => 
-            setDifficulty("Normal")
-            }>
-            <Text style={styles.difficultyButtonText}>Normal</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.difficultyButton} onPress={() => 
-            setDifficulty("Hard")
-            }>
-            <Text style={styles.difficultyButtonText}>Hard</Text>
-          </TouchableOpacity>
-        </View>
-             
-        <Text style={styles.inputLabel}>Primary Skill</Text>
-        <Dropdown
-          style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-          data={skills}
-          maxHeight={300}
-          labelField="name"
-          valueField="name"
-          placeholder="Select Skill"  
-          value={primarySkill} 
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
-          onChange={item => {
-            setPrimarySkill(item.name);
-            setIsFocus(false);
-          }}
-        />
-
-        <Text style={styles.inputLabel}>Secondary Skill</Text>
-        <Dropdown
-          style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-          data={skills}
-          maxHeight={300}
-          labelField="name"
-          valueField="name"
-          placeholder="Select Skill"  
-          value={secondarySkill} 
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
-          onChange={item => {
-            setSecondarySkill(item.name);
-            setIsFocus(false);
-          }}
-        />
-                    
-        {/* TODO: Add the Repeatable check box for the quest creation */}
-
-        <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>Completion Reward:</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Completion reward..."
-            placeholderTextColor={colors.textPlaceholder}
-            value={completionReward}
-            onChangeText={setCompletionReward}
-          />
-        </View>
-
-        </View>
-
-        <TouchableOpacity style={styles.button} onPress={createQuest}>
-          <Text style={styles.buttonText}>Create</Text>
-        </TouchableOpacity>
-
-        </SafeAreaView>
-    </TouchableWithoutFeedback>
-    </Modal>
+      </TouchableWithoutFeedback>
+    </View>
+  </TouchableWithoutFeedback>
+</Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+
+  overlay: {
     flex: 1,
+    backgroundColor: colors.bgPrimary, 
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+  modalContainer: {
+    flex: .92,
+    width: "100%",
+    backgroundColor: colors.bgPrimary,
+    borderRadius: 10,
+    padding: 20,
+    justifyContent: "space-between",
+  },
+  formContainer: {
+    width: "100%",
+    backgroundColor: colors.bgSecondary,
+    borderRadius: 10,
+    paddingBottom: 50,
+    flexShrink: 1,
+  },
+  inputContainer: {
+    paddingLeft: "2%",
+    paddingRight: "2%"
+  },
+  inputFieldName: {
+    fontFamily: "Alegreya_400Regular",
+    fontSize: 18,
+    color: colors.textInput,
+    paddingHorizontal: 10,
+    backgroundColor: colors.bgPrimary,
+    height: "8%",
+    borderColor: colors.borderInput,
+    borderWidth: 2,
+    borderRadius: 6,
+  },
+  inputFieldDescription: {
+    fontFamily: "Alegreya_400Regular",
+    fontSize: 18,
+    color: colors.textInput,
+    paddingHorizontal: 10,
+    backgroundColor: colors.bgPrimary,
+    height: "16%",
+    borderColor: colors.borderInput,
+    borderWidth: 2,
+    borderRadius: 6,
+  },
+  titleContainer: {
+    backgroundColor: colors.bgQuaternary,
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.bgPrimary, // main background color
-    padding: 20,
-  },
+    padding: "5%",
+    borderRadius:10,
+    marginBottom:"2%"
+    },
   title: {
     fontFamily: "Metamorphous_400Regular",
     fontSize: 36,
     color: colors.text,
-  },
-  logo: {
-    height: 80,
-    aspectRatio: 4.75, // maintains correct image width -> aspectRation = width/height
-    marginTop: 36,
-    marginBottom: 32,
   },
   dropdown: {
     height: 50,
@@ -245,34 +422,33 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderRadius: 8,
     paddingHorizontal: 8,
+    flex: 1,
+    backgroundColor: colors.textInput,        
   },
-  form: {
-    backgroundColor: colors.bgSecondary,
-    marginTop: 15,
-    padding: 15,
-    borderRadius: 8,
-    width: "90%",
-    shadowColor: colors.shadowLight, // Shadow color
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
+  rowGroup: {
+    flexDirection: 'row',  
+    alignItems: 'center',  
+    marginTop: "1%",
+    width:"100%",
+    justifyContent: 'space-between',
   },
-  inputRow: {
+  rowLeft: {
+    justifyContent: "flex-start",
+    flex: 1, 
+  },
+  rowRight: {
+    justifyContent: "flex-end",
+    flex: 1,
     flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-between",
-    marginBottom: 10,
   },
-  inputGroupRowLeft: {
-    width: "60%",
+  rowLabel: {
+    fontFamily: "Metamorphous_400Regular",
+    fontSize: 18,
+    color: colors.text,
+    marginRight: 10,  
   },
-  inputGroupRowRight: {
-    width: "35%",
-  },
-  inputGroup: {
-    marginBottom: 12,
-  },
+  
+ 
   inputLabel: {
     fontFamily: "Metamorphous_400Regular",
     fontSize: 18,
@@ -301,80 +477,107 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 6,
     paddingHorizontal: 10,
-    // width: "35%", // handled by inputGroupRowRight style
+    alignItems: "center",
+    width: "100%", 
   },
-  button: {
-    width: "56%",
+  endButtons:{
+    justifyContent: "flex-end",
+     
+  },
+  createCancelContainer: {
+    flexDirection: 'row',
+    justifyContent: "space-between", 
+  },
+  createCancelText: {
+    fontFamily: "Metamorphous_400Regular",
+    color: colors.textDark, 
+    fontSize: 20,
+  },
+  createButton: {
+    width: "40%",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: colors.bgSecondary,
-    borderRadius: 100, // full rounded corners
-    marginTop: 5,
-    padding: 5,
-    shadowColor: colors.shadow, // Shadow color to match the button for a cohesive look
+    borderRadius: 100,
+    shadowColor: colors.shadow, 
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 5,  
+    margin:"2%",
+    padding:"3%", 
+  },
+  cancelButton: {
+    width: "40%",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.cancel,
+    borderRadius: 100,
+    shadowColor: colors.shadow, 
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 5,
+    padding:"3%",
+    margin:"2%"  
+  },
+  difficultyButtonContainer: {
+    flexDirection: 'row',  
+    alignItems: 'center',
+  },
+  difficultyLabel: {
+    fontFamily: "Metamorphous_400Regular",
+    fontSize: 18,
+    color: colors.text,
+    width: "40%"
+    
   },
   difficultyButton: {
-    width: "20%",
+    width: "15%",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.bgSecondary,
-    borderRadius: 100, // full rounded corners
-    marginTop: 0,
-    padding: 5,
-    shadowColor: colors.shadow, // Shadow color to match the button for a cohesive look
+    backgroundColor: colors.bgPrimary,
+    borderRadius: 5,
+    shadowColor: colors.shadow, 
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 5,
+    height: 30,
+    margin:"2%"   
   },
-  fitToText: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  buttonText: {
-    fontFamily: "Metamorphous_400Regular",
-    color: colors.textDark, // match title color, slightly darker due to being on darker bg
-    fontSize: 20, // Slightly larger for emphasis
+  difficultyButtonPressed: {
+    width: "15%",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.bgQuaternary,
+    borderRadius: 5,
+    shadowColor: colors.shadow, 
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 5,
+    height: 30,  
+    margin:"2%" 
   },
   difficultyButtonText: {
     fontFamily: "Metamorphous_400Regular",
     color: colors.textDark, // match title color, slightly darker due to being on darker bg
     fontSize: 10, // Slightly larger for emphasis
   },
-  addButton: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    backgroundColor: "#c2c8a0",
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  addButtonText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#4a503d",
-  },
   placeholderStyle: {
     fontSize: 16,
+    color: colors.textInput,
+    fontFamily: "Metamorphous_400Regular",
   },
   selectedTextStyle: {
     fontSize: 16,
+    color: colors.textInput,
+    fontFamily: "Metamorphous_400Regular",
   },
   iconStyle: {
     width: 20,
     height: 20,
-  },
-  inputSearchStyle: {
-    height: 40,
-    fontSize: 16,
   },
 });
 

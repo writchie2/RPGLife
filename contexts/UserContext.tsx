@@ -278,18 +278,19 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         primarySkill: primarySkill,
         reward: completionReward,
         active: true,
+        repeatable: repeatable
       };
   
       if (secondarySkill !== "") {
         newQuest.secondarySkill = secondarySkill;
       }
-      if (repeatable !== false) {
-        newQuest.repeatable = repeatable;
+      if (questDescription !== "") {
+        newQuest.description = questDescription;
       }
       
   
       const docRef = await addDoc(questsCollectionRef, newQuest);
-      console.log("Skill added with ID:", docRef.id);
+      console.log("Quest added with ID:", docRef.id);
     } catch (error) {
       console.error("Error adding skill:", error);
     }
@@ -306,26 +307,47 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     // Subscribes to user document to detect changes made and update the local data when detected
     const unsubscribeUser = onSnapshot(userDocRef, (docSnapshot) => {
       if (docSnapshot.exists()) {
-        const updatedData = docSnapshot.data() as UserData;
+        const data = docSnapshot.data();
+        
+        const updatedData: UserData = {
+          username: data.username,
+          birthday: data.birthdate?.toDate?.() || null, 
+          email: data.email,
+          strengthEXP: data.strengthEXP || 0,
+          vitalityEXP: data.vitalityEXP || 0,
+          agilityEXP: data.agilityEXP || 0,
+          staminaEXP: data.staminaEXP || 0,
+          intelligenceEXP: data.intelligenceEXP || 0,
+          charismaEXP: data.charismaEXP || 0,
+          exp: data.exp || 0,
+          avatarIndex: data.avatarIndex || 0,
+          quests: data.quests || [],
+          skills: data.skills || [],
+        };
+    
         setUserData(updatedData);
         saveUserData(updatedData); // Update AsyncStorage cache
       } else {
         console.error("User document does not exist.");
       }
     });
-
     // Subscribes to quests collection to detect changes made and update the local data when detected
     const unsubscribeQuests = onSnapshot(questsCollectionRef, (querySnapshot) => {
-      const updatedQuests = querySnapshot.docs.map((doc) => ({
+      const updatedQuests = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      
+      return {
         id: doc.id,
-        ...doc.data(),
-      }));
+        ...data,
+        dueDate: data.dueDate?.toDate?.() || null, // Convert Firestore Timestamp to Date
+      } as Quest;
+    });
+    
       setUserData((prev) => {
         if (!prev) return null;
-        const updatedData: UserData = { ...prev, quests: updatedQuests as Quest[] };
-        // Save to AsyncStorage
-        saveUserData(updatedData);
-        return updatedData; 
+        const updatedData: UserData = { ...prev, quests: updatedQuests };
+        saveUserData(updatedData); // Save to AsyncStorage
+        return updatedData;
       });
     });
 

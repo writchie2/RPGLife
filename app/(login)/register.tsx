@@ -111,7 +111,7 @@ export default function RegisterScreen() {
           await setDoc(doc(db, "users", curUser.uid), {
             username: userName,
             email: email,
-            birthday: date.toDateString(),
+            birthday: date,
             exp: 0,
             iconIdex: 0,
             strengthEXP: 0,

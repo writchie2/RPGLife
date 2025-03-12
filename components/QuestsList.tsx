@@ -34,7 +34,7 @@ const QuestsList: React.FC<QuestsListProps> = ({
       <Text style={styles.questName}>{item.name}</Text>
       <Text style={styles.questDescription}>{item.description}</Text>
       <Text style={styles.questDetails}>
-        Difficulty: {item.difficulty} | Due: {/* WHAT THE FUCK */}
+        Difficulty: {item.difficulty} | Due: {item.dueDate.toDateString()}
       </Text>
       <Text style={styles.questSkills}>
         Primary Skill: {item.primarySkill}{" "}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, TouchableWithoutFeedback, Image, TextInput, Alert, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, TouchableWithoutFeedback, Image, TextInput, Alert, Keyboard, ScrollView } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import colors from "@/constants/colors";
 import { router } from "expo-router";
@@ -46,10 +46,10 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
         let errors = [];
         if (skillName.trim() === "")
         {
-            errors.push("Skill Name cannot be blank");
+            errors.push("Skill name cannot be blank");
             error = true;
         }
-        const skillExists = userData.userData?.skills?.some(skill => skill.name.toLowerCase() === skillName.toLowerCase());
+        const skillExists = userData.userData?.skills?.some(skill => skill.name.toLowerCase() === skillName.trim().toLowerCase());
         if (skillExists)
         {
             errors.push("A skill with that name already exists");
@@ -93,159 +93,177 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
             <View style={styles.overlay} >
               <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <View style={styles.modalContainer}>
-                    <View style={styles.formContainer}>
-                        
-                        {/* Title */}
-                        <View style={styles.titleContainer}>
-                            <Text style={styles.title}>Create Skill</Text>
-                        </View>
-
-                        {/* Input */}
-                        <View style={styles.inputContainer}>
+                    {/* ScrollView makes the form scrollable if it does not fit fully on a small screen */}
+                    <ScrollView 
+                        contentContainerStyle={styles.scrollContainer} 
+                        keyboardShouldPersistTaps="handled"
+                        showsVerticalScrollIndicator={false}
+                    >
+                        <View style={styles.formContainer}>
                             
-                            {/* Skill Name */}
-                            <Text style={styles.inputLabel}>Skill Name:</Text>
-                            <TextInput
-                                style={styles.inputFieldName}
-                                placeholder="Skill name..."
-                                placeholderTextColor={colors.textPlaceholder}
-                                autoCorrect={false}
-                                value={skillName}
-                                onChangeText={setSkillName}
-                            />
+                            {/* Title */}
+                            <View style={styles.titleContainer}>
+                                <Text style={styles.title}>Create Skill</Text>
+                            </View>
 
-                            {/* Description */}
-                            <Text style={styles.inputLabel}>Description:</Text>
-                            <TextInput
-                                style={styles.inputFieldDescription}
-                                placeholder="Description (optional)..."
-                                placeholderTextColor={colors.textPlaceholder}
-                                autoCorrect={true}
-                                value={description}
-                                onChangeText={setDescription}
-                                multiline={true}
-                            />
-
-                            {/* Primary Trait */}
-                            <View style={styles.traitGroup}>
-                                <Text style={styles.traitLabel}>Primary Trait:</Text>
-                                <Dropdown
-                                    style={[
-                                        styles.dropdown,
-                                        isFocusPrimary
-                                          ? { borderColor: colors.borderInput, backgroundColor: colors.bgQuaternary } // Color when focused
-                                          : { backgroundColor: colors.bgPrimary }, // Color when not focused
-                                      ]}
-                                    placeholderStyle={styles.placeholderStyle}
-                                    containerStyle={{ backgroundColor: colors.bgPrimary }}
-                                    itemTextStyle={{ fontFamily: "Metamorphous_400Regular", }}
-                                    selectedTextStyle={styles.selectedTextStyle}
-                                    inputSearchStyle={styles.inputSearchStyle}
-                                    iconStyle={styles.iconStyle}
-                                    data={traits}
-                                    maxHeight={300}
-                                    labelField="label"
-                                    valueField="value"
-                                    placeholder="Select trait"  
-                                    value={primaryTrait}
-                                    onFocus={() => setIsFocusPrimary(true)}
-                                    onBlur={() => setIsFocusPrimary(false)}
-                                    onChange={item => {
-                                        setPrimaryTrait(item.value);
-                                        setIsFocusPrimary(false);
-                                    }}
+                            {/* Input */}
+                            <View style={styles.inputContainer}>
+                                
+                                {/* Skill Name */}
+                                <Text style={styles.inputLabel}>Skill Name:</Text>
+                                <TextInput
+                                    style={styles.inputFieldName}
+                                    placeholder="Skill name..."
+                                    placeholderTextColor={colors.textPlaceholder}
+                                    autoCorrect={false}
+                                    value={skillName}
+                                    onChangeText={setSkillName}
                                 />
-                            </View>
-                            
-                            {/* Secondary Trait */}
-                            <View style={styles.traitGroup}>
-                                <Text style={styles.traitLabel}>Secondary Trait:</Text>
-                                <Dropdown
-                                     style={[
-                                        styles.dropdown,
-                                        isFocusSecondary
-                                          ? { borderColor: colors.borderInput, backgroundColor: colors.bgQuaternary } // Color when focused
-                                          : { backgroundColor: colors.bgPrimary }, // Color when not focused
-                                      ]}
-                                    placeholderStyle={styles.placeholderStyle}
-                                    selectedTextStyle={styles.selectedTextStyle}
-                                    containerStyle={{ backgroundColor: colors.bgPrimary }}
-                                    itemTextStyle={{ fontFamily: "Metamorphous_400Regular", }}
-                                    inputSearchStyle={styles.inputSearchStyle}
-                                    iconStyle={styles.iconStyle}
-                                    data={traits}
-                                    maxHeight={300}
-                                    labelField="label"
-                                    valueField="value"
-                                    placeholder={'(Optional)'}
-                                    value={secondaryTrait}
-                                    onFocus={() => setIsFocusSecondary(true)}
-                                    onBlur={() => setIsFocusSecondary(false)}
-                                    onChange={item => {
-                                        setSecondaryTrait(item.value);
-                                        setIsFocusSecondary(false);
-                                    }}
-                                    />
+
+                                {/* Description */}
+                                <Text style={styles.inputLabel}>Description:</Text>
+                                <TextInput
+                                    style={styles.inputFieldDescription}
+                                    placeholder="Description (optional)..."
+                                    placeholderTextColor={colors.textPlaceholder}
+                                    autoCorrect={true}
+                                    value={description}
+                                    onChangeText={setDescription}
+                                    multiline={true}
+                                />
+
+                                {/* Primary Trait */}
+                                <View style={styles.traitGroup}>
+                                    <View style={styles.traitLeft}>
+                                        <Text style={styles.traitLabel}>Primary Trait:</Text>
+                                    </View>
+                                    <View style={styles.traitRight}>
+                                        <Dropdown
+                                            style={[
+                                                styles.dropdown,
+                                                isFocusPrimary
+                                                ? { borderColor: colors.borderInput, backgroundColor: colors.bgQuaternary } // Color when focused
+                                                : { backgroundColor: colors.bgPrimary }, // Color when not focused
+                                            ]}
+                                            placeholderStyle={styles.placeholderStyle}
+                                            containerStyle={{ backgroundColor: colors.bgPrimary }}
+                                            itemTextStyle={{ fontFamily: "Metamorphous_400Regular", }}
+                                            selectedTextStyle={styles.selectedTextStyle}
+                                            inputSearchStyle={styles.inputSearchStyle}
+                                            iconStyle={styles.iconStyle}
+                                            data={traits}
+                                            maxHeight={300}
+                                            labelField="label"
+                                            valueField="value"
+                                            placeholder="Select trait"  
+                                            value={primaryTrait}
+                                            onFocus={() => setIsFocusPrimary(true)}
+                                            onBlur={() => setIsFocusPrimary(false)}
+                                            onChange={item => {
+                                                setPrimaryTrait(item.value);
+                                                setIsFocusPrimary(false);
+                                            }}
+                                        />
+                                    </View>
+                                </View>
+                                
+                                {/* Secondary Trait */}
+                                <View style={styles.traitGroup}>
+                                    <View style={styles.traitLeft}>
+                                        <Text style={styles.traitLabel}>Secondary Trait:</Text>
+                                    </View>
+                                    <View style={styles.traitRight}>
+                                        <Dropdown
+                                            style={[
+                                                styles.dropdown,
+                                                isFocusSecondary
+                                                ? { borderColor: colors.borderInput, backgroundColor: colors.bgQuaternary } // Color when focused
+                                                : { backgroundColor: colors.bgPrimary }, // Color when not focused
+                                            ]}
+                                            placeholderStyle={styles.placeholderStyle}
+                                            selectedTextStyle={styles.selectedTextStyle}
+                                            containerStyle={{ backgroundColor: colors.bgPrimary }}
+                                            itemTextStyle={{ fontFamily: "Metamorphous_400Regular", }}
+                                            inputSearchStyle={styles.inputSearchStyle}
+                                            iconStyle={styles.iconStyle}
+                                            data={traits}
+                                            maxHeight={300}
+                                            labelField="label"
+                                            valueField="value"
+                                            placeholder={'(Optional)'}
+                                            value={secondaryTrait}
+                                            onFocus={() => setIsFocusSecondary(true)}
+                                            onBlur={() => setIsFocusSecondary(false)}
+                                            onChange={item => {
+                                                setSecondaryTrait(item.value);
+                                                setIsFocusSecondary(false);
+                                            }}
+                                            />
+                                        </View>
+                                </View>
+
+                                {/* Expereicne Buttons */}
+                                <View style={styles.experienceButtonContainer}>
+                                    <Text style={styles.expereinceLabel}>Experience:</Text>
+                                    <TouchableOpacity 
+                                        style={ experience ==="novice"?  styles.experienceButtonPressed : styles.experienceButton} 
+                                        onPress={() => { 
+                                        setExperience("novice");
+                                        }}
+                                    >
+                                        <Text>Novice</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity 
+                                        style={ experience ==="adept"?  styles.experienceButtonPressed : styles.experienceButton} 
+                                        onPress={() => { 
+                                        setExperience("adept");
+                                        }}
+                                    >
+                                        <Text>Adept</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity 
+                                        style={ experience ==="master"?  styles.experienceButtonPressed : styles.experienceButton} 
+                                        onPress={() => { 
+                                        setExperience("master");
+                                        }}
+                                    >
+                                        <Text>Master</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
 
-                            {/* Expereicne Buttons */}
-                            <View style={styles.experienceButtonContainer}>
-                                <Text style={styles.expereinceLabel}>Experience:</Text>
-                                <TouchableOpacity 
-                                    style={ experience ==="novice"?  styles.experienceButtonPressed : styles.experienceButton} 
-                                    onPress={() => { 
-                                    setExperience("novice");
-                                    }}
-                                >
-                                    <Text>Novice</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity 
-                                    style={ experience ==="adept"?  styles.experienceButtonPressed : styles.experienceButton} 
-                                    onPress={() => { 
-                                    setExperience("adept");
-                                    }}
-                                >
-                                    <Text>Adept</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity 
-                                    style={ experience ==="master"?  styles.experienceButtonPressed : styles.experienceButton} 
-                                    onPress={() => { 
-                                    setExperience("master");
-                                    }}
-                                >
-                                    <Text>Master</Text>
-                                </TouchableOpacity>
-                            </View>
                         </View>
 
-                    </View>
-
+                        
+                    </ScrollView>
                     {/* Create and Cancel Buttons */}
-                    <View style={styles.createCancelContainer}>
-                        <TouchableOpacity 
-                            style={ styles.cancelButton} 
-                            onPress={() =>{
-                                setSkillName("");
-                                setDescription("");
-                                setPrimaryTrait("");
-                                setSecondaryTrait("");
-                                setExperience("");
-                                onClose();
-                            }}
-                        >
-                            <Text style={styles.createCancelText}>Cancel</Text>
-                        </TouchableOpacity>
+                    <View style={styles.endButtons}>
+                        <View style={styles.createCancelContainer}>
+                            <TouchableOpacity 
+                                style={ styles.cancelButton} 
+                                onPress={() =>{
+                                    setSkillName("");
+                                    setDescription("");
+                                    setPrimaryTrait("");
+                                    setSecondaryTrait("");
+                                    setExperience("");
+                                    onClose();
+                                }}
+                            >
+                                <Text style={styles.createCancelText}>Cancel</Text>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity 
-                            style={ styles.createButton} 
-                            onPress={() => {
-                                createSkill();
-                            }}
-                        >
-                            <Text style={styles.createCancelText}>Create</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity 
+                                style={ styles.createButton} 
+                                onPress={() => {
+                                    createSkill();
+                                }}
+                            >
+                                <Text style={styles.createCancelText}>Create</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
               </TouchableWithoutFeedback>
@@ -264,34 +282,43 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         width: "100%",
-        height: "92%",
+        flex: .92,
         backgroundColor: colors.bgPrimary,
         padding: 20,
         borderRadius: 10,
-        alignItems: "center",
-        justifyContent: "space-between",
     },
     formContainer: {
         backgroundColor:colors.bgSecondary,
         width: "100%",
-        height: "60%",
         borderRadius:10,
         paddingBottom:0,
-        flexGrow: 0,
-        
+        flexShrink: 1,
     },
+    scrollContainer: {
+        flexGrow: 1,
+        alignItems: "center",
+      },
 
     traitGroup: {
         flexDirection: 'row',  
         alignItems: 'center',  
         marginTop: "1%",
       },
+    traitLeft: {
+        justifyContent: "flex-start",
+        flex: 1, 
+    },
+    traitRight: {
+        justifyContent: "flex-end",
+        flex: 1,
+        flexDirection: "row",
+    },
     traitLabel: {
         fontFamily: "Metamorphous_400Regular",
         fontSize: 18,
         color: colors.text,
         marginRight: 10,  
-        width: "50%",
+        
     },
     dropdown: {
         height: 50,
@@ -417,9 +444,13 @@ const styles = StyleSheet.create({
         height: 30,  
         margin:"2%" 
     },
+    endButtons:{
+        justifyContent: "flex-end",
+         
+    },
     createCancelContainer: {
         flexDirection: 'row',
-        justifyContent: "flex-end", 
+        justifyContent: "space-between", 
     },
     createCancelText: {
         fontFamily: "Metamorphous_400Regular",
@@ -437,7 +468,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 4,
         elevation: 5,
-        height: "30%",  
+        padding:"3%",  
         margin:"2%" 
     },
     cancelButton: {
@@ -451,7 +482,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 4,
         elevation: 5,
-        height: "30%",
+        padding:"3%",
         margin:"2%"  
     },
     
