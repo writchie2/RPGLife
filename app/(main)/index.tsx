@@ -179,6 +179,8 @@ export default function HomePage() {
                   skills={userData.userData?.skills || []}
                   mode="active"
                 />
+                
+                
               )}
             </View>
             {/* Quests Section */}
