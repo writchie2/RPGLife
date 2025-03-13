@@ -51,7 +51,7 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
       <DateTimePickerModal
         isVisible={showPicker}
         mode="date"
-        date={maxDate}
+        //date={maxDate}
         onConfirm={handleConfirm}
         onCancel={() => setShowPicker(false)}
       />
