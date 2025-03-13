@@ -7,6 +7,7 @@ import {
   Modal,
   TouchableWithoutFeedback,
   Image,
+  Platform,
 } from "react-native";
 import colors from "@/constants/colors";
 import { router } from "expo-router";
@@ -153,8 +154,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContainer: {
-     width: "90%",
-     height: "80%",
+    // width: "90%",
+    // height: "80%",
+    ...Platform.select({
+      ios: {
+        width: "100%",
+        height: "94%",
+        marginTop: "12%",
+      },
+      android: {
+        width: "100%",
+        height: "100%",
+      },
+      default: {
+        width: "100%",
+        height: "95%",
+        marginTop: "10%",
+      },
+    }),
     backgroundColor: colors.bgPrimary,
     padding: 20,
     alignItems: "center",
