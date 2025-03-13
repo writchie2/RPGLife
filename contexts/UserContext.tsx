@@ -161,8 +161,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     // Right now "novice" = 0 exp, "adept" = 1000 exp, "master" = 2200 exp
     // This can all change when we re-balance how exp works
     let calcEXP = 0; 
-    if (experience = "adept"){ calcEXP = 1000;}
-    if (experience = "master"){ calcEXP = 2200;}
+    if (experience === "adept"){ calcEXP = 1000;}
+    if (experience === "master"){ calcEXP = 2200;}
   
     try {
       const skillsCollectionRef = collection(db, "users", auth.currentUser.uid, "skills");
@@ -278,18 +278,19 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         primarySkill: primarySkill,
         reward: completionReward,
         active: true,
+        repeatable: repeatable
       };
   
       if (secondarySkill !== "") {
         newQuest.secondarySkill = secondarySkill;
       }
-      if (repeatable !== false) {
-        newQuest.repeatable = repeatable;
+      if (questDescription !== "") {
+        newQuest.description = questDescription;
       }
       
   
       const docRef = await addDoc(questsCollectionRef, newQuest);
-      console.log("Skill added with ID:", docRef.id);
+      console.log("Quest added with ID:", docRef.id);
     } catch (error) {
       console.error("Error adding skill:", error);
     }
@@ -306,9 +307,31 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     // Subscribes to user document to detect changes made and update the local data when detected
     const unsubscribeUser = onSnapshot(userDocRef, (docSnapshot) => {
       if (docSnapshot.exists()) {
-        const updatedData = docSnapshot.data() as UserData;
-        setUserData(updatedData);
-        saveUserData(updatedData); // Update AsyncStorage cache
+        
+        const data = docSnapshot.data();
+  
+        setUserData((prev) => {
+          if (!prev) return null;
+          
+          const updatedData: UserData = {
+            username: data.username,
+            birthday: data.birthdate?.toDate?.(),
+            email: data.email,
+            strengthEXP: data.strengthEXP,
+            vitalityEXP: data.vitalityEXP,
+            agilityEXP: data.agilityEXP,
+            staminaEXP: data.staminaEXP,
+            intelligenceEXP: data.intelligenceEXP,
+            charismaEXP: data.charismaEXP,
+            exp: data.exp,
+            avatarIndex: data.avatarIndex,
+            quests: prev.quests, 
+            skills: prev.skills,
+          };
+  
+          saveUserData(updatedData);
+          return updatedData;
+        });
       } else {
         console.error("User document does not exist.");
       }
@@ -316,16 +339,21 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
     // Subscribes to quests collection to detect changes made and update the local data when detected
     const unsubscribeQuests = onSnapshot(questsCollectionRef, (querySnapshot) => {
-      const updatedQuests = querySnapshot.docs.map((doc) => ({
+      const updatedQuests = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      
+      return {
         id: doc.id,
-        ...doc.data(),
-      }));
+        ...data,
+        dueDate: data.dueDate?.toDate?.() || null, // Convert Firestore Timestamp to Date
+      } as Quest;
+    });
+    
       setUserData((prev) => {
         if (!prev) return null;
-        const updatedData: UserData = { ...prev, quests: updatedQuests as Quest[] };
-        // Save to AsyncStorage
-        saveUserData(updatedData);
-        return updatedData; 
+        const updatedData: UserData = { ...prev, quests: updatedQuests };
+        saveUserData(updatedData); // Save to AsyncStorage
+        return updatedData;
       });
     });
 
@@ -335,6 +363,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         id: doc.id,
         ...doc.data(),
       }));
+      
       setUserData((prev) => {
         if (!prev) return null;
         const updatedData: UserData = { ...prev, skills: updatedSkills as Skill[] };

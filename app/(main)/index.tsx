@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
   Modal,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -178,6 +179,8 @@ export default function HomePage() {
                   skills={userData.userData?.skills || []}
                   mode="active"
                 />
+                
+                
               )}
             </View>
             {/* Quests Section */}

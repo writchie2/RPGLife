@@ -5,9 +5,9 @@ import { Int32 } from "react-native/Libraries/Types/CodegenTypes";
 export interface Quest {
     id: string;
     name: string;
-    dueDate: Date; // Change to date? Firestore normally stores dates as strings. 
-    description: string;
-    difficulty: 'easy' | 'medium' | 'hard'; 
+    dueDate: Date; 
+    description?: string;
+    difficulty: 'Easy' | 'Normal' | 'Hard'; 
     primarySkill: string;
     secondarySkill?: string; // Optional secondary skill
     repeatable: boolean;
@@ -30,7 +30,7 @@ export interface Quest {
   // Define the structure of a Firestore user document
   export interface UserData {
     username: string;
-    birthdate: string; // Change to date? Firestore normally stores dates as strings. 
+    birthday: Date;  
     email: string;
     strengthEXP: number,
     vitalityEXP: number,
