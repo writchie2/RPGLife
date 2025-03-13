@@ -161,8 +161,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     // Right now "novice" = 0 exp, "adept" = 1000 exp, "master" = 2200 exp
     // This can all change when we re-balance how exp works
     let calcEXP = 0; 
-    if (experience = "adept"){ calcEXP = 1000;}
-    if (experience = "master"){ calcEXP = 2200;}
+    if (experience === "adept"){ calcEXP = 1000;}
+    if (experience === "master"){ calcEXP = 2200;}
   
     try {
       const skillsCollectionRef = collection(db, "users", auth.currentUser.uid, "skills");

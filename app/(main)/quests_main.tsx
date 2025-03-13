@@ -9,6 +9,7 @@ import { getAuth } from 'firebase/auth';
 import QuestsList  from '../../components/QuestsList'
 import { useUserData } from '@/contexts/UserContext';
 import { BackHandler, Alert } from "react-native";
+import CreateQuestModal from "@/components/CreateQuestModal";
 
 //import { fetchUserData } from '../../utils/firestoreUtils';
 //import { saveUserData, getUserData } from '../../utils/storageUtils';
@@ -25,6 +26,7 @@ export default function QuestMainPage() {
 
   const [questListVisible, setQuestListVisible] = useState(false);
   const [pastQuestListVisible, setPastQuestListVisible] = useState(false);
+  const [questModalVisible, setQuestModalVisible] = useState(false);
 
   useEffect(() => {
           const backAction = () => {
@@ -70,8 +72,9 @@ export default function QuestMainPage() {
         (<QuestsList quests={userData.userData?.quests || []} mode="inactive" />
         )}
         
+        <CreateQuestModal visible={questModalVisible} onClose={() => setQuestModalVisible(false)}></CreateQuestModal>
       {/* Add Button */}
-      <Pressable style={styles.addButton} onPress={() => router.push("/(main)/create_quest")}>
+      <Pressable style={styles.addButton} onPress={() => setQuestModalVisible(true)}>
         <Text style={styles.addButtonText}>+</Text>
       </Pressable>
     </View>
