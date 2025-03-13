@@ -307,7 +307,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     // Subscribes to user document to detect changes made and update the local data when detected
     const unsubscribeUser = onSnapshot(userDocRef, (docSnapshot) => {
       if (docSnapshot.exists()) {
-        console.log("User snapshot triggered");
+        
         const data = docSnapshot.data();
   
         setUserData((prev) => {
@@ -363,7 +363,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         id: doc.id,
         ...doc.data(),
       }));
-      console.log("skill snapshot triggered");
+      
       setUserData((prev) => {
         if (!prev) return null;
         const updatedData: UserData = { ...prev, skills: updatedSkills as Skill[] };
