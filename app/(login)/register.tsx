@@ -118,7 +118,7 @@ export default function RegisterScreen() {
             vitalityEXP: 0,
             agilityEXP: 0,
             staminaEXP: 0,
-            inteligenceEXP: 0,
+            intelligenceEXP: 0,
             charismaEXP: 0,
           });
           try {

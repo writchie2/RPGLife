@@ -206,6 +206,15 @@ export default function HomePage() {
               )}
             </View>
           </View>
+          <TouchableOpacity
+                style={styles.section}
+                onPress={() => alert(JSON.stringify(userData.userData))}
+              >
+                <Text style={styles.sectionTitle}>
+                   TEST
+                  </Text>
+
+              </TouchableOpacity>
 
 
         {/* Add Button */}
