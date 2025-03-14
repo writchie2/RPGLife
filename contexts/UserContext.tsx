@@ -51,8 +51,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
         await updateDoc(userDoc, {
-          strengthEXP: (userData.strengthEXP + increaseAmount),
-          exp: (userData.exp + increaseAmount) 
+          strengthEXP: (userData.strengthEXP + increaseAmount)
         })
       }
     } catch (error) {
@@ -69,8 +68,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
         await updateDoc(userDoc, {
-          vitalityEXP: (userData.vitalityEXP + increaseAmount),
-          exp: (userData.exp + increaseAmount) 
+          vitalityEXP: (userData.vitalityEXP + increaseAmount)
         })
       }
     } catch (error) {
@@ -87,8 +85,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
         await updateDoc(userDoc, {
-          agilityEXP: (userData.agilityEXP + increaseAmount),
-          exp: (userData.exp + increaseAmount) 
+          agilityEXP: (userData.agilityEXP + increaseAmount)
         })
       }
     } catch (error) {
@@ -105,8 +102,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
         await updateDoc(userDoc, {
-          staminaEXP: (userData.staminaEXP + increaseAmount),
-          exp: (userData.exp + increaseAmount) 
+          staminaEXP: (userData.staminaEXP + increaseAmount)
         })
       }
     } catch (error) {
@@ -123,8 +119,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
         await updateDoc(userDoc, {
-          intelligenceEXP: (userData.intelligenceEXP + increaseAmount),
-          exp: (userData.exp + increaseAmount) 
+          intelligenceEXP: (userData.intelligenceEXP + increaseAmount)
         })
       }
     } catch (error) {
@@ -142,6 +137,19 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         const userDoc = doc(db, "users", auth.currentUser.uid)
         await updateDoc(userDoc, {
           charismaEXP: (userData.charismaEXP + increaseAmount),
+        })
+      }
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+    }
+  }
+
+  const addOverallEXP = async (increaseAmount : number) => {
+    if (!userData) return;
+    try {
+      if (auth.currentUser) {
+        const userDoc = doc(db, "users", auth.currentUser.uid)
+        await updateDoc(userDoc, {
           exp: (userData.exp + increaseAmount) 
         })
       }
@@ -257,7 +265,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
               break;
             }
       }
-      
+      addOverallEXP(calcEXP);
     } catch (error) {
       console.error("Error adding skill:", error);
     }
@@ -307,12 +315,9 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     // Subscribes to user document to detect changes made and update the local data when detected
     const unsubscribeUser = onSnapshot(userDocRef, (docSnapshot) => {
       if (docSnapshot.exists()) {
-        
         const data = docSnapshot.data();
-  
+    
         setUserData((prev) => {
-          if (!prev) return null;
-          
           const updatedData: UserData = {
             username: data.username,
             birthday: data.birthdate?.toDate?.(),
@@ -325,10 +330,9 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
             charismaEXP: data.charismaEXP,
             exp: data.exp,
             avatarIndex: data.avatarIndex,
-            quests: prev.quests, 
-            skills: prev.skills,
+            quests: prev?.quests || [], 
+            skills: prev?.skills || [], 
           };
-  
           saveUserData(updatedData);
           return updatedData;
         });
