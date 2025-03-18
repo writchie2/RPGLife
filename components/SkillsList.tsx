@@ -13,6 +13,7 @@ import {
 import { Skill } from "../utils/types";
 import colors from "@/constants/colors";
 import calcEXP from "@/utils/calcEXP";
+import SkillViewModal from "./SkillViewModal";
 
 interface SkillsListProps {
   skills: Skill[];
@@ -23,13 +24,19 @@ const SkillsList: React.FC<SkillsListProps> = ({
   skills, // Array of skills from UserData interface
   mode, // "active", "inactive", or "all"
 }) => {
+
+  const [skillModalVisible, setSkillModalVisible] = useState(false);
+  const[skillID, setSkillID] = useState("");
   //Item that will be rendered for each skill
   //TO DO: styling
   //TO DO: change press action to route to quest page
   const renderItem = ({ item }: { item: Skill }) => (
     <TouchableOpacity
       style={styles.skillItem}
-      onPress={() => alert("You selected skill with id:" + item.id)}
+      onPress={() => {
+        setSkillID(item.id)
+        setSkillModalVisible(true);
+      }}
     >
       <View style={styles.splitRowContainer}>
         <Text style={styles.skillName}>{item.name}</Text>
@@ -86,6 +93,7 @@ const SkillsList: React.FC<SkillsListProps> = ({
         renderItem={renderItem}
         contentContainerStyle={styles.listContainer}
       />
+      <SkillViewModal visible={skillModalVisible} id={skillID} onClose={() => {setSkillModalVisible(false); setSkillID("");}}></SkillViewModal>
     </View>
   );
 };

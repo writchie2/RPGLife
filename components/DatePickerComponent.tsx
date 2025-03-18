@@ -8,6 +8,7 @@ interface DatePickerProps {
   label: string;
   dateSelected: Boolean;
   onDateChange?: (date: Date) => void;
+  
 }
 
 const DatePickerComponent: React.FC<DatePickerProps> = ({
@@ -18,14 +19,12 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
 }) => {
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
-  const [isDateSelected, setisDateSelected] = useState(false);
 
   const maxDate = new Date();
   maxDate.setFullYear(maxDate.getFullYear() - 13);
 
   const handleConfirm = (date: Date) => {
     setDate(date);
-    setisDateSelected(true);
     onDateChange?.(date);
     setShowPicker(false);
   };
@@ -36,7 +35,7 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
         style={styles.container}
         onPress={() => setShowPicker(true)}
       >
-        {isDateSelected && (
+        {dateSelected && (
           // <Text style={styles.textSelected}>{date.toDateString()}</Text>
           <Text style={styles.textSelected}>
             {date.toLocaleDateString("en-US", {
@@ -46,7 +45,7 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
             })}
           </Text>
         )}
-        {!isDateSelected && <Text style={styles.textLabel}>{label}</Text>}
+        {!dateSelected && <Text style={styles.textLabel}>{label}</Text>}
       </TouchableOpacity>
       <DateTimePickerModal
         isVisible={showPicker}
