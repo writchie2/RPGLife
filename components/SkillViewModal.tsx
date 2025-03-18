@@ -126,7 +126,7 @@ id,
 const styles = StyleSheet.create({
     overlay: {
         flex: 1,
-        backgroundColor: 'blue', 
+        backgroundColor: colors.bgPrimary, 
         justifyContent: "flex-end",
         alignItems: "center",
     },
