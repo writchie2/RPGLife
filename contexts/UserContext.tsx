@@ -14,6 +14,8 @@ interface UserContextType {
   setAvatar: (index: number) => void;
   addSkill: (skillName: String, description: String, primaryTrait: String, secondaryTrait: String, experience: String) => void;
   addQuest: (questName: String, questDescription: String, dueDate: Date, difficulty: String, primarySkill: String, secondarySkill: String, repeatable: Boolean, completionReward: string) => void;
+  archiveSkill: (id: string) => void;
+  activateSkill: (id: string) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -271,6 +273,35 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   }
 
+  const archiveSkill = async (id: string) => {
+    if (!auth.currentUser) return;
+    try {
+      if (auth.currentUser) {
+        const skillDoc = doc(db, "users", auth.currentUser.uid, "skills", id)
+        await updateDoc(skillDoc, {
+          active: false
+      })
+      }
+    } catch (error) {
+      console.error("Error archiving skill:", error);
+    }
+  };
+  
+  const activateSkill = async (id: string) => {
+    if (!auth.currentUser) return;
+    try {
+      if (auth.currentUser) {
+        const skillDoc = doc(db, "users", auth.currentUser.uid, "skills", id)
+        await updateDoc(skillDoc, {
+          active: true
+      })
+      }
+    } catch (error) {
+      console.error("Error activating skill:", error);
+    }
+  };
+  
+
   const addQuest = async (questName: String, questDescription: String, dueDate: Date, difficulty: String, primarySkill: String, secondarySkill: String, repeatable: Boolean, completionReward: String) => {
     if (!auth.currentUser) {
       return;
@@ -387,7 +418,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{userData, setAvatar, addSkill, addQuest}}>
+    <UserContext.Provider value={{userData, setAvatar, addSkill, addQuest, archiveSkill, activateSkill}}>
       {children}
     </UserContext.Provider>
   );

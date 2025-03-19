@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import {Text, StyleSheet, TouchableOpacity, ScrollView, View, Modal, TouchableWithoutFeedback, Keyboard} from "react-native";
+import {Text, StyleSheet, TouchableOpacity, ScrollView, View, Modal, TouchableWithoutFeedback, Keyboard, Alert} from "react-native";
 import calcEXP from "@/utils/calcEXP";
 import colors from "@/constants/colors";
 
@@ -28,9 +28,40 @@ onClose,
 id,
 }) => {
 
-    const skill = useUserData().userData?.skills?.find(skill => skill.id === id);
+    const { userData, archiveSkill, activateSkill } = useUserData();
+    const skill = userData?.skills?.find(skill => skill.id === id);
     const [skillEditVisible, setSkillEditVisible] = useState(false);
     const [skillID, setSkillID] = useState("");
+    
+
+    const archiveHandler = () => {
+        const matchingQuests = userData?.quests ? userData.quests.filter(
+            (quest) => (quest.primarySkill === skill?.name && quest.active)|| (quest.secondarySkill === skill?.name && quest.active)
+        ): [];
+        if (matchingQuests.length > 0) {
+            let activeQuests = [];
+            activeQuests.push("There are quests active with this skill:\n\n");
+            matchingQuests.map((quest, index) => (
+                activeQuests.push(`${index + 1}: ${quest.name}\n`)
+            ));
+            activeQuests.push("\nPlease complete these quests or delete them.");
+            const questMessage = activeQuests.join("");
+            Alert.alert("Error!", questMessage);
+        } else {
+            if(skill){
+                archiveSkill(skill.id);
+                onClose();
+            }
+                
+        }
+    };
+    const activateHandler = () => {
+        if(skill){
+            activateSkill(skill.id);
+            onClose();
+        }
+    };
+
     return (
         <Modal
         animationType="none"
@@ -86,10 +117,15 @@ id,
                                         <Text style={styles.fieldText}>Achievement 1</Text>
                                         <Text style={styles.fieldText}>Achievement 2</Text>
                                     </View>
-
-                                    <TouchableOpacity style={styles.completeButton} onPress={() =>alert("You selected archive")}>
+                                    {skill?.active && (
+                                    <TouchableOpacity style={styles.archiveButton} onPress={() => archiveHandler()}>
                                         <Text style={styles.buttonText}>Archive Skill</Text>
-                                    </TouchableOpacity>
+                                    </TouchableOpacity>)}
+
+                                    {!skill?.active && (
+                                    <TouchableOpacity style={styles.archiveButton} onPress={() => activateHandler()}>
+                                        <Text style={styles.buttonText}>Re Activate Skill</Text>
+                                    </TouchableOpacity>)}
 
                                 </View>    
                             </ScrollView>
@@ -246,21 +282,8 @@ const styles = StyleSheet.create({
         padding:"3%",
         margin:"2%"  
     },
-    repeatButton: {
-        width: "40%",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "blue",
-        borderRadius: 100,
-        shadowColor: colors.shadow, 
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
-        padding:"3%",
-        margin:"2%"  
-    },
-    completeButton: {
+    
+    archiveButton: {
         width: "70%",
         alignItems: "center",
         justifyContent: "center",
