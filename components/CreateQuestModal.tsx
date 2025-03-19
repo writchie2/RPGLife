@@ -169,6 +169,7 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
                         style={styles.inputDate}
                         label="MM/DD/YYYY"
                         dateSelected={dateSelected}
+                        
                         onDateChange={(date: Date) => {
                           setDate(date);
                           setDateSelected(true);
