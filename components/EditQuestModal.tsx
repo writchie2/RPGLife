@@ -28,7 +28,8 @@
     if (!auth.currentUser) {
             return;
         }
-    const quest = useUserData().userData?.quests?.find(quest => quest.id === id);
+    const { userData, archiveSkill, activateSkill } = useUserData();
+    const quest = userData?.quests?.find(quest => quest.id === id);
 
     const [questName, setQuestName] = useState("");
     const [questDescription, setQuestDescription] = useState("");
@@ -41,8 +42,8 @@
     const [completionReward, setCompletionReward] = useState("");
     const [isFocusPrimary, setIsFocusPrimary] = useState(false);
     const [isFocusSecondary, setIsFocusSecondary] = useState(false);
-    const userData = useUserData();
-    const skills = userData.userData?.skills || [];
+    
+    const skills = userData?.skills || [];
 
     useEffect(() => {
         if (quest) {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {Text, StyleSheet, TouchableOpacity, ScrollView, View, Modal, TouchableWithoutFeedback, Keyboard} from "react-native";
+import {Text, StyleSheet, TouchableOpacity, ScrollView, View, Modal, TouchableWithoutFeedback, Keyboard, Alert} from "react-native";
 import colors from "@/constants/colors";
 
 import { useEffect } from "react";
@@ -26,9 +26,72 @@ onClose,
 id,
 }) => {
 
-    const quest = useUserData().userData?.quests?.find(quest => quest.id === id);
+    const { userData, deleteQuest, completeQuest } = useUserData();
+    
+    const quest = userData?.quests?.find(quest => quest.id === id);
     const [questEditVisible, setQuestEditVisible] = useState(false);
     const [questID, setQuestID] = useState("");
+
+    const deleteHandler = () => {
+        if (userData && quest){
+        Alert.alert(
+            "Confirm Delete:",
+            quest.name,
+            [
+                {
+                    text: "Confirm",
+                    onPress: () => {
+                        onClose();
+                        if(quest.active){
+                            deleteQuest(quest.id);
+                        }
+                        else{
+                            // Should be something we can add later once game design is figured out. 
+                            alert("Only active quests can be deleted, not finished quests!");
+                        }
+                        
+                    },
+                },
+                {
+                    text: "Cancel",
+                    onPress: () => {
+                    },
+                },
+            ]);
+        }
+    }
+
+    const completeHandler = () => {
+        if (userData && quest){
+        
+            // TODO 
+            // First check checkpoints are completed
+            // If not, return alert error
+            
+            completeQuest(quest.id);
+            
+            // Alert message for now
+            // A popup graphic would be cool in the future
+            let message = [];
+            message.push("You completed:\n" + quest.name + '\n');
+            if (quest.difficulty === "Easy"){
+                message.push("You gained 150 XP!\n")
+            }
+            else if(quest.difficulty === "Normal"){
+                    message.push("You gained 300 XP!\n")
+                }
+            else{
+                message.push("You gained 450 XP!\n")
+            }
+            message.push("We'll make the graphic look cooler later!")
+            Alert.alert(
+                "Quest Complete!",
+                message.join("")
+            )
+
+            onClose();
+        }
+    }
     return (
         <Modal
         animationType="none"
@@ -81,8 +144,12 @@ id,
                                         </TouchableOpacity>
                                     )}
 
-                                    <TouchableOpacity style={styles.completeButton} onPress={() =>alert("You selected complete")}>
+                                    <TouchableOpacity style={styles.completeButton} onPress={() =>completeHandler()}>
                                         <Text style={styles.buttonText}>Complete Quest</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity style={styles.deleteButton} onPress={() =>deleteHandler()}>
+                                        <Text style={styles.buttonText}>Delete Quest</Text>
                                     </TouchableOpacity>
 
                                 </View>    
@@ -99,9 +166,14 @@ id,
                                     <Text style={styles.buttonText}>Close</Text>
                                     </TouchableOpacity>
                                     
-                                    <TouchableOpacity style={styles.editButton} onPress={() =>{
-                                        setQuestID(quest?.id || "0");
-                                        setQuestEditVisible(true);
+                                    <TouchableOpacity style={styles.editButton} onPress={() => {
+                                        if (quest?.active){
+                                            setQuestID(quest.id);
+                                            setQuestEditVisible(true);
+                                        }
+                                        else {
+                                            alert("Only active quests can be edited!");
+                                        }
                                         }}>
                                         <Text style={styles.buttonText}>Edit</Text>
                                     </TouchableOpacity>
@@ -242,6 +314,20 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: colors.bgSecondary,
+        borderRadius: 100,
+        shadowColor: colors.shadow, 
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.5,
+        shadowRadius: 4,
+        elevation: 5,  
+        margin:"2%",
+        padding:"3%", 
+    },
+    deleteButton: {
+        width: "70%",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "maroon",
         borderRadius: 100,
         shadowColor: colors.shadow, 
         shadowOffset: { width: 0, height: 3 },

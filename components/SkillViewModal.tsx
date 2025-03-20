@@ -27,36 +27,36 @@ visible,
 onClose,
 id,
 }) => {
-
+    
     const { userData, archiveSkill, activateSkill } = useUserData();
+    
     const skill = userData?.skills?.find(skill => skill.id === id);
     const [skillEditVisible, setSkillEditVisible] = useState(false);
     const [skillID, setSkillID] = useState("");
     
 
     const archiveHandler = () => {
-        const matchingQuests = userData?.quests ? userData.quests.filter(
-            (quest) => (quest.primarySkill === skill?.name && quest.active)|| (quest.secondarySkill === skill?.name && quest.active)
-        ): [];
-        if (matchingQuests.length > 0) {
-            let activeQuests = [];
-            activeQuests.push("There are quests active with this skill:\n\n");
-            matchingQuests.map((quest, index) => (
-                activeQuests.push(`${index + 1}: ${quest.name}\n`)
-            ));
-            activeQuests.push("\nPlease complete these quests or delete them.");
-            const questMessage = activeQuests.join("");
-            Alert.alert("Error!", questMessage);
-        } else {
-            if(skill){
+            if (userData && skill){
+            const matchingQuests = userData.quests?.filter(
+                (quest) => (quest.primarySkill === skill.name && quest.active)|| (quest.secondarySkill === skill.name && quest.active)
+            );
+            if (matchingQuests && matchingQuests?.length > 0) {
+                let activeQuests = [];
+                activeQuests.push("There are quests active with this skill:\n\n");
+                matchingQuests.map((quest, index) => (
+                    activeQuests.push(`${index + 1}: ${quest.name}\n`)
+                ));
+                activeQuests.push("\nPlease complete these quests or delete them.");
+                const questMessage = activeQuests.join("");
+                Alert.alert("Error!", questMessage);
+            } else {
                 archiveSkill(skill.id);
-                onClose();
+                onClose();   
             }
-                
         }
     };
     const activateHandler = () => {
-        if(skill){
+        if (userData && skill){
             activateSkill(skill.id);
             onClose();
         }
@@ -89,7 +89,7 @@ id,
                                         <Text style={styles.descriptionText}>{skill?.description}</Text>
                                     </View>
                                     <View style={styles.fieldContainer}>
-                                        <Text style={styles.fieldText}>Traits: {skill?.primaryTrait}{skill?.secondaryTrait && `, ${skill?.secondaryTrait}`}</Text>
+                                        <Text style={styles.fieldText}>Traits: {skill?.primaryTrait}{skill?.secondaryTrait && `, ${skill.secondaryTrait}`}</Text>
                                     </View>
                                     <View style={styles.expBar}>
                                         <View
@@ -142,8 +142,10 @@ id,
                                     </TouchableOpacity>
                                     
                                     <TouchableOpacity style={styles.editButton} onPress={() =>{
-                                        setSkillID(skill?.id || "0");
-                                        setSkillEditVisible(true);
+                                        if (skill){
+                                            setSkillID(skill.id);
+                                            setSkillEditVisible(true);
+                                        } 
                                     }}>
                                         <Text style={styles.buttonText}>Edit</Text>
                                     </TouchableOpacity>

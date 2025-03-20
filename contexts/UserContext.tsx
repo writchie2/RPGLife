@@ -4,7 +4,7 @@ import { fetchUserData } from '@/utils/firestoreUtils';
 import { auth } from "../FirebaseConfig"
 import { saveUserData, getUserData } from '../utils/storageUtils';
 import { UserData, Skill, Quest  } from '@/utils/types';
-import { doc, updateDoc, onSnapshot, collection, query, addDoc } from 'firebase/firestore';
+import { doc, updateDoc, onSnapshot, collection, query, addDoc, deleteDoc, getDocs, where } from 'firebase/firestore';
 import { db } from '../FirebaseConfig';
 
 
@@ -16,6 +16,9 @@ interface UserContextType {
   addQuest: (questName: String, questDescription: String, dueDate: Date, difficulty: String, primarySkill: String, secondarySkill: String, repeatable: Boolean, completionReward: string) => void;
   archiveSkill: (id: string) => void;
   activateSkill: (id: string) => void;
+  deleteQuest: (id: string) => void;
+  completeQuest: (id: string) => void;
+  resetAccount: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -57,7 +60,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         })
       }
     } catch (error) {
-      console.error("Error updating avatar:", error);
+      console.error("Error adding strength exp:", error);
     }
   }
 
@@ -74,7 +77,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         })
       }
     } catch (error) {
-      console.error("Error updating avatar:", error);
+      console.error("Error adding vitality exp avatar:", error);
     }
   }
 
@@ -91,7 +94,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         })
       }
     } catch (error) {
-      console.error("Error updating avatar:", error);
+      console.error("Error adding agility exp:", error);
     }
   }
 
@@ -108,7 +111,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         })
       }
     } catch (error) {
-      console.error("Error updating avatar:", error);
+      console.error("Error adding stamina exp:", error);
     }
   }
 
@@ -125,7 +128,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         })
       }
     } catch (error) {
-      console.error("Error updating avatar:", error);
+      console.error("Error adding intelligence exp:", error);
     }
   }
 
@@ -142,7 +145,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         })
       }
     } catch (error) {
-      console.error("Error updating avatar:", error);
+      console.error("Error adding charisma exp:", error);
     }
   }
 
@@ -156,7 +159,99 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         })
       }
     } catch (error) {
-      console.error("Error updating avatar:", error);
+      console.error("Error adding overall skill:", error);
+    }
+  }
+
+  const addSkillEXP = async (increaseAmount : number, skillName: string) => {
+    if (!userData || !auth.currentUser) return;
+    try {
+        const skillsRef = collection(db, "users", auth.currentUser.uid, "skills");
+        const q = query(skillsRef, where("name", "==", skillName));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          const skillDoc = querySnapshot.docs[0].ref;
+          
+          const skill = userData.skills?.find(skill => skill.name === skillName);
+          if(!skill){
+            console.log("Tried adding exp to a skill that doesn't exist");
+            return
+          }
+          await updateDoc(skillDoc, {
+            exp: (skill.exp + increaseAmount) 
+          })
+          // If there is no secondary trait, the primary trait gets the entirety of the exp. 
+          if (skill.secondaryTrait === "") {
+            switch (skill.primaryTrait) {
+            case "Strength":
+              addStrengthEXP(increaseAmount);
+              break;
+            case "Vitality":
+              addVitalityEXP(increaseAmount);
+              break;
+            case "Agility":
+              addAgilityEXP(increaseAmount);
+              break;
+            case "Stamina":
+              addStaminaEXP(increaseAmount);
+              break;
+            case "Intelligence":
+              addIntelligenceEXP(increaseAmount);
+              break;
+            case "Charisma":
+              addCharismaEXP(increaseAmount);
+              break;
+            }
+          }
+          // If there is a secondary trait, the primary trait gets 60% of the exp and secondary trait gets 40%
+          else {
+            switch (skill.primaryTrait) {
+              case "Strength":
+                addStrengthEXP((increaseAmount * 0.6));
+                break;
+              case "Vitality":
+                addVitalityEXP((increaseAmount * 0.6));
+                break;
+              case "Agility":
+                addAgilityEXP((increaseAmount * 0.6));
+                break;
+              case "Stamina":
+                addStaminaEXP((increaseAmount * 0.6));
+                break;
+              case "Intelligence":
+                addIntelligenceEXP((increaseAmount * 0.6));
+                break;
+              case "Charisma":
+                addCharismaEXP((increaseAmount * 0.6));
+                break;
+              }
+              switch (skill.secondaryTrait) {
+                case "Strength":
+                  addStrengthEXP((increaseAmount * 0.4));
+                  break;
+                case "Vitality":
+                  addVitalityEXP((increaseAmount * 0.4));
+                  break;
+                case "Agility":
+                  addAgilityEXP((increaseAmount * 0.4));
+                  break;
+                case "Stamina":
+                  addStaminaEXP((increaseAmount * 0.4));
+                  break;
+                case "Intelligence":
+                  addIntelligenceEXP((increaseAmount * 0.4));
+                  break;
+                case "Charisma":
+                  addCharismaEXP((increaseAmount * 0.4));
+                  break;
+                }
+            }
+        }
+        else {
+          console.log(`No skill found with name: ${skillName}`);
+        }
+    } catch (error) {
+      console.error("Error adding skill exp:", error);
     }
   }
 
@@ -266,7 +361,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
               addCharismaEXP((calcEXP * 0.4));
               break;
             }
-      }
+        }
       addOverallEXP(calcEXP);
     } catch (error) {
       console.error("Error adding skill:", error);
@@ -334,6 +429,51 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       console.error("Error adding skill:", error);
     }
   }
+
+  const deleteQuest = async(id: string) => {
+    if (!auth.currentUser) return;
+    try {
+        const docRef = doc(db, "users", auth.currentUser.uid, "quests", id)
+        await deleteDoc(docRef);
+    } catch (error) {
+      console.error("Error activating skill:", error);
+    }
+  };
+
+  const completeQuest = async(id: string) => {
+    if (!auth.currentUser || !userData) return;
+    try {
+        const docRef = doc(db, "users", auth.currentUser.uid, "quests", id)
+        const quest = userData.quests?.find(quest => quest.id === id);
+        if (!quest)
+        {
+            console.log("Tried to complete a quest that doesn't exist!");
+            return;
+        }
+
+        let expGain = 150;
+        if (quest.difficulty === "Normal") {
+          expGain = 300;
+        }
+        if (quest.difficulty === "Hard") {
+          expGain = 450;
+        }
+
+        if (!quest.secondarySkill) {
+          addSkillEXP(expGain, quest.primarySkill);
+        }
+        else {
+          addSkillEXP((expGain *0.6), quest.primarySkill);
+          addSkillEXP((expGain *0.4), quest.secondarySkill);
+        }
+        addOverallEXP(expGain);
+        await updateDoc(docRef, {
+          active: false
+      })
+    } catch (error) {
+      console.error("Error completing quest:", error);
+    }
+  };
 
   useEffect(() => {
 
@@ -417,8 +557,48 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   }, []);
 
+  const resetAccount = async () => {
+    if (!auth.currentUser || !userData) return;
+    try {
+      const userUID = auth.currentUser.uid;
+      const userDoc = doc(db, "users", userUID)
+      await updateDoc(userDoc, {
+        exp: 0,
+        strengthEXP: 0,
+        vitalityEXP: 0,
+        agilityEXP: 0,
+        staminaEXP: 0,
+        intelligenceEXP: 0,
+        charismaEXP: 0,
+      })
+      
+      const skillsCollectionRef = collection(db, "users", userUID, "skills");
+      const skillsQuerySnapshot = await getDocs(skillsCollectionRef);
+      
+      const skillDeletePromises = skillsQuerySnapshot.docs.map((skillDoc) =>
+        deleteDoc(doc(db, "users", userUID, "skills", skillDoc.id))
+      );
+
+    
+      await Promise.all(skillDeletePromises);
+      
+      const questsCollectionRef = collection(db, "users", userUID, "quests");
+      const questQuerySnapshot = await getDocs(questsCollectionRef);
+
+      const questDeletePromises = questQuerySnapshot.docs.map((questDoc) =>
+        deleteDoc(doc(db, "users", userUID, "quests", questDoc.id))
+      );
+
+    
+      await Promise.all(questDeletePromises);
+    } catch(error){
+      console.error("Error resetting account:", error);
+    }
+
+  }
+
   return (
-    <UserContext.Provider value={{userData, setAvatar, addSkill, addQuest, archiveSkill, activateSkill}}>
+    <UserContext.Provider value={{userData, setAvatar, addSkill, addQuest, archiveSkill, activateSkill, deleteQuest, completeQuest, resetAccount}}>
       {children}
     </UserContext.Provider>
   );
