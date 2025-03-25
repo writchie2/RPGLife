@@ -18,6 +18,7 @@ import {
   SafeAreaView,
   View,
   Image,
+  Alert,
 } from "react-native";
 import {
   getAuth,
@@ -30,38 +31,59 @@ import {
 
 import { useEffect } from "react";
 import { BackHandler } from "react-native";
+import { useUserData } from "@/contexts/UserContext";
 
 import colors from "@/constants/colors";
 
 export default function Settings() {
-    useEffect(() => {
-            const backAction = () => {
-              router.replace("/(main)"); // Navigate back to home
-              return true; // Prevent default behavior
-            };
-        
-            const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
-        
-            return () => backHandler.remove(); // Cleanup
-          }, []);
+  const {resetAccount} = useUserData();
+    
+  useEffect(() => {
+    const backAction = () => {
+      router.replace("/(main)"); // Navigate back to home
+      return true; // Prevent default behavior
+    };
 
-    return (
-        
-      <View style={styles.headerContainer}>
-        <UserHeader></UserHeader>
-        <View style={styles.container}>
-            <Text style={styles.title}>Settings</Text>
-            <Image
-            style={styles.logo}
-            source={require("../../assets/images/RPGiconShield.png")}
-            />
-            <TouchableOpacity style={styles.button} onPress={() => router.push("/(main)")}>
-            <Text style={styles.buttonText}>Go Home</Text>
-            </TouchableOpacity>
-        </View>
-      </View>
-    );
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+
+    return () => backHandler.remove(); // Cleanup
+  }, []);
+    
+  const resetHandler = () => {
+    Alert.alert(
+      "Confirm Reset",
+      "This will reset you experience, and delete your skills and quests",
+      [
+          {
+              text: "Confirm",
+              onPress: () => {
+                resetAccount();       
+              },
+          },
+          {
+              text: "Cancel",
+              onPress: () => {
+              },
+          },
+      ]);
   }
+
+  return ( 
+    <View style={styles.headerContainer}>
+      <UserHeader></UserHeader>
+      <View style={styles.container}>
+          <Text style={styles.title}>Settings</Text>
+          <Image
+          style={styles.logo}
+          source={require("../../assets/images/RPGiconShield.png")}
+          />
+          <TouchableOpacity style={styles.button} onPress={() => resetHandler()}>
+          <Text style={styles.buttonText}>Reset Account</Text>
+          </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
   
   const styles = StyleSheet.create({
     headerContainer:{
