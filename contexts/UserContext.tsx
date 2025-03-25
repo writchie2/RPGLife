@@ -43,127 +43,126 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         })
       }
     } catch (error) {
-      console.error("Error updating avatar:", error);
+      console.error("Error altering avatar:", error);
     }
   };
 
-  // Function adds an amount to the user's strengthEXP. 
-  // This amount is also added to the user's overall exp
-  // Input: increaseAmount (number added to strengthEXP)
-  const addStrengthEXP = async (increaseAmount : number) => {
+  // Function alters an amount to the user's strengthEXP.
+  // Input: alterAmount (number added to strengthEXP)
+  const alterStrengthEXP = async (alterAmount : number) => {
     if (!userData) return;
     try {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
         await updateDoc(userDoc, {
-          strengthEXP: (userData.strengthEXP + increaseAmount)
+          strengthEXP: (userData.strengthEXP + alterAmount)
         })
       }
     } catch (error) {
-      console.error("Error adding strength exp:", error);
+      console.error("Error altering strength exp:", error);
     }
   }
 
-  // Function adds an amount to the user's vitalityEXP. 
-  // This amount is also added to the user's overall exp
-  // Input: increaseAmount (number added to vitalityEXP)
-  const addVitalityEXP = async (increaseAmount : number) => {
+  // Function alters an amount to the user's vitalityEXP. 
+  // Input: alterAmount (number added to vitalityEXP)
+  const alterVitalityEXP = async (alterAmount : number) => {
     if (!userData) return;
     try {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
         await updateDoc(userDoc, {
-          vitalityEXP: (userData.vitalityEXP + increaseAmount)
+          vitalityEXP: (userData.vitalityEXP + alterAmount)
         })
       }
     } catch (error) {
-      console.error("Error adding vitality exp avatar:", error);
+      console.error("Error altering vitality exp avatar:", error);
     }
   }
 
-  // Function adds an amount to the user's agilityEXP. 
-  // This amount is also added to the user's overall exp
-  // Input: increaseAmount (number added to agilityEXP)
-  const addAgilityEXP = async (increaseAmount : number) => {
+  // Function alters an amount to the user's agilityEXP. 
+  // Input: alterAmount (number added to agilityEXP)
+  const alterAgilityEXP = async (alterAmount : number) => {
     if (!userData) return;
     try {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
         await updateDoc(userDoc, {
-          agilityEXP: (userData.agilityEXP + increaseAmount)
+          agilityEXP: (userData.agilityEXP + alterAmount)
         })
       }
     } catch (error) {
-      console.error("Error adding agility exp:", error);
+      console.error("Error altering agility exp:", error);
     }
   }
 
-  // Function adds an amount to the user's staminaEXP. 
-  // This amount is also added to the user's overall exp
-  // Input: increaseAmount (number added to staminaEXP)
-  const addStaminaEXP = async (increaseAmount : number) => {
+  // Function alters an amount to the user's staminaEXP. 
+  // Input: alterAmount (number added to staminaEXP)
+  const alterStaminaEXP = async (alterAmount : number) => {
     if (!userData) return;
     try {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
         await updateDoc(userDoc, {
-          staminaEXP: (userData.staminaEXP + increaseAmount)
+          staminaEXP: (userData.staminaEXP + alterAmount)
         })
       }
     } catch (error) {
-      console.error("Error adding stamina exp:", error);
+      console.error("Error altering stamina exp:", error);
     }
   }
 
-  // Function adds an amount to the user's intelligenceEXP. 
-  // This amount is also added to the user's overall exp
-  // Input: increaseAmount (number added to intelligenceEXP)
-  const addIntelligenceEXP = async (increaseAmount : number) => {
+  // Function alters an amount to the user's intelligenceEXP. 
+  // Input: altereAmount (number added to intelligenceEXP)
+  const alterIntelligenceEXP = async (alterAmount : number) => {
     if (!userData) return;
     try {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
         await updateDoc(userDoc, {
-          intelligenceEXP: (userData.intelligenceEXP + increaseAmount)
+          intelligenceEXP: (userData.intelligenceEXP + alterAmount)
         })
       }
     } catch (error) {
-      console.error("Error adding intelligence exp:", error);
+      console.error("Error altering intelligence exp:", error);
     }
   }
 
-  // Function adds an amount to the user's charismaEXP. 
-  // This amount is also added to the user's overall exp
-  // Input: increaseAmount (number added to charismaEXP)
-  const addCharismaEXP = async (increaseAmount : number) => {
+  // Function alters an amount to the user's charismaEXP. 
+  // Input: alterAmount (number added to charismaEXP)
+  const alterCharismaEXP = async (alterAmount : number) => {
     if (!userData) return;
     try {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
         await updateDoc(userDoc, {
-          charismaEXP: (userData.charismaEXP + increaseAmount),
+          charismaEXP: (userData.charismaEXP + alterAmount),
         })
       }
     } catch (error) {
-      console.error("Error adding charisma exp:", error);
+      console.error("Error altering charisma exp:", error);
     }
   }
-
-  const addOverallEXP = async (increaseAmount : number) => {
+  
+  // Function alters an amount to the user's overallEXP. 
+  // Input: alterAmount (number added to charismaEXP)
+  const alterOverallEXP = async (alterAmount : number) => {
     if (!userData) return;
     try {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
         await updateDoc(userDoc, {
-          exp: (userData.exp + increaseAmount) 
+          exp: (userData.exp + alterAmount) 
         })
       }
     } catch (error) {
-      console.error("Error adding overall skill:", error);
+      console.error("Error altering overall skill:", error);
     }
   }
-
-  const addSkillEXP = async (increaseAmount : number, skillName: string) => {
+  
+  // Function that alters the exp of a skill
+  // Calls the alterTrait function to alter the traits' exp
+  // Input: alterAmount (number added to charismaEXP)
+  const alterSkillEXP = async (alterAmount : number, skillName: string) => {
     if (!userData || !auth.currentUser) return;
     try {
         const skillsRef = collection(db, "users", auth.currentUser.uid, "skills");
@@ -174,85 +173,93 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           
           const skill = userData.skills?.find(skill => skill.name === skillName);
           if(!skill){
-            console.log("Tried adding exp to a skill that doesn't exist");
+            console.log("Tried altering exp to a skill that doesn't exist");
             return
           }
           await updateDoc(skillDoc, {
-            exp: (skill.exp + increaseAmount) 
+            exp: (skill.exp + alterAmount) 
           })
-          // If there is no secondary trait, the primary trait gets the entirety of the exp. 
-          if (skill.secondaryTrait === "") {
-            switch (skill.primaryTrait) {
-            case "Strength":
-              addStrengthEXP(increaseAmount);
-              break;
-            case "Vitality":
-              addVitalityEXP(increaseAmount);
-              break;
-            case "Agility":
-              addAgilityEXP(increaseAmount);
-              break;
-            case "Stamina":
-              addStaminaEXP(increaseAmount);
-              break;
-            case "Intelligence":
-              addIntelligenceEXP(increaseAmount);
-              break;
-            case "Charisma":
-              addCharismaEXP(increaseAmount);
-              break;
-            }
-          }
-          // If there is a secondary trait, the primary trait gets 60% of the exp and secondary trait gets 40%
-          else {
-            switch (skill.primaryTrait) {
-              case "Strength":
-                addStrengthEXP((increaseAmount * 0.6));
-                break;
-              case "Vitality":
-                addVitalityEXP((increaseAmount * 0.6));
-                break;
-              case "Agility":
-                addAgilityEXP((increaseAmount * 0.6));
-                break;
-              case "Stamina":
-                addStaminaEXP((increaseAmount * 0.6));
-                break;
-              case "Intelligence":
-                addIntelligenceEXP((increaseAmount * 0.6));
-                break;
-              case "Charisma":
-                addCharismaEXP((increaseAmount * 0.6));
-                break;
-              }
-              switch (skill.secondaryTrait) {
-                case "Strength":
-                  addStrengthEXP((increaseAmount * 0.4));
-                  break;
-                case "Vitality":
-                  addVitalityEXP((increaseAmount * 0.4));
-                  break;
-                case "Agility":
-                  addAgilityEXP((increaseAmount * 0.4));
-                  break;
-                case "Stamina":
-                  addStaminaEXP((increaseAmount * 0.4));
-                  break;
-                case "Intelligence":
-                  addIntelligenceEXP((increaseAmount * 0.4));
-                  break;
-                case "Charisma":
-                  addCharismaEXP((increaseAmount * 0.4));
-                  break;
-                }
-            }
+
+          alterTraitEXP(alterAmount, skill.primaryTrait, skill.secondaryTrait || "")
         }
         else {
           console.log(`No skill found with name: ${skillName}`);
         }
     } catch (error) {
-      console.error("Error adding skill exp:", error);
+      console.error("Error altering skill exp:", error);
     }
+  }
+
+  // Function called by the alterSkillEXP function that handles altering the exp of traits for a skill
+  // If there is only a primary skill 100% goes to that, if there are two, the are split up 75% and 25%
+  // Input: alterAmount (number added to skillEXP and traits), primary (string with primary trait name), secondary (string with secondary trait name)
+  const alterTraitEXP = async (alterAmount : number, primary : string, secondary : string) => {
+    // If there is no secondary trait, the primary trait gets the entirety of the exp.
+    if (secondary === "") {
+      switch (primary) {
+      case "Strength":
+        alterStrengthEXP(alterAmount);
+        break;
+      case "Vitality":
+        alterVitalityEXP(alterAmount);
+        break;
+      case "Agility":
+        alterAgilityEXP(alterAmount);
+        break;
+      case "Stamina":
+        alterStaminaEXP(alterAmount);
+        break;
+      case "Intelligence":
+        alterIntelligenceEXP(alterAmount);
+        break;
+      case "Charisma":
+        alterCharismaEXP(alterAmount);
+        break;
+      }
+    }
+    // If there is a secondary trait, the primary trait gets 60% of the exp and secondary trait gets 40%
+    else {
+      switch (primary) {
+        case "Strength":
+          alterStrengthEXP((alterAmount * 0.75));
+          break;
+        case "Vitality":
+          alterVitalityEXP((alterAmount * 0.75));
+          break;
+        case "Agility":
+          alterAgilityEXP((alterAmount * 0.75));
+          break;
+        case "Stamina":
+          alterStaminaEXP((alterAmount * 0.75));
+          break;
+        case "Intelligence":
+          alterIntelligenceEXP((alterAmount * 0.75));
+          break;
+        case "Charisma":
+          alterCharismaEXP((alterAmount * 0.75));
+          break;
+        }
+        switch (secondary) {
+          case "Strength":
+            alterStrengthEXP((alterAmount * 0.25));
+            break;
+          case "Vitality":
+            alterVitalityEXP((alterAmount * 0.25));
+            break;
+          case "Agility":
+            alterAgilityEXP((alterAmount * 0.25));
+            break;
+          case "Stamina":
+            alterStaminaEXP((alterAmount * 0.25));
+            break;
+          case "Intelligence":
+            alterIntelligenceEXP((alterAmount * 0.25));
+            break;
+          case "Charisma":
+            alterCharismaEXP((alterAmount * 0.25));
+            break;
+          }
+      }
   }
 
   // Function that creates a new document in the "skills" collection of Firebase representing a new skill
@@ -291,83 +298,17 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       // Add the record to FireBase as a new document in the "skills" collection
       const docRef = await addDoc(skillsCollectionRef, newSkill);
       console.log("Skill added with ID:", docRef.id);
-
-      // Handles the experience gain when a new skill is created. 
-      // The user can select their expereince level when creating a skill, and that exp
-      // will be added to their overall exp and the respective traits
-
-      // If there is no secondary trait, the primary trait gets the entirety of the exp. 
-      if (secondaryTrait === "") {
-        switch (primaryTrait) {
-        case "Strength":
-          addStrengthEXP(calcEXP);
-          break;
-        case "Vitality":
-          addVitalityEXP(calcEXP);
-          break;
-        case "Agility":
-          addAgilityEXP(calcEXP);
-          break;
-        case "Stamina":
-          addStaminaEXP(calcEXP);
-          break;
-        case "Intelligence":
-          addIntelligenceEXP(calcEXP);
-          break;
-        case "Charisma":
-          addCharismaEXP(calcEXP);
-          break;
-        }
-      }
-      // If there is a secondary trait, the primary trait gets 60% of the exp and secondary trait gets 40%
-      else {
-        switch (primaryTrait) {
-          case "Strength":
-            addStrengthEXP((calcEXP * 0.6));
-            break;
-          case "Vitality":
-            addVitalityEXP((calcEXP * 0.6));
-            break;
-          case "Agility":
-            addAgilityEXP((calcEXP * 0.6));
-            break;
-          case "Stamina":
-            addStaminaEXP((calcEXP * 0.6));
-            break;
-          case "Intelligence":
-            addIntelligenceEXP((calcEXP * 0.6));
-            break;
-          case "Charisma":
-            addCharismaEXP((calcEXP * 0.6));
-            break;
-          }
-          switch (secondaryTrait) {
-            case "Strength":
-              addStrengthEXP((calcEXP * 0.4));
-              break;
-            case "Vitality":
-              addVitalityEXP((calcEXP * 0.4));
-              break;
-            case "Agility":
-              addAgilityEXP((calcEXP * 0.4));
-              break;
-            case "Stamina":
-              addStaminaEXP((calcEXP * 0.4));
-              break;
-            case "Intelligence":
-              addIntelligenceEXP((calcEXP * 0.4));
-              break;
-            case "Charisma":
-              addCharismaEXP((calcEXP * 0.4));
-              break;
-            }
-        }
-      addOverallEXP(calcEXP);
+      
+      // Removed adding overall exp when skill is created. 
+      //alterOverallEXP(calcEXP);
     } catch (error) {
-      console.error("Error adding skill:", error);
+      console.error("Error altering skill:", error);
     }
   }
 
+  // Function that sets the boolean field 'active' in a skill to false.
+  // Validation of skill meeting requirements to be archived is handled in the function that calls it in SkillViewModal
+  // Input: id (string of the skill's id)
   const archiveSkill = async (id: string) => {
     if (!auth.currentUser) return;
     try {
@@ -382,6 +323,9 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
   
+  // Function that sets the boolean field 'active' in a skill to true.
+  // Validation of skill meeting requirements to be archived is handled in the function that calls it in SkillViewModal
+  // Input: id (string of the skill's id)
   const activateSkill = async (id: string) => {
     if (!auth.currentUser) return;
     try {
@@ -396,7 +340,9 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
   
-
+  // Function that creates a new document in the "quests" collection of Firebase representing a new quest
+  // Validation of inputs is handled in the function that calls it in the CreateQuestModal 
+  // questName, primarySkill, dueDate, difficulty, reward, and repeatable are required. The others are optional and may be blank strings
   const addQuest = async (questName: String, questDescription: String, dueDate: Date, difficulty: String, primarySkill: String, secondarySkill: String, repeatable: Boolean, completionReward: String) => {
     if (!auth.currentUser) {
       return;
@@ -406,7 +352,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       
       const newQuest: Record<string, any> = {
         name: questName,
-        description: questDescription,
         dueDate: dueDate,
         difficulty: difficulty,
         primarySkill: primarySkill,
@@ -426,20 +371,26 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       const docRef = await addDoc(questsCollectionRef, newQuest);
       console.log("Quest added with ID:", docRef.id);
     } catch (error) {
-      console.error("Error adding skill:", error);
+      console.error("Error adding quest:", error);
     }
   }
 
+  // Function that deletes a quest document from the "quests" collection
+  // Validation of quest meeting requirements to be deleted is handled in the function that calls it in QuestViewModal
+  // Input: id (string of the quest's id)
   const deleteQuest = async(id: string) => {
     if (!auth.currentUser) return;
     try {
         const docRef = doc(db, "users", auth.currentUser.uid, "quests", id)
         await deleteDoc(docRef);
     } catch (error) {
-      console.error("Error activating skill:", error);
+      console.error("Error deleting quest:", error);
     }
   };
 
+  // Function that sets a quest's 'active' field to false and rewards exp to skills and overall exp
+  // Validation of quest meeting requirements to be completed is handled in the function that calls it in QuestViewModal
+  // Input: id (string of the quest's id)
   const completeQuest = async(id: string) => {
     if (!auth.currentUser || !userData) return;
     try {
@@ -460,13 +411,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         }
 
         if (!quest.secondarySkill) {
-          addSkillEXP(expGain, quest.primarySkill);
+          alterSkillEXP(expGain, quest.primarySkill);
         }
         else {
-          addSkillEXP((expGain *0.6), quest.primarySkill);
-          addSkillEXP((expGain *0.4), quest.secondarySkill);
+          alterSkillEXP((expGain *0.75), quest.primarySkill);
+          alterSkillEXP((expGain *0.25), quest.secondarySkill);
         }
-        addOverallEXP(expGain);
+        alterOverallEXP(expGain);
         await updateDoc(docRef, {
           active: false
       })
