@@ -62,30 +62,25 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
     let error = false;
     let errors = [];
     
-    if (questName.trim() === "")
-    {
+    if (questName.trim() === ""){
         errors.push("Quest name cannot be blank");
         error = true;
     }
     const questExists = userData.userData?.quests?.some(quest => quest.name.toLowerCase() === questName.trim().toLowerCase());
-    if (questExists)
-    {
+    if (questExists){
         errors.push("A quest with that name already exists");
         error = true;
     }
-    if (primarySkill === "")
-    {
+    if (primarySkill === ""){
         errors.push("Must choose a primary skill");
         error = true;
     }
-    if (difficulty === "")
-    {
-        errors.push("Must choose the difficulty");
-        error = true;
+    if (primarySkill === secondarySkill){
+      errors.push("Primary skill cannot be the same as secondary skill");
+      error = true;
     }
-    if (completionReward.trim() === "")
-    {
-        errors.push("Must choose a completion reward");
+    if (difficulty === ""){
+        errors.push("Must choose the difficulty");
         error = true;
     }
     if (error){
