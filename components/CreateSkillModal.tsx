@@ -44,24 +44,24 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
 
         let error = false;
         let errors = [];
-        if (skillName.trim() === "")
-        {
+        if (skillName.trim() === ""){
             errors.push("Skill name cannot be blank");
             error = true;
         }
         const skillExists = userData.userData?.skills?.some(skill => skill.name.toLowerCase() === skillName.trim().toLowerCase());
-        if (skillExists)
-        {
+        if (skillExists){
             errors.push("A skill with that name already exists");
             error = true;
         }
-        if (primaryTrait === "")
-        {
+        if (primaryTrait === ""){
             errors.push("Must choose a primary trait");
             error = true;
         }
-        if (experience === "")
-        {
+        if (primaryTrait === secondaryTrait){
+            errors.push("Primary trait cannot be the same as secondary trait");
+            error = true;
+        }
+        if (experience === ""){
             errors.push("Must choose your starting experience");
             error = true;
         }

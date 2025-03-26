@@ -44,36 +44,29 @@ const EditSkillModal: React.FC<EditSkillModalProps> = ({
     const [isFocusPrimary, setIsFocusPrimary] = useState(false);
     const [isFocusSecondary, setIsFocusSecondary] = useState(false);
     const userData = useUserData();
-    /*
     
-    Will need to adjust to make it edit
-
-    // Function validates input and will call the "addSkill" function that exists in UserContext.tsx
-    // Errors will appear if name is blank, name is not unique, a primary trait isn't selected,
-    // or if starting exp isn't selected
-    const createSkill = () => {
-
+    const editSkill = () => {
+        if(!skill){
+            return;
+        }
+        // Check for that all fields are filled out properly. 
         let error = false;
         let errors = [];
-        if (skillName.trim() === "")
-        {
+        if (skillName?.trim() === ""){
             errors.push("Skill name cannot be blank");
             error = true;
         }
-        const skillExists = userData.userData?.skills?.some(skill => skill.name.toLowerCase() === skillName.trim().toLowerCase());
-        if (skillExists)
-        {
+        const skillExists = userData.userData?.skills?.some(skill => skill.name.toLowerCase() === skillName?.trim().toLowerCase());
+        if (skillExists && (skillName?.trim() !== skill.name)){
             errors.push("A skill with that name already exists");
             error = true;
         }
-        if (primaryTrait === "")
-        {
+        if (primaryTrait === ""){
             errors.push("Must choose a primary trait");
             error = true;
         }
-        if (experience === "")
-        {
-            errors.push("Must choose your starting experience");
+        if (primaryTrait === secondaryTrait){
+            errors.push("Primary trait cannot be the same as secondary trait");
             error = true;
         }
         if (error){
@@ -81,17 +74,44 @@ const EditSkillModal: React.FC<EditSkillModalProps> = ({
             Alert.alert("Error!", errorMessage);
             return;
         }
-        
-        userData.addSkill(skillName.trim(), description.trim(), primaryTrait, secondaryTrait, experience);
-        setSkillName("");
-        setDescription("");
-        setPrimaryTrait("");
-        setSecondaryTrait("");
-        setExperience("");
-        onClose();
-    }
 
-    */
+        let edit = false;
+        let edits = [];
+        if(skillName?.trim() !== skill.name){
+            
+            // UserContext function to edit the name
+            
+            edits.push("Name changed to \"" + skillName?.trim() + "\"\n");
+            edit = true;
+        }
+        if(description?.trim() !== skill.description){
+            
+            // UserContext function to edit the description
+            
+            edits.push("Description changed to \"" + description?.trim() + "\"\n");
+            edit = true;
+        }
+        if (primaryTrait !== skill.primaryTrait || secondaryTrait !== skill.secondaryTrait){
+            
+            // UserContext function to edit the traits
+
+            edits.push("Traits changed to " + primaryTrait);
+            if(secondaryTrait !== ""){
+                edits.push(" and " + secondaryTrait);
+            }
+            edit = true;
+        }
+
+        if (edit){
+            const editMessage = edits.join("");
+            Alert.alert("Sucess!", editMessage);
+            onClose();
+        }
+        else{
+            Alert.alert("Error!", "No edits were made.");
+            return;
+        }
+    }
 
     useEffect(() => {
             if (skill) {
@@ -276,11 +296,11 @@ const EditSkillModal: React.FC<EditSkillModalProps> = ({
                             <TouchableOpacity 
                                 style={ styles.createButton} 
                                 onPress={() => {
-                                    //createSkill();
-                                    alert("You chose edit skill");
+                                    editSkill()
+                                    //alert("You chose edit skill");
                                 }}
                             >
-                                <Text style={styles.createCancelText}>Create</Text>
+                                <Text style={styles.createCancelText}>Edit</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

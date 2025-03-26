@@ -283,17 +283,12 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       const newSkill: Record<string, any> = {
         name: skillName,
         primaryTrait: primaryTrait,
+        secondaryTrait: secondaryTrait,
+        description: description,
         exp: calcEXP,
         active: true,
       };
       
-      // If secondary trait or description are not blank, add them as a field. 
-      if (secondaryTrait !== "") {
-        newSkill.secondaryTrait = secondaryTrait;
-      }
-      if (description !== "") {
-        newSkill.description = description;
-      }
       
       // Add the record to FireBase as a new document in the "skills" collection
       const docRef = await addDoc(skillsCollectionRef, newSkill);
@@ -342,7 +337,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   
   // Function that creates a new document in the "quests" collection of Firebase representing a new quest
   // Validation of inputs is handled in the function that calls it in the CreateQuestModal 
-  // questName, primarySkill, dueDate, difficulty, reward, and repeatable are required. The others are optional and may be blank strings
+  // questName, primarySkill, dueDate, difficulty, and repeatable are required. The others are optional and may be blank strings
   const addQuest = async (questName: String, questDescription: String, dueDate: Date, difficulty: String, primarySkill: String, secondarySkill: String, repeatable: Boolean, completionReward: String) => {
     if (!auth.currentUser) {
       return;
@@ -352,22 +347,16 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       
       const newQuest: Record<string, any> = {
         name: questName,
+        description: questDescription,
         dueDate: dueDate,
         difficulty: difficulty,
         primarySkill: primarySkill,
+        secondarySkill: secondarySkill,
         reward: completionReward,
         active: true,
         repeatable: repeatable
       };
-  
-      if (secondarySkill !== "") {
-        newQuest.secondarySkill = secondarySkill;
-      }
-      if (questDescription !== "") {
-        newQuest.description = questDescription;
-      }
-      
-  
+       
       const docRef = await addDoc(questsCollectionRef, newQuest);
       console.log("Quest added with ID:", docRef.id);
     } catch (error) {
