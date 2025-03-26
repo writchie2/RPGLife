@@ -6,10 +6,10 @@ export interface Quest {
     id: string;
     name: string;
     dueDate: Date; 
-    description?: string;
+    description: string;
     difficulty: string; 
     primarySkill: string;
-    secondarySkill?: string; // Optional secondary skill
+    secondarySkill: string; // Optional secondary skill
     repeatable: boolean;
     reward: string;
     checkpoints?: Checkpoint[]; // Optional checkpoints list (can be empty)
@@ -20,9 +20,9 @@ export interface Quest {
   export interface Skill {
     id: string;
     name: string;
-    description?: string;
+    description: string;
     primaryTrait: string;
-    secondaryTrait?: string;
+    secondaryTrait: string;
     exp: number;
     active: boolean;
   }
