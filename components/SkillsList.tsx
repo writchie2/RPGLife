@@ -24,9 +24,8 @@ const SkillsList: React.FC<SkillsListProps> = ({
   skills, // Array of skills from UserData interface
   mode, // "active", "inactive", or "all"
 }) => {
-
   const [skillModalVisible, setSkillModalVisible] = useState(false);
-  const[skillID, setSkillID] = useState("");
+  const [skillID, setSkillID] = useState("");
   //Item that will be rendered for each skill
   //TO DO: styling
   //TO DO: change press action to route to quest page
@@ -34,40 +33,47 @@ const SkillsList: React.FC<SkillsListProps> = ({
     <TouchableOpacity
       style={styles.skillItem}
       onPress={() => {
-        setSkillID(item.id)
+        setSkillID(item.id);
         setSkillModalVisible(true);
       }}
     >
-      <View style={styles.splitRowContainer}>
-        <Text style={styles.skillName}>{item.name}</Text>
-        <Text style={styles.skillTrait}>
-          Traits: {item.primaryTrait}
-          {item.secondaryTrait ? ` + ${item.secondaryTrait}` : ""}
+      {/* <View style={styles.splitRowContainer}> */}
+      <Text style={styles.skillName}>{item.name}</Text>
+      {/* </View> */}
+      <View style={styles.skillDetailsContainer}>
+        <Text style={styles.skillDescription}>
+          {item.description ? item.description : "Skill Details"}
         </Text>
-      </View>
-      <Text style={styles.skillDescription}>{item.description}</Text>
-      {/* exp bar */}
-      <View style={styles.expBar}>
-        <View
-          style={{
-            height: "100%",
-            width: `${
-              (calcEXP(item.exp).progressEXP / calcEXP(item.exp).neededEXP) *
-              100
-            }%`,
-            backgroundColor: colors.text,
-            borderRadius: 99,
-          }}
-        ></View>
-      </View>
-      <View style={styles.splitRowContainer}>
-        <Text style={styles.expTrait}>
-          {/* Level {Math.floor((item.exp || 1) / 100)} {(item.exp || 0) % 100} exp */}
-          Level {calcEXP(item.exp).level}
-        </Text>
-        <Text style={styles.expTrait}>
-          {calcEXP(item.exp).progressEXP}/{calcEXP(item.exp).neededEXP} exp
-        </Text>
+        <View style={styles.skillDetailsContainer2}>
+          <Text style={styles.skillTrait}>
+            Traits: {item.primaryTrait}
+            {item.secondaryTrait ? ` + ${item.secondaryTrait}` : ""}
+          </Text>
+          {/* exp bar */}
+          <View style={styles.expBar}>
+            <View
+              style={{
+                height: "100%",
+                width: `${
+                  (calcEXP(item.exp).progressEXP /
+                    calcEXP(item.exp).neededEXP) *
+                  100
+                }%`,
+                backgroundColor: colors.text,
+                borderRadius: 99,
+              }}
+            ></View>
+          </View>
+          <View style={styles.splitRowContainer}>
+            <Text style={styles.expTrait}>
+              {/* Level {Math.floor((item.exp || 1) / 100)} {(item.exp || 0) % 100} exp */}
+              Level {calcEXP(item.exp).level}
+            </Text>
+            <Text style={styles.expTrait}>
+              {calcEXP(item.exp).progressEXP}/{calcEXP(item.exp).neededEXP} exp
+            </Text>
+          </View>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -95,8 +101,16 @@ const SkillsList: React.FC<SkillsListProps> = ({
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={styles.listContainer}
+        scrollEnabled={false}
       />
-      <SkillViewModal visible={skillModalVisible} id={skillID} onClose={() => {setSkillModalVisible(false); setSkillID("");}}></SkillViewModal>
+      <SkillViewModal
+        visible={skillModalVisible}
+        id={skillID}
+        onClose={() => {
+          setSkillModalVisible(false);
+          setSkillID("");
+        }}
+      ></SkillViewModal>
     </View>
   );
 };
@@ -122,12 +136,35 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 12,
   },
+  skillDetailsContainer: {
+    // borderLeftWidth: 0.5,
+    // paddingLeft: 6,
+    // marginLeft: 2.5,
+    // borderColor: colors.borderLight,
+    // borderBottomWidth: 1,
+    // paddingBottom: 6,
+    // marginLeft: 2,
+  },
+  skillDetailsContainer2: {
+    borderLeftWidth: 0.5,
+    paddingLeft: 6,
+    marginLeft: 2.5,
+    marginTop: 4,
+    borderColor: colors.borderLight,
+    // borderBottomWidth: 1,
+    // paddingLeft: 5,
+    // paddingBottom: 6,
+    // paddingTop: 2,
+  },
   skillItem: {
-    padding: 10,
-    marginBottom: 12,
+    // padding: 10,
+    // marginBottom: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 6,
+    marginBottom: 10,
     backgroundColor: "transparent",
-    borderBottomWidth: 1,
-    // borderLeftWidth: 1,
+    // borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderColor: colors.borderLight,
   },
   splitRowContainer: {
@@ -139,18 +176,20 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: colors.text,
   },
-  skillTrait: {
-    // fontFamily: "Alegreya_400Regular",
-    fontFamily: "Alegreya_500Medium",
-    marginTop: 5,
-    fontSize: 14,
-    color: colors.textLight,
-  },
   skillDescription: {
     // fontFamily: "Alegreya_400Regular",
     fontFamily: "Alegreya_500Medium",
-    marginTop: 5,
+    // marginTop: 5,
+    marginTop: 4,
     fontSize: 16,
+    color: colors.textLight,
+  },
+  skillTrait: {
+    // fontFamily: "Alegreya_400Regular",
+    fontFamily: "Alegreya_500Medium",
+    // marginTop: 5,
+    marginTop: 2,
+    fontSize: 14,
     color: colors.textLight,
   },
   expBar: {

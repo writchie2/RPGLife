@@ -12,7 +12,6 @@ import { Quest } from "../utils/types";
 import colors from "@/constants/colors";
 import QuestViewModal from "./QuestViewModal";
 
-
 interface QuestsListProps {
   quests: Quest[];
   mode: string;
@@ -30,29 +29,38 @@ const QuestsList: React.FC<QuestsListProps> = ({
   const [questsModalVisible, setQuestsModalVisible] = useState(false);
   const [questID, setQuestID] = useState("");
   const renderItem = ({ item }: { item: Quest }) => {
-   // const time = new Timestamp(item.dueDate.getSeconds(), item.dueDate.getMilliseconds())
-   return (
-    <TouchableOpacity
-      style={styles.questItem}
-      onPress={() => {
-        setQuestID(item.id)
-        setQuestsModalVisible(true);
-      }}
-    >
-      <Text style={styles.questName}>{item.name}</Text>
-      <Text style={styles.questDescription}>{item.description}</Text>
-      <Text style={styles.questDetails}>
-        Difficulty: {item.difficulty} | Due: {item.dueDate.toDateString()}
-      </Text>
-      <Text style={styles.questSkills}>
-        Primary Skill: {item.primarySkill}{" "}
-        {item.secondarySkill ? "| Secondary Skill: " + item.secondarySkill : ""}
-      </Text>
-      <Text style={styles.questRepeatability}>
-        Repeatable: {item.repeatable ? "Yes" : "No"}
-      </Text>
-    </TouchableOpacity>
-  );}
+    // const time = new Timestamp(item.dueDate.getSeconds(), item.dueDate.getMilliseconds())
+    return (
+      <TouchableOpacity
+        style={styles.questItem}
+        onPress={() => {
+          setQuestID(item.id);
+          setQuestsModalVisible(true);
+        }}
+      >
+        <Text style={styles.questName}>{item.name}</Text>
+        <View style={styles.questDetailsContainer}>
+          <Text style={styles.questDescription}>
+            {item.description ? item.description : "Quest Details"}
+          </Text>
+          <View style={styles.questDetailsContainer2}>
+            <Text style={styles.questDetails}>
+              Difficulty: {item.difficulty} | Due: {item.dueDate.toDateString()}
+            </Text>
+            <Text style={styles.questSkills}>
+              Primary Skill: {item.primarySkill}{" "}
+              {item.secondarySkill
+                ? "| Secondary Skill: " + item.secondarySkill
+                : ""}
+            </Text>
+            <Text style={styles.questRepeatability}>
+              Repeatable: {item.repeatable ? "Yes" : "No"}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   let chosenQuests: Quest[] = quests;
   if (mode === "active") {
@@ -77,8 +85,16 @@ const QuestsList: React.FC<QuestsListProps> = ({
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={styles.listContainer}
+        scrollEnabled={false}
       />
-      <QuestViewModal visible={questsModalVisible} id={questID} onClose={() => {setQuestsModalVisible(false); setQuestID("");}}></QuestViewModal>
+      <QuestViewModal
+        visible={questsModalVisible}
+        id={questID}
+        onClose={() => {
+          setQuestsModalVisible(false);
+          setQuestID("");
+        }}
+      ></QuestViewModal>
     </View>
   );
 };
@@ -103,12 +119,35 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 12,
   },
+  questDetailsContainer: {
+    // borderLeftWidth: 0.5,
+    // paddingLeft: 6,
+    // marginLeft: 2.5,
+    // borderColor: colors.borderLight,
+    // borderBottomWidth: 1,
+    // paddingBottom: 6,
+    // marginLeft: 2,
+    // marginTop: 5,
+  },
+  questDetailsContainer2: {
+    borderLeftWidth: 0.5,
+    paddingLeft: 6,
+    marginLeft: 2.5,
+    marginTop: 4,
+    borderColor: colors.borderLight,
+    // borderBottomWidth: 1,
+    // paddingLeft: 5,
+    // paddingBottom: 6,
+  },
   questItem: {
-    padding: 10,
-    marginBottom: 12,
+    // padding: 10,
+    // marginBottom: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 6,
+    marginBottom: 10,
     backgroundColor: "transparent",
-    borderBottomWidth: 1,
-    // borderLeftWidth: 1,
+    // borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderColor: colors.borderLight,
   },
   questName: {
@@ -119,14 +158,16 @@ const styles = StyleSheet.create({
   questDescription: {
     // fontFamily: "Alegreya_400Regular",
     fontFamily: "Alegreya_500Medium",
-    marginTop: 5,
+    // marginTop: 5,
+    marginTop: 4,
     fontSize: 16,
     color: colors.textLight,
   },
   questDetails: {
     // fontFamily: "Alegreya_400Regular",
     fontFamily: "Alegreya_500Medium",
-    marginTop: 5,
+    // marginTop: 5,
+    marginTop: 2,
     fontSize: 14,
     color: colors.textLight,
   },
