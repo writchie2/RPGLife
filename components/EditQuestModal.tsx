@@ -1,6 +1,6 @@
 
     import React, { useEffect, useState } from "react";
-    import {Text, StyleSheet, TextInput, Button, TouchableOpacity, SafeAreaView, ScrollView, Pressable, View, Modal, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform} from "react-native";
+    import {Text, StyleSheet, TextInput, Button, TouchableOpacity, SafeAreaView, ScrollView, Pressable, View, Modal, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, Alert} from "react-native";
     import { auth } from "../FirebaseConfig"
     import DatePickerComponent from "../components/DatePickerComponent";
 
@@ -28,7 +28,7 @@
     if (!auth.currentUser) {
             return;
         }
-    const { userData, archiveSkill, activateSkill } = useUserData();
+    const { userData, editQuestName, editQuestDescription, editQuestDueDate, editQuestDifficulty, editQuestSkills, editQuestRepeatable} = useUserData();
     const quest = userData?.quests?.find(quest => quest.id === id);
 
     const [questName, setQuestName] = useState("");
@@ -45,6 +45,101 @@
     
     const skills = userData?.skills || [];
 
+    const editQuest = () => {
+        // Check to make sure the quest actually exists
+        if (!quest) {
+            return;
+        }
+
+        // Set up error handling to make sure every necessary field is filled out
+        let error = false;
+        let errors = [];
+
+        if (questName.trim() === "") {
+            errors.push("Quest name must not be blank");
+            error = true;
+        }
+
+        if (primarySkill === "") {
+            errors.push("Quest needs to have a primary skill selected");
+            error = true;
+        }
+
+        // Set up edit handling in case a field is changed
+        // NOTE: THIS IS BEING PREEMPTIVELY SET UP BEFORE IMPLEMENTING NECESSARY FUNCTIONS IN USERCONTEXT
+        // IT'S ALSO TOTALLY JUST COPYING HENRY'S ACTUAL GOOD CODE FROM THE EDITSKILLMODAL
+        let edit = false;
+        let edits= [];
+
+        if (questName.trim() !== quest.name) {
+            
+            editQuestName(quest.id, questName.trim());
+            
+            edits.push("Quest name changed to \"" + questName.trim() + "\"\n");
+            edit = true;
+        }
+
+        if (questDescription.trim() !== quest.description) {
+            
+            editQuestDescription(quest.id, questDescription.trim());
+            
+            // This might be a bad alert on account of potentially long quest descriptions
+            edits.push("Quest description changed to \"" + questDescription.trim() + "\"\n");
+            edit = true;
+        }
+
+        if (dueDate !== quest.dueDate) {
+            
+            editQuestDueDate(quest.id, dueDate);
+            
+            edits.push("Quest due date changed to \"" + dueDate + "\"\n");
+            edit = true;
+        }
+
+        if (questName.trim() !== quest.name) {
+            
+            editQuestName(quest.id, questName.trim());
+            
+            edits.push("Quest name changed to \"" + questName.trim() + "\"\n");
+            edit = true;
+        }
+
+        if (difficulty.trim() !== quest.difficulty) {
+            
+            editQuestDifficulty(quest.id, difficulty.trim());
+            
+            edits.push("Quest difficulty changed to \"" + difficulty.trim() + "\"\n");
+            edit = true;
+        }
+
+        if (primarySkill !== quest.primarySkill || secondarySkill !== quest.secondarySkill) {
+            
+            editQuestSkills(quest.id, primarySkill, secondarySkill);
+            
+            edits.push("Quest primary skill changed to " + primarySkill + " and quest secondary skill changed to " + secondarySkill);
+            edit = true;
+        }
+
+        if (repeatable !== quest.repeatable) {
+            
+            editQuestRepeatable(quest.id, repeatable);
+            
+            edits.push("Quest repeatability changed to \"" + repeatable + "\"\n");
+            edit = true;
+        }
+
+        if (edit) {
+            const editMessage = edits.join("");
+            Alert.alert("Quest has been edited", editMessage);
+            onClose();
+        }
+        else {
+            Alert.alert("No edits were made");
+            return;
+        }
+    }
+
+
     useEffect(() => {
         if (quest) {
             setQuestName(quest.name);
@@ -57,7 +152,6 @@
             setCompletionReward(quest.reward);
         }
     }, [quest]);
-    
 
     return (
         <Modal
