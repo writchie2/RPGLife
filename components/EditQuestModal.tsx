@@ -28,7 +28,7 @@
     if (!auth.currentUser) {
             return;
         }
-    const { userData, editQuestName, editQuestDescription, editQuestDueDate, editQuestDifficulty, editQuestSkills, editQuestRepeatable} = useUserData();
+    const { userData, editQuestName, editQuestDescription, editQuestSkills, editQuestRepeatable} = useUserData();
     const quest = userData?.quests?.find(quest => quest.id === id);
 
     const [questName, setQuestName] = useState("");
@@ -65,11 +65,18 @@
             error = true;
         }
 
-        // TODO: Needs more error handling for dueDate
+        if (primarySkill === secondarySkill && primarySkill!== "") {
+            errors.push("Primary skill cannot be the same as secondary skill");
+            error = true;
+        }
+
+        const questExists = userData?.quests?.some(quest => quest.name.toLowerCase() === questName.trim().toLowerCase());
+        if (questExists && (questName.trim() !== quest.name)) {
+            errors.push("A quest with that name already exists");
+            error = true;
+        }
 
         // Set up edit handling in case a field is changed
-        // NOTE: THIS IS BEING PREEMPTIVELY SET UP BEFORE IMPLEMENTING NECESSARY FUNCTIONS IN USERCONTEXT
-        // IT'S ALSO TOTALLY JUST COPYING HENRY'S ACTUAL GOOD CODE FROM THE EDITSKILLMODAL
         let edit = false;
         let edits= [];
 
@@ -87,22 +94,6 @@
             
             // This might be a bad alert on account of potentially long quest descriptions
             edits.push("Quest description changed to \"" + questDescription.trim() + "\"\n");
-            edit = true;
-        }
-
-        if (dueDate !== quest.dueDate) {
-            
-            editQuestDueDate(quest.id, dueDate);
-            
-            edits.push("Quest due date changed to \"" + dueDate + "\"\n");
-            edit = true;
-        }
-
-        if (difficulty.trim() !== quest.difficulty) {
-            
-            editQuestDifficulty(quest.id, difficulty.trim());
-            
-            edits.push("Quest difficulty changed to \"" + difficulty.trim() + "\"\n");
             edit = true;
         }
 

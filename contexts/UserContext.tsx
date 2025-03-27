@@ -25,8 +25,6 @@ interface UserContextType {
   editSkillTraits: (id: string, newPrimary: string, newSecondary: string) => void;
   editQuestName: (id: string, newQuestName: string) => void;
   editQuestDescription: (id: string, newQuestDescription: string) => void;
-  editQuestDueDate: (id: string, newQuestDueDate: Date) => void;
-  editQuestDifficulty: (id: string, newQuestDifficulty: string) => void;
   editQuestSkills: (id: string, newQuestPrimarySkill: string, newQuestSecondarySkill: string) => void;
   editQuestRepeatable: (id: string, newQuestRepeatable: boolean) => void;
 }
@@ -590,28 +588,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   }
 
-  const editQuestDueDate = async(id: string, newQuestDueDate: Date) => {
-    try {
-      if (auth.currentUser) {
-        const questDoc = doc(db, "users", auth.currentUser.uid, "quests", id)
-        await updateDoc(questDoc, {dueDate: newQuestDueDate})
-      }
-    } catch (error) {
-        console.error("Error with editing Quest Due Date: ", error);
-    }
-  }
-
-  const editQuestDifficulty = async(id: string, newQuestDifficulty: string) => {
-    try {
-      if (auth.currentUser) {
-        const questDoc = doc(db, "users", auth.currentUser.uid, "quests", id)
-        await updateDoc(questDoc, {difficulty: newQuestDifficulty})
-      }
-    } catch (error) {
-        console.error("Error with editing Quest Difficulty: ", error);
-    }
-  }
-
   const editQuestRepeatable = async(id: string, newQuestRepeatable: boolean) => {
     try {
       if (auth.currentUser) {
@@ -623,8 +599,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   }
 
-  // NOTE: Not sure if updating skills requires anything extra in terms of EXP or checking for the skill itself
-  // Please double check!
   const editQuestSkills = async(id: string, newQuestPrimarySkill: string, newQuestSecondarySkill: string) => {
     try {
       if (auth.currentUser) {
@@ -797,7 +771,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
      archiveSkill, activateSkill, deleteQuest,
       completeQuest, resetAccount, editSkillName,
        editSkillDescription, editSkillTraits, deleteSkill, editQuestName, editQuestDescription,
-        editQuestDueDate, editQuestDifficulty, editQuestRepeatable, editQuestSkills}}>
+        editQuestRepeatable, editQuestSkills}}>
       {children}
     </UserContext.Provider>
   );
