@@ -23,6 +23,12 @@ interface UserContextType {
   editSkillName: (id: string, newName: string) => void;
   editSkillDescription: (id: string, newDescription: string) => void;
   editSkillTraits: (id: string, newPrimary: string, newSecondary: string) => void;
+  editQuestName: (id: string, newQuestName: string) => void;
+  editQuestDescription: (id: string, newQuestDescription: string) => void;
+  editQuestDueDate: (id: string, newQuestDueDate: Date) => void;
+  editQuestDifficulty: (id: string, newQuestDifficulty: string) => void;
+  editQuestSkills: (id: string, newQuestPrimarySkill: string, newQuestSecondarySkill: string) => void;
+  editQuestRepeatable: (id: string, newQuestRepeatable: boolean) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -550,6 +556,74 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       console.error("Error completing quest:", error);
     }
   };
+
+  const editQuestName = async(id: string, newQuestName: string) => {
+    try {
+      if (auth.currentUser) {
+        const questDoc = doc(db, "users", auth.currentUser.uid, "quests", id)
+        await updateDoc(questDoc, {name: newQuestName})
+      }
+    } catch (error) {
+        console.error("Error with editing Quest Name: ", error);
+    }
+  }
+
+  const editQuestDescription = async(id: string, newQuestDescription: string) => {
+    try {
+      if (auth.currentUser) {
+        const questDoc = doc(db, "users", auth.currentUser.uid, "quests", id)
+        await updateDoc(questDoc, {description: newQuestDescription})
+      }
+    } catch (error) {
+        console.error("Error with editing Quest Description: ", error);
+    }
+  }
+
+  const editQuestDueDate = async(id: string, newQuestDueDate: Date) => {
+    try {
+      if (auth.currentUser) {
+        const questDoc = doc(db, "users", auth.currentUser.uid, "quests", id)
+        await updateDoc(questDoc, {dueDate: newQuestDueDate})
+      }
+    } catch (error) {
+        console.error("Error with editing Quest Due Date: ", error);
+    }
+  }
+
+  const editQuestDifficulty = async(id: string, newQuestDifficulty: string) => {
+    try {
+      if (auth.currentUser) {
+        const questDoc = doc(db, "users", auth.currentUser.uid, "quests", id)
+        await updateDoc(questDoc, {difficulty: newQuestDifficulty})
+      }
+    } catch (error) {
+        console.error("Error with editing Quest Difficulty: ", error);
+    }
+  }
+
+  const editQuestRepeatable = async(id: string, newQuestRepeatable: boolean) => {
+    try {
+      if (auth.currentUser) {
+        const questDoc = doc(db, "users", auth.currentUser.uid, "quests", id)
+        await updateDoc(questDoc, {repeatable: newQuestRepeatable})
+      }
+    } catch (error) {
+        console.error("Error with editing Quest Repeatability: ", error);
+    }
+  }
+
+  // NOTE: Not sure if updating skills requires anything extra in terms of EXP or checking for the skill itself
+  // Please double check!
+  const editQuestSkills = async(id: string, newQuestPrimarySkill: string, newQuestSecondarySkill: string) => {
+    try {
+      if (auth.currentUser) {
+        const questDoc = doc(db, "users", auth.currentUser.uid, "quests", id)
+        await updateDoc(questDoc, {primarySkill: newQuestPrimarySkill, secondarySkill: newQuestSecondarySkill})
+      }
+    } catch (error) {
+        console.error("Error with editing Quest Skills: ", error);
+    }
+  }
   
   
 
@@ -711,7 +785,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     <UserContext.Provider value={{userData, setAvatar, addSkill, addQuest,
      archiveSkill, activateSkill, deleteQuest,
       completeQuest, resetAccount, editSkillName,
-       editSkillDescription, editSkillTraits, deleteSkill, }}>
+       editSkillDescription, editSkillTraits, deleteSkill, editQuestName, editQuestDescription,
+        editQuestDueDate, editQuestDifficulty, editQuestRepeatable, editQuestSkills}}>
       {children}
     </UserContext.Provider>
   );

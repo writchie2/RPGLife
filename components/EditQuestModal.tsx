@@ -65,6 +65,8 @@
             error = true;
         }
 
+        // TODO: Needs more error handling for dueDate
+
         // Set up edit handling in case a field is changed
         // NOTE: THIS IS BEING PREEMPTIVELY SET UP BEFORE IMPLEMENTING NECESSARY FUNCTIONS IN USERCONTEXT
         // IT'S ALSO TOTALLY JUST COPYING HENRY'S ACTUAL GOOD CODE FROM THE EDITSKILLMODAL
@@ -93,14 +95,6 @@
             editQuestDueDate(quest.id, dueDate);
             
             edits.push("Quest due date changed to \"" + dueDate + "\"\n");
-            edit = true;
-        }
-
-        if (questName.trim() !== quest.name) {
-            
-            editQuestName(quest.id, questName.trim());
-            
-            edits.push("Quest name changed to \"" + questName.trim() + "\"\n");
             edit = true;
         }
 
@@ -388,7 +382,8 @@
                 </TouchableOpacity>
                 
                 <TouchableOpacity style={styles.createButton} onPress={() => {
-                        alert("You chose edit quest");
+                        editQuest()
+                        //alert("You chose edit quest");
                     }}>
                     <Text style={styles.createCancelText}>Edit</Text>
                 </TouchableOpacity>
