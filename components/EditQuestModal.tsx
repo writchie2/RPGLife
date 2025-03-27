@@ -57,6 +57,18 @@
             setCompletionReward(quest.reward);
         }
     }, [quest]);
+
+    useEffect(() => {
+        if (primarySkill == null){
+            setPrimarySkill("");
+        }
+    }, [primarySkill]);
+
+    useEffect(() => {
+        if (secondarySkill == null){
+            setSecondarySkill("");
+        }
+    }, [secondarySkill]);
     
 
     return (
@@ -172,7 +184,7 @@
                         containerStyle={{ backgroundColor: colors.bgPrimary }}
                         itemTextStyle={{ fontFamily: "Metamorphous_400Regular", }}
                         iconStyle={styles.iconStyle}
-                        data={skills}
+                        data={[{ label: "None", value: null }, ...skills]}
                         maxHeight={300}
                         labelField="name"
                         valueField="name"
@@ -206,7 +218,7 @@
                         containerStyle={{ backgroundColor: colors.bgPrimary }}
                         itemTextStyle={{ fontFamily: "Metamorphous_400Regular", }}
                         iconStyle={styles.iconStyle}
-                        data={skills}
+                        data={[{ label: "None", value: null }, ...skills]}
                         maxHeight={300}
                         labelField="name"
                         valueField="name"

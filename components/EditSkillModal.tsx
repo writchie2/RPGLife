@@ -33,17 +33,17 @@ const EditSkillModal: React.FC<EditSkillModalProps> = ({
     id,
 }) => {
     const skill = useUserData().userData?.skills?.find(skill => skill.id === id)
-    const [skillName, setSkillName] = useState(skill?.name);
-    const [description, setDescription] = useState(skill?.description);
-    const [primaryTrait, setPrimaryTrait] = useState(skill?.primaryTrait);
-    const [secondaryTrait, setSecondaryTrait] = useState(skill?.secondaryTrait);
+    const [skillName, setSkillName] = useState(skill?.name || "");
+    const [description, setDescription] = useState(skill?.description || "");
+    const [primaryTrait, setPrimaryTrait] = useState(skill?.primaryTrait || "");
+    const [secondaryTrait, setSecondaryTrait] = useState(skill?.secondaryTrait || "");
     
     //const [experience, setExperience] = useState(skill?.exp);
     // Probably don't want to have buttons to change exp level. Maybe a reset exp level?
 
     const [isFocusPrimary, setIsFocusPrimary] = useState(false);
     const [isFocusSecondary, setIsFocusSecondary] = useState(false);
-    const userData = useUserData();
+    const {userData, editSkillName, editSkillDescription, editSkillTraits} = useUserData();
     
     const editSkill = () => {
         if(!skill){
@@ -52,12 +52,12 @@ const EditSkillModal: React.FC<EditSkillModalProps> = ({
         // Check for that all fields are filled out properly. 
         let error = false;
         let errors = [];
-        if (skillName?.trim() === ""){
+        if (skillName.trim() === ""){
             errors.push("Skill name cannot be blank");
             error = true;
         }
-        const skillExists = userData.userData?.skills?.some(skill => skill.name.toLowerCase() === skillName?.trim().toLowerCase());
-        if (skillExists && (skillName?.trim() !== skill.name)){
+        const skillExists = userData?.skills?.some(skill => skill.name.toLowerCase() === skillName.trim().toLowerCase());
+        if (skillExists && (skillName.trim() !== skill.name)){
             errors.push("A skill with that name already exists");
             error = true;
         }
@@ -65,7 +65,7 @@ const EditSkillModal: React.FC<EditSkillModalProps> = ({
             errors.push("Must choose a primary trait");
             error = true;
         }
-        if (primaryTrait === secondaryTrait){
+        if (primaryTrait === secondaryTrait && primaryTrait!== ""){
             errors.push("Primary trait cannot be the same as secondary trait");
             error = true;
         }
@@ -77,23 +77,28 @@ const EditSkillModal: React.FC<EditSkillModalProps> = ({
 
         let edit = false;
         let edits = [];
-        if(skillName?.trim() !== skill.name){
+        if(skillName.trim() !== skill.name){
             
-            // UserContext function to edit the name
+            editSkillName(skill.id, skillName.trim());
             
-            edits.push("Name changed to \"" + skillName?.trim() + "\"\n");
+            edits.push("Name changed to \"" + skillName.trim() + "\"\n");
             edit = true;
         }
-        if(description?.trim() !== skill.description){
+        if(description.trim() !== skill.description){
             
-            // UserContext function to edit the description
+            editSkillDescription(skill.id, description.trim());
             
-            edits.push("Description changed to \"" + description?.trim() + "\"\n");
+            if (description.trim() === ""){
+                edits.push("Description was removed\n");
+            }
+            else{
+                edits.push("Description changed to \"" + description.trim() + "\"\n");
+            }
             edit = true;
         }
         if (primaryTrait !== skill.primaryTrait || secondaryTrait !== skill.secondaryTrait){
             
-            // UserContext function to edit the traits
+            editSkillTraits(skill.id, primaryTrait, secondaryTrait);
 
             edits.push("Traits changed to " + primaryTrait);
             if(secondaryTrait !== ""){
@@ -121,6 +126,19 @@ const EditSkillModal: React.FC<EditSkillModalProps> = ({
                 setSecondaryTrait(skill.secondaryTrait || "");
             }
     }, [skill]);
+
+    useEffect(() => {
+        if (primaryTrait == null){
+            setPrimaryTrait("");
+        }
+    }, [primaryTrait]);
+
+    useEffect(() => {
+        if (secondaryTrait == null){
+            setSecondaryTrait("");
+        }
+    }, [secondaryTrait]);
+
     return (
         <Modal
           animationType="slide"
@@ -191,7 +209,7 @@ const EditSkillModal: React.FC<EditSkillModalProps> = ({
                                             selectedTextStyle={styles.selectedTextStyle}
                                             inputSearchStyle={styles.inputSearchStyle}
                                             iconStyle={styles.iconStyle}
-                                            data={traits}
+                                            data={[{ label: "None", value: null }, ...traits]}
                                             maxHeight={300}
                                             labelField="label"
                                             valueField="value"
@@ -226,7 +244,7 @@ const EditSkillModal: React.FC<EditSkillModalProps> = ({
                                             itemTextStyle={{ fontFamily: "Metamorphous_400Regular", }}
                                             inputSearchStyle={styles.inputSearchStyle}
                                             iconStyle={styles.iconStyle}
-                                            data={traits}
+                                            data={[{ label: "None", value: null }, ...traits]}
                                             maxHeight={300}
                                             labelField="label"
                                             valueField="value"

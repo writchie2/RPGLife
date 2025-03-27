@@ -75,7 +75,7 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
         errors.push("Must choose a primary skill");
         error = true;
     }
-    if (primarySkill === secondarySkill){
+    if (primarySkill === secondarySkill && primarySkill!== ""){
       errors.push("Primary skill cannot be the same as secondary skill");
       error = true;
     }
@@ -100,6 +100,18 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
     setCompletionReward("")
     onClose();
   }
+
+  useEffect(() => {
+      if (primarySkill == null){
+          setPrimarySkill("");
+      }
+  }, [primarySkill]);
+
+  useEffect(() => {
+      if (secondarySkill == null){
+          setSecondarySkill("");
+      }
+  }, [secondarySkill]);
 
   return (
     <Modal
@@ -215,7 +227,7 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
                       containerStyle={{ backgroundColor: colors.bgPrimary }}
                       itemTextStyle={{ fontFamily: "Metamorphous_400Regular", }}
                       iconStyle={styles.iconStyle}
-                      data={skills}
+                      data={[{ label: "None", value: null }, ...skills]}
                       maxHeight={300}
                       labelField="name"
                       valueField="name"
@@ -249,7 +261,7 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
                       containerStyle={{ backgroundColor: colors.bgPrimary }}
                       itemTextStyle={{ fontFamily: "Metamorphous_400Regular", }}
                       iconStyle={styles.iconStyle}
-                      data={skills}
+                      data={[{ label: "None", value: null }, ...skills]}
                       maxHeight={300}
                       labelField="name"
                       valueField="name"
