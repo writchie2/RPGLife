@@ -205,6 +205,7 @@
                             />
                     
                     {/* Due Date */} 
+                    {/* Maybe delete this field since we don't want people to be able to edit dueDate? */}
                     <View style={styles.rowGroup}>
                         <View style={styles.rowLeft}>
                         <Text style={styles.rowLabel}>Due Date:</Text>
@@ -223,6 +224,7 @@
                     </View>
 
                     {/* Difficulty Selector */}  
+                    {/* Also maybe delete this field since we don't want people to be able to edit difficulty either? */}
                     <View style={styles.difficultyButtonContainer}>
                     <Text style={styles.difficultyLabel}>Difficulty:</Text>
                     {/* Buttons likely best method to establish difficulty */}
