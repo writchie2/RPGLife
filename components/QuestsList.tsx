@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,8 @@ import { Timestamp } from "firebase/firestore";
 
 import { Quest } from "../utils/types";
 import colors from "@/constants/colors";
+import QuestViewModal from "./QuestViewModal";
+
 
 interface QuestsListProps {
   quests: Quest[];
@@ -24,12 +26,18 @@ const QuestsList: React.FC<QuestsListProps> = ({
   //Item that will be rendered for each quest
   //TO DO: styling
   //TO DO: change press action to route to quest page
+
+  const [questsModalVisible, setQuestsModalVisible] = useState(false);
+  const [questID, setQuestID] = useState("");
   const renderItem = ({ item }: { item: Quest }) => {
    // const time = new Timestamp(item.dueDate.getSeconds(), item.dueDate.getMilliseconds())
    return (
     <TouchableOpacity
       style={styles.questItem}
-      onPress={() => alert("You selected quest with id:" + JSON.stringify(item.dueDate))}
+      onPress={() => {
+        setQuestID(item.id)
+        setQuestsModalVisible(true);
+      }}
     >
       <Text style={styles.questName}>{item.name}</Text>
       <Text style={styles.questDescription}>{item.description}</Text>
@@ -70,6 +78,7 @@ const QuestsList: React.FC<QuestsListProps> = ({
         renderItem={renderItem}
         contentContainerStyle={styles.listContainer}
       />
+      <QuestViewModal visible={questsModalVisible} id={questID} onClose={() => {setQuestsModalVisible(false); setQuestID("");}}></QuestViewModal>
     </View>
   );
 };

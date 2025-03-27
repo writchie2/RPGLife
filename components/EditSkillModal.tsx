@@ -1,16 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TouchableWithoutFeedback, Image, TextInput, Alert, Keyboard, ScrollView } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import colors from "@/constants/colors";
-import { router } from "expo-router";
-import { auth } from '../FirebaseConfig';
 import { useState } from "react";
 import { useUserData } from '@/contexts/UserContext';
 
-interface CreateSkillModalProps {
+interface EditSkillModalProps {
     visible: boolean
     onModalHide?: () => void
     onClose: () => void
+    id: string;
 }
 
 const traits = [
@@ -22,34 +21,43 @@ const traits = [
     { label: 'Charisma', value: 'Charisma' },
   ];
 
-const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
+/*
+TODO:
+Implement edit skill functionality
+reset exp button?
+styling?
+*/
+const EditSkillModal: React.FC<EditSkillModalProps> = ({
     visible,
     onClose,
-
+    id,
 }) => {
-    const [skillName, setSkillName] = useState("");
-    const [description, setDescription] = useState("");
-    const [primaryTrait, setPrimaryTrait] = useState("");
-    const [secondaryTrait, setSecondaryTrait] = useState("");
-    const [experience, setExperience] = useState("");
+    const skill = useUserData().userData?.skills?.find(skill => skill.id === id)
+    const [skillName, setSkillName] = useState(skill?.name);
+    const [description, setDescription] = useState(skill?.description);
+    const [primaryTrait, setPrimaryTrait] = useState(skill?.primaryTrait);
+    const [secondaryTrait, setSecondaryTrait] = useState(skill?.secondaryTrait);
+    
+    //const [experience, setExperience] = useState(skill?.exp);
+    // Probably don't want to have buttons to change exp level. Maybe a reset exp level?
 
     const [isFocusPrimary, setIsFocusPrimary] = useState(false);
     const [isFocusSecondary, setIsFocusSecondary] = useState(false);
     const userData = useUserData();
-
-    // Function validates input and will call the "addSkill" function that exists in UserContext.tsx
-    // Errors will appear if name is blank, name is not unique, a primary trait isn't selected,
-    // or if starting exp isn't selected
-    const createSkill = () => {
-
+    
+    const editSkill = () => {
+        if(!skill){
+            return;
+        }
+        // Check for that all fields are filled out properly. 
         let error = false;
         let errors = [];
-        if (skillName.trim() === ""){
+        if (skillName?.trim() === ""){
             errors.push("Skill name cannot be blank");
             error = true;
         }
-        const skillExists = userData.userData?.skills?.some(skill => skill.name.toLowerCase() === skillName.trim().toLowerCase());
-        if (skillExists){
+        const skillExists = userData.userData?.skills?.some(skill => skill.name.toLowerCase() === skillName?.trim().toLowerCase());
+        if (skillExists && (skillName?.trim() !== skill.name)){
             errors.push("A skill with that name already exists");
             error = true;
         }
@@ -61,26 +69,58 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
             errors.push("Primary trait cannot be the same as secondary trait");
             error = true;
         }
-        if (experience === ""){
-            errors.push("Must choose your starting experience");
-            error = true;
-        }
         if (error){
             const errorMessage = errors.join(",\n") + ".";
             Alert.alert("Error!", errorMessage);
             return;
         }
-        
-        userData.addSkill(skillName.trim(), description.trim(), primaryTrait, secondaryTrait, experience);
-        setSkillName("");
-        setDescription("");
-        setPrimaryTrait("");
-        setSecondaryTrait("");
-        setExperience("");
-        onClose();
+
+        let edit = false;
+        let edits = [];
+        if(skillName?.trim() !== skill.name){
+            
+            // UserContext function to edit the name
+            
+            edits.push("Name changed to \"" + skillName?.trim() + "\"\n");
+            edit = true;
+        }
+        if(description?.trim() !== skill.description){
+            
+            // UserContext function to edit the description
+            
+            edits.push("Description changed to \"" + description?.trim() + "\"\n");
+            edit = true;
+        }
+        if (primaryTrait !== skill.primaryTrait || secondaryTrait !== skill.secondaryTrait){
+            
+            // UserContext function to edit the traits
+
+            edits.push("Traits changed to " + primaryTrait);
+            if(secondaryTrait !== ""){
+                edits.push(" and " + secondaryTrait);
+            }
+            edit = true;
+        }
+
+        if (edit){
+            const editMessage = edits.join("");
+            Alert.alert("Sucess!", editMessage);
+            onClose();
+        }
+        else{
+            Alert.alert("Error!", "No edits were made.");
+            return;
+        }
     }
 
-
+    useEffect(() => {
+            if (skill) {
+                setSkillName(skill.name);
+                setDescription(skill.description || "");
+                setPrimaryTrait(skill.primaryTrait);
+                setSecondaryTrait(skill.secondaryTrait || "");
+            }
+    }, [skill]);
     return (
         <Modal
           animationType="slide"
@@ -103,7 +143,7 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
                             
                             {/* Title */}
                             <View style={styles.titleContainer}>
-                                <Text style={styles.title}>Create Skill</Text>
+                                <Text style={styles.title}>Edit Skill</Text>
                             </View>
 
                             {/* Input */}
@@ -203,6 +243,8 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
                                 </View>
 
                                 {/* Expereicne Buttons */}
+                                {/*
+                                Commenting out skill buttons for now
                                 <View style={styles.experienceButtonContainer}>
                                     <Text style={styles.expereinceLabel}>Experience:</Text>
                                     <TouchableOpacity 
@@ -232,6 +274,7 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
                                         <Text>Master</Text>
                                     </TouchableOpacity>
                                 </View>
+                                */}
                             </View>
 
                         </View>
@@ -244,11 +287,6 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
                             <TouchableOpacity 
                                 style={ styles.cancelButton} 
                                 onPress={() =>{
-                                    setSkillName("");
-                                    setDescription("");
-                                    setPrimaryTrait("");
-                                    setSecondaryTrait("");
-                                    setExperience("");
                                     onClose();
                                 }}
                             >
@@ -258,10 +296,11 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
                             <TouchableOpacity 
                                 style={ styles.createButton} 
                                 onPress={() => {
-                                    createSkill();
+                                    editSkill()
+                                    //alert("You chose edit skill");
                                 }}
                             >
-                                <Text style={styles.createCancelText}>Create</Text>
+                                <Text style={styles.createCancelText}>Edit</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -488,4 +527,4 @@ const styles = StyleSheet.create({
     
   });
   
-export default CreateSkillModal;
+export default EditSkillModal;

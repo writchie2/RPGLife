@@ -207,7 +207,6 @@ export default function HomePage() {
             </View>
           </View>
 
-
         {/* Add Button */}
         <Pressable
           style={styles.addButton}

@@ -59,7 +59,7 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
                 <TouchableOpacity
                     style={styles.navButton}
                     onPress={() => {
-                    //router.push("/(main)/character");
+                    router.push("/(main)/character_main");
                     setTimeout(() => {
                         onClose();
                     }, 100);

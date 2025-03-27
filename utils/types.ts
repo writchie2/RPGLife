@@ -7,7 +7,7 @@ export interface Quest {
     name: string;
     dueDate: Date; 
     description?: string;
-    difficulty: 'Easy' | 'Normal' | 'Hard'; 
+    difficulty: string; 
     primarySkill: string;
     secondarySkill?: string; // Optional secondary skill
     repeatable: boolean;

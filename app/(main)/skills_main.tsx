@@ -1,7 +1,6 @@
 /*
 simple skeleton of the skills page
 that shows active skills and archived skills
-TODO later date: design and make the page look pretty
 */
 
 import React, { useState, useEffect } from "react";
@@ -54,34 +53,45 @@ export default function SkillsPage() {
     
         {/* User Header */}
         <UserHeader></UserHeader>
+
+      
         <View>
-            {/*skills style for now*/}
+            {/*section for skill lists*/}
+          <View style={styles.dropdownContainer}>
             <TouchableOpacity 
                 style={styles.section} 
                 onPress={() => setSkillsListVisible(!skillsListVisible)}
             > 
-                <Text style={styles.sectionTitle}>
+                <View style={styles.sectionTitleContainer}>
+                  <Text style={styles.sectionTitle}>
                     {skillsListVisible ? 'Active Skills ▲' : 'Active Skills ▼'}
-                </Text>
+                  </Text>
+               </View>
             </TouchableOpacity>
             {skillsListVisible && ( 
                 
                 <SkillsList skills={userData.userData?.skills || []} mode="active" />
                 )} 
 
-            
+            </View>
+
+            {/*Completed section*/}
+          <View style={styles.dropdownContainer}>
             <TouchableOpacity 
                 style={styles.section} 
                 onPress={() => setPastSkillsListVisible(!pastSkillsListVisible)}
             >
-            <Text style={styles.sectionTitle}>
-                {pastSkillsListVisible ? 'Completed ▲' : 'Completed ▼'}
-            </Text>
+              <View style={styles.sectionTitleContailer}>
+                <Text style={styles.sectionTitle}>
+                    {pastSkillsListVisible ? 'Completed ▲' : 'Completed ▼'}
+                </Text>
+              </View>
             </TouchableOpacity>
             {pastSkillsListVisible && (
                 <SkillsList skills={userData.userData?.skills || []} mode="inactive" />
                 )}
         </View>
+      </View>
 
         <CreateSkillModal visible={skillsModalVisible} onClose={() => setSkillsModalVisible(false)}></CreateSkillModal>
         
@@ -93,7 +103,7 @@ export default function SkillsPage() {
     );
 }
 
-
+//styling, similar to home page:
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -137,6 +147,10 @@ const styles = StyleSheet.create({
     fontFamily: "Metamorphous_400Regular",
     fontSize: 24,
     color: colors.text,
+  },
+  dropdownContainer:{
+    position: "relative",
+    marginTop: 20,
   },
   section: {
     zIndex: 1,
