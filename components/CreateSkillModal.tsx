@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TouchableWithoutFeedback, Image, TextInput, Alert, Keyboard, ScrollView } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import colors from "@/constants/colors";
@@ -14,12 +14,14 @@ interface CreateSkillModalProps {
 }
 
 const traits = [
+    
     { label: 'Strength', value: 'Strength' },
     { label: 'Vitality', value: 'Vitality' },
     { label: 'Agility', value: 'Agility' },
     { label: 'Stamina', value: 'Stamina' },
     { label: 'Intelligence', value: 'Intelligence' },
     { label: 'Charisma', value: 'Charisma' },
+    //{ label: "None", value: "" },
   ];
 
 const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
@@ -57,7 +59,7 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
             errors.push("Must choose a primary trait");
             error = true;
         }
-        if (primaryTrait === secondaryTrait){
+        if (primaryTrait === secondaryTrait && primaryTrait!== ""){
             errors.push("Primary trait cannot be the same as secondary trait");
             error = true;
         }
@@ -79,6 +81,19 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
         setExperience("");
         onClose();
     }
+
+    useEffect(() => {
+        if (primaryTrait == null){
+            setPrimaryTrait("");
+        }
+    }, [primaryTrait]);
+    
+    useEffect(() => {
+        if (secondaryTrait == null){
+            setSecondaryTrait("");
+        }
+    }, [secondaryTrait]);
+
 
 
     return (
@@ -151,7 +166,7 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
                                             selectedTextStyle={styles.selectedTextStyle}
                                             inputSearchStyle={styles.inputSearchStyle}
                                             iconStyle={styles.iconStyle}
-                                            data={traits}
+                                            data={[{ label: "None", value: null }, ...traits]}
                                             maxHeight={300}
                                             labelField="label"
                                             valueField="value"
@@ -186,7 +201,7 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
                                             itemTextStyle={{ fontFamily: "Metamorphous_400Regular", }}
                                             inputSearchStyle={styles.inputSearchStyle}
                                             iconStyle={styles.iconStyle}
-                                            data={traits}
+                                            data={[{ label: "None", value: null }, ...traits]}
                                             maxHeight={300}
                                             labelField="label"
                                             valueField="value"
