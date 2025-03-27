@@ -4,7 +4,7 @@ import { fetchUserData } from '@/utils/firestoreUtils';
 import { auth } from "../FirebaseConfig"
 import { saveUserData, getUserData } from '../utils/storageUtils';
 import { UserData, Skill, Quest  } from '@/utils/types';
-import { doc, updateDoc, onSnapshot, collection, query, addDoc, deleteDoc, getDocs, where } from 'firebase/firestore';
+import { doc, updateDoc, onSnapshot, collection, query, addDoc, deleteDoc, getDocs, where, getDoc } from 'firebase/firestore';
 import { db } from '../FirebaseConfig';
 
 
@@ -12,13 +12,17 @@ import { db } from '../FirebaseConfig';
 interface UserContextType {
   userData: UserData | null;
   setAvatar: (index: number) => void;
-  addSkill: (skillName: String, description: String, primaryTrait: String, secondaryTrait: String, experience: String) => void;
-  addQuest: (questName: String, questDescription: String, dueDate: Date, difficulty: String, primarySkill: String, secondarySkill: String, repeatable: Boolean, completionReward: string) => void;
+  addSkill: (skillName: string, description: string, primaryTrait: string, secondaryTrait: string, experience: string) => void;
+  addQuest: (questName: string, questDescription: string, dueDate: Date, difficulty: string, primarySkill: string, secondarySkill: string, repeatable: Boolean, completionReward: string) => void;
   archiveSkill: (id: string) => void;
   activateSkill: (id: string) => void;
   deleteQuest: (id: string) => void;
+  deleteSkill: (id: string) => void;
   completeQuest: (id: string) => void;
   resetAccount: () => void;
+  editSkillName: (id: string, newName: string) => void;
+  editSkillDescription: (id: string, newDescription: string) => void;
+  editSkillTraits: (id: string, newPrimary: string, newSecondary: string) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -31,21 +35,12 @@ interface UserProviderProps {
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [userData, setUserData] = useState<UserData | null>(null);
   
-  // Function updates the user's document to change the index of their avatar icon
-  // Input: index (for avatar array in UserHeader)
-  const setAvatar = async (index: number) => {
-    if (!userData) return;
-    try {
-      if (auth.currentUser) {
-        const userDoc = doc(db, "users", auth.currentUser.uid)
-        await updateDoc(userDoc, {
-          avatarIndex: index, 
-        })
-      }
-    } catch (error) {
-      console.error("Error altering avatar:", error);
-    }
-  };
+
+
+
+/* 
+        EXP FUNCTIONS
+*/
 
   // Function alters an amount to the user's strengthEXP.
   // Input: alterAmount (number added to strengthEXP)
@@ -54,8 +49,16 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     try {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
+        const userSnap = await getDoc(userDoc);
+        if (!userSnap.exists()) {
+            console.error("Error: User document not found.");
+            return;
+        }
+
+        const currentStrengthEXP = userSnap.data().strengthEXP;
+        
         await updateDoc(userDoc, {
-          strengthEXP: (userData.strengthEXP + alterAmount)
+          strengthEXP: (currentStrengthEXP + alterAmount)
         })
       }
     } catch (error) {
@@ -70,8 +73,16 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     try {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
+        const userSnap = await getDoc(userDoc);
+        if (!userSnap.exists()) {
+            console.error("Error: User document not found.");
+            return;
+        }
+
+        const currentVitalityEXP = userSnap.data().vitalityEXP;
+        
         await updateDoc(userDoc, {
-          vitalityEXP: (userData.vitalityEXP + alterAmount)
+          vitalityEXP: (currentVitalityEXP + alterAmount)
         })
       }
     } catch (error) {
@@ -86,8 +97,16 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     try {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
+        const userSnap = await getDoc(userDoc);
+        if (!userSnap.exists()) {
+            console.error("Error: User document not found.");
+            return;
+        }
+
+        const currentAgilityEXP = userSnap.data().agilityEXP;
+        
         await updateDoc(userDoc, {
-          agilityEXP: (userData.agilityEXP + alterAmount)
+          agilityEXP: (currentAgilityEXP + alterAmount)
         })
       }
     } catch (error) {
@@ -102,8 +121,16 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     try {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
+        const userSnap = await getDoc(userDoc);
+        if (!userSnap.exists()) {
+            console.error("Error: User document not found.");
+            return;
+        }
+
+        const currentStaminaEXP = userSnap.data().staminaEXP;
+        
         await updateDoc(userDoc, {
-          staminaEXP: (userData.staminaEXP + alterAmount)
+          staminaEXP: (currentStaminaEXP + alterAmount)
         })
       }
     } catch (error) {
@@ -118,8 +145,16 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     try {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
+        const userSnap = await getDoc(userDoc);
+        if (!userSnap.exists()) {
+            console.error("Error: User document not found.");
+            return;
+        }
+
+        const currentIntelligenceEXP = userSnap.data().intelligenceEXP;
+        
         await updateDoc(userDoc, {
-          intelligenceEXP: (userData.intelligenceEXP + alterAmount)
+          intelligenceEXP: (currentIntelligenceEXP + alterAmount)
         })
       }
     } catch (error) {
@@ -134,8 +169,16 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     try {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
+        const userSnap = await getDoc(userDoc);
+        if (!userSnap.exists()) {
+            console.error("Error: User document not found.");
+            return;
+        }
+
+        const currentCharismaEXP = userSnap.data().charismaEXP;
+        
         await updateDoc(userDoc, {
-          charismaEXP: (userData.charismaEXP + alterAmount),
+          charismaEXP: (currentCharismaEXP + alterAmount)
         })
       }
     } catch (error) {
@@ -150,8 +193,16 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     try {
       if (auth.currentUser) {
         const userDoc = doc(db, "users", auth.currentUser.uid)
+        const userSnap = await getDoc(userDoc);
+        if (!userSnap.exists()) {
+            console.error("Error: User document not found.");
+            return;
+        }
+
+        const currentEXP = userSnap.data().exp;
+        
         await updateDoc(userDoc, {
-          exp: (userData.exp + alterAmount) 
+          exp: (currentEXP + alterAmount)
         })
       }
     } catch (error) {
@@ -262,10 +313,17 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       }
   }
 
+
+
+  /*
+        SKILL FUNCTIONS
+  */
+
+
   // Function that creates a new document in the "skills" collection of Firebase representing a new skill
   // Validation of inputs is handled in the function that calls it in the CreateSkillModal 
   // skillName, primaryTrait, and experiecne are required. The others are optional and may be blank strings 
-  const addSkill = async (skillName: String, description: String, primaryTrait: String, secondaryTrait: String, experience: String) => {
+  const addSkill = async (skillName: string, description: string, primaryTrait: string, secondaryTrait: string, experience: string) => {
     if (!auth.currentUser) {
       return;
     }
@@ -273,8 +331,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     // Right now "novice" = 0 exp, "adept" = 1000 exp, "master" = 2200 exp
     // This can all change when we re-balance how exp works
     let calcEXP = 0; 
-    if (experience === "adept"){ calcEXP = 1000;}
-    if (experience === "master"){ calcEXP = 2200;}
+    if (experience === "adept"){ calcEXP = 6105;}
+    if (experience === "master"){ calcEXP = 15932;}
   
     try {
       const skillsCollectionRef = collection(db, "users", auth.currentUser.uid, "skills");
@@ -296,6 +354,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       
       // Removed adding overall exp when skill is created. 
       //alterOverallEXP(calcEXP);
+
+      alterTraitEXP(calcEXP, primaryTrait, secondaryTrait)
     } catch (error) {
       console.error("Error altering skill:", error);
     }
@@ -334,11 +394,87 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       console.error("Error activating skill:", error);
     }
   };
+
+  const deleteSkill = async(id: string) => {
+    if (!auth.currentUser) return;
+    try {
+        const skill = userData?.skills?.find(skill => skill.id === id);
+        if(!skill){
+          return;
+        }
+
+        await alterTraitEXP((skill.exp * -1), skill.primaryTrait, skill.secondaryTrait);
+
+        const docRef = doc(db, "users", auth.currentUser.uid, "skills", id)
+        await deleteDoc(docRef);
+    } catch (error) {
+      console.error("Error deleting quest:", error);
+    }
+  };
+
+  const editSkillName = async (id: string, newName: string) => {
+    try {
+      if (auth.currentUser) {
+        const skillDoc = doc(db, "users", auth.currentUser.uid, "skills", id)
+        await updateDoc(skillDoc, {
+          name: newName
+      })
+      }
+    } catch (error) {
+      console.error("Error editing name:", error);
+    }
+  }
+
+  const editSkillDescription = async (id: string, newDescription: string) => {
+    try {
+      if (auth.currentUser) {
+        const skillDoc = doc(db, "users", auth.currentUser.uid, "skills", id)
+        await updateDoc(skillDoc, {
+          description: newDescription
+      })
+      }
+    } catch (error) {
+      console.error("Error editing name:", error);
+    }
+  }
+
+  const editSkillTraits = async (id: string, newPrimary: string, newSecondary: string) => {
+    try {
+      if (auth.currentUser) {
+
+        const skill = userData?.skills?.find(skill => skill.id === id);
+        if(!skill){
+          return;
+        }
+
+        await alterTraitEXP((skill.exp * -1), skill.primaryTrait, skill.secondaryTrait);
+        
+
+        const skillDoc = doc(db, "users", auth.currentUser.uid, "skills", id);
+        await updateDoc(skillDoc, {
+          primaryTrait: newPrimary,
+          secondaryTrait: newSecondary
+        });
+
+        await alterTraitEXP(skill.exp, newPrimary, newSecondary);
+      }
+    } catch (error) {
+      console.error("Error editing name:", error);
+    }
+  }
+
+
+  
+
+  /*
+        QUEST FUNCTIONS
+  */
+
   
   // Function that creates a new document in the "quests" collection of Firebase representing a new quest
   // Validation of inputs is handled in the function that calls it in the CreateQuestModal 
   // questName, primarySkill, dueDate, difficulty, and repeatable are required. The others are optional and may be blank strings
-  const addQuest = async (questName: String, questDescription: String, dueDate: Date, difficulty: String, primarySkill: String, secondarySkill: String, repeatable: Boolean, completionReward: String) => {
+  const addQuest = async (questName: string, questDescription: string, dueDate: Date, difficulty: string, primarySkill: string, secondarySkill: string, repeatable: Boolean, completionReward: string) => {
     if (!auth.currentUser) {
       return;
     }
@@ -414,7 +550,78 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       console.error("Error completing quest:", error);
     }
   };
+  
+  
 
+
+/*
+        SETTING FUNCTIONS
+*/
+
+
+ // Function updates the user's document to change the index of their avatar icon
+  // Input: index (for avatar array in UserHeader)
+  const setAvatar = async (index: number) => {
+    if (!userData) return;
+    try {
+      if (auth.currentUser) {
+        const userDoc = doc(db, "users", auth.currentUser.uid)
+        await updateDoc(userDoc, {
+          avatarIndex: index, 
+        })
+      }
+    } catch (error) {
+      console.error("Error altering avatar:", error);
+    }
+  };
+
+  const resetAccount = async () => {
+    if (!auth.currentUser || !userData) return;
+    try {
+      const userUID = auth.currentUser.uid;
+      const userDoc = doc(db, "users", userUID)
+      await updateDoc(userDoc, {
+        exp: 0,
+        strengthEXP: 0,
+        vitalityEXP: 0,
+        agilityEXP: 0,
+        staminaEXP: 0,
+        intelligenceEXP: 0,
+        charismaEXP: 0,
+      })
+      
+      const skillsCollectionRef = collection(db, "users", userUID, "skills");
+      const skillsQuerySnapshot = await getDocs(skillsCollectionRef);
+      
+      const skillDeletePromises = skillsQuerySnapshot.docs.map((skillDoc) =>
+        deleteDoc(doc(db, "users", userUID, "skills", skillDoc.id))
+      );
+
+    
+      await Promise.all(skillDeletePromises);
+      
+      const questsCollectionRef = collection(db, "users", userUID, "quests");
+      const questQuerySnapshot = await getDocs(questsCollectionRef);
+
+      const questDeletePromises = questQuerySnapshot.docs.map((questDoc) =>
+        deleteDoc(doc(db, "users", userUID, "quests", questDoc.id))
+      );
+
+    
+      await Promise.all(questDeletePromises);
+    } catch(error){
+      console.error("Error resetting account:", error);
+    }
+
+  }
+
+
+
+
+
+  /*
+        LISTENER (unsuscribe) FUNCTIONS
+  */
   useEffect(() => {
 
     if (!auth.currentUser) return;
@@ -497,48 +704,14 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   }, []);
 
-  const resetAccount = async () => {
-    if (!auth.currentUser || !userData) return;
-    try {
-      const userUID = auth.currentUser.uid;
-      const userDoc = doc(db, "users", userUID)
-      await updateDoc(userDoc, {
-        exp: 0,
-        strengthEXP: 0,
-        vitalityEXP: 0,
-        agilityEXP: 0,
-        staminaEXP: 0,
-        intelligenceEXP: 0,
-        charismaEXP: 0,
-      })
-      
-      const skillsCollectionRef = collection(db, "users", userUID, "skills");
-      const skillsQuerySnapshot = await getDocs(skillsCollectionRef);
-      
-      const skillDeletePromises = skillsQuerySnapshot.docs.map((skillDoc) =>
-        deleteDoc(doc(db, "users", userUID, "skills", skillDoc.id))
-      );
 
-    
-      await Promise.all(skillDeletePromises);
-      
-      const questsCollectionRef = collection(db, "users", userUID, "quests");
-      const questQuerySnapshot = await getDocs(questsCollectionRef);
-
-      const questDeletePromises = questQuerySnapshot.docs.map((questDoc) =>
-        deleteDoc(doc(db, "users", userUID, "quests", questDoc.id))
-      );
-
-    
-      await Promise.all(questDeletePromises);
-    } catch(error){
-      console.error("Error resetting account:", error);
-    }
-
-  }
+  
 
   return (
-    <UserContext.Provider value={{userData, setAvatar, addSkill, addQuest, archiveSkill, activateSkill, deleteQuest, completeQuest, resetAccount}}>
+    <UserContext.Provider value={{userData, setAvatar, addSkill, addQuest,
+     archiveSkill, activateSkill, deleteQuest,
+      completeQuest, resetAccount, editSkillName,
+       editSkillDescription, editSkillTraits, deleteSkill, }}>
       {children}
     </UserContext.Provider>
   );
