@@ -533,6 +533,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
             return;
         }
 
+        // Quick check to make sure a completed quest can't be used to gain EXP.
+        // Still gives a popup saying the quest was 'completed', but the user doesn't gain any more EXP from it
+        if (quest.active == false) {
+          console.log("Cannot complete a 'completed' quest!");
+          return;
+        }
+
         let expGain = 150;
         if (quest.difficulty === "Normal") {
           expGain = 300;
@@ -549,7 +556,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           alterSkillEXP((expGain *0.25), quest.secondarySkill);
         }
         alterOverallEXP(expGain);
-        
+
+        // Doesn't make the quest inactive if the quest is repeatable. Could definitely be better, but I figure it's a decent start
         if (quest.repeatable == false) {
           await updateDoc(docRef, {
             active: false  
