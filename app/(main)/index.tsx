@@ -12,6 +12,7 @@ import {
   Modal,
   ActivityIndicator,
   ScrollView,
+  FlatList,
 } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -30,17 +31,15 @@ import {
 import { db } from "../../FirebaseConfig";
 import { getAuth } from "firebase/auth";
 
-import { fetchUserData } from '../../utils/firestoreUtils';
-import { saveUserData, getUserData } from '../../utils/storageUtils';
-import { UserData, Quest, Skill, Checkpoint } from '../../utils/types';
-import SkillsList  from '../../components/SkillsList'
-import QuestsList  from '../../components/QuestsList'
+import { fetchUserData } from "../../utils/firestoreUtils";
+import { saveUserData, getUserData } from "../../utils/storageUtils";
+import { UserData, Quest, Skill, Checkpoint } from "../../utils/types";
+import SkillsList from "../../components/SkillsList";
+import QuestsList from "../../components/QuestsList";
 import CreateSkillModal from "@/components/CreateSkillModal";
 import CreateQuestModal from "@/components/CreateQuestModal";
-import NavigationModal  from '../../components/NavigationModal'
-import { useUserData } from '@/contexts/UserContext';
-
-
+import NavigationModal from "../../components/NavigationModal";
+import { useUserData } from "@/contexts/UserContext";
 
 import colors from "@/constants/colors";
 import UserHeader from "@/components/UserHeader";
@@ -154,10 +153,14 @@ export default function HomePage() {
     return null;
   } else {
     return (
-        <View style={styles.container}>
-          {/* Header Component */}
+      <View style={styles.container}>
+        {/* Header Component */}
+        <View style={styles.headerContainer}>
           <UserHeader></UserHeader>
+        </View>
 
+        <View style={styles.scrollLine}></View>
+        <ScrollView style={styles.scrollContainer}>
           <View>
             {/* Skills Section */}
             <View style={styles.dropdownContainer}>
@@ -179,8 +182,6 @@ export default function HomePage() {
                   skills={userData.userData?.skills || []}
                   mode="active"
                 />
-                
-                
               )}
             </View>
             {/* Quests Section */}
@@ -206,42 +207,54 @@ export default function HomePage() {
               )}
             </View>
           </View>
+        </ScrollView>
 
         {/* Add Button */}
         <Pressable
           style={styles.addButton}
-          onPress={() =>{
+          onPress={() => {
             setAddModalVisible(true);
-          }
-          }
+          }}
         >
           <Text style={styles.addButtonText}>+</Text>
         </Pressable>
-          
-        <CreateSkillModal visible={skillsModalVisible} onClose={() => setSkillsModalVisible(false)}></CreateSkillModal>
-        <CreateQuestModal visible={questsModalVisible} onClose={() => setQuestsModalVisible(false)}></CreateQuestModal>
+
+        <CreateSkillModal
+          visible={skillsModalVisible}
+          onClose={() => setSkillsModalVisible(false)}
+        ></CreateSkillModal>
+        <CreateQuestModal
+          visible={questsModalVisible}
+          onClose={() => setQuestsModalVisible(false)}
+        ></CreateQuestModal>
 
         {/* Modal for Add Button */}
         <Modal
           animationType="slide"
           transparent={true}
           visible={addModalVisible}
-          onRequestClose={ () => setAddModalVisible(false)}
+          onRequestClose={() => setAddModalVisible(false)}
         >
           <TouchableWithoutFeedback onPress={() => setAddModalVisible(false)}>
             <View style={styles.modalOverlay}>
               <TouchableWithoutFeedback>
                 <View style={styles.modalContent}>
-                <TouchableOpacity style={styles.modalButton} onPress={() => {
-                    setAddModalVisible(false);
-                    setSkillsModalVisible(true);
-                  }}>
+                  <TouchableOpacity
+                    style={styles.modalButton}
+                    onPress={() => {
+                      setAddModalVisible(false);
+                      setSkillsModalVisible(true);
+                    }}
+                  >
                     <Text style={styles.modalButtonText}>Add Skill</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.modalButton} onPress={() => {
-                    setAddModalVisible(false);
-                    setQuestsModalVisible(true);
-                  }}>
+                  <TouchableOpacity
+                    style={styles.modalButton}
+                    onPress={() => {
+                      setAddModalVisible(false);
+                      setQuestsModalVisible(true);
+                    }}
+                  >
                     <Text style={styles.modalButtonText}>Add Quest</Text>
                   </TouchableOpacity>
                 </View>
@@ -249,7 +262,6 @@ export default function HomePage() {
             </View>
           </TouchableWithoutFeedback>
         </Modal>
-        
       </View>
     );
   }
@@ -259,11 +271,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bgPrimary,
-    padding: 20,
+    // padding: 20,
+    paddingVertical: 20,
+  },
+  headerContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  scrollLine: {
+    marginHorizontal: 15,
+    borderBottomWidth: 1,
+    borderColor: colors.borderLight,
+  },
+  scrollContainer: {
+    paddingTop: 20,
+    paddingHorizontal: 20,
   },
   dropdownContainer: {
     position: "relative",
-    marginTop: 20,
+    // marginBottom: 20,
+    marginBottom: 40, // need to increase to compensate for scrollContainer Top Padding, also looks better?
   },
   section: {
     zIndex: 1,
@@ -306,8 +333,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   addButtonText: {
-    fontSize: 24,
-    fontWeight: "bold",
+    // fontSize: 24,
+    // fontWeight: "bold",
+    fontSize: 36,
+    lineHeight: 44,
     color: colors.text,
   },
   loading: {
