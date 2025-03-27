@@ -46,39 +46,47 @@ export default function QuestMainPage() {
       {/* User section similar to home page user section */}
       <UserHeader></UserHeader>
 
-      {/* copying home page quest style for now*/}
-      <TouchableOpacity 
-        style={styles.section} 
-        onPress={() => setQuestListVisible(!questListVisible)}
-      > 
-        <Text style={styles.sectionTitle}>
-          {questListVisible ? 'Active Quests ▲' : 'Active Quests ▼'}
-        </Text>
-      </TouchableOpacity>
-        {questListVisible && 
-          ( <QuestsList quests={userData.userData?.quests || []} mode="active" />
+      <View>
+        {/* Active Quests Section */}
+        <View style={styles.dropdownContainer}>
+          <TouchableOpacity 
+            style={styles.section} 
+            onPress={() => setQuestListVisible(!questListVisible)}
+          > 
+            <View>
+              <Text style={styles.sectionTitle}>
+                {questListVisible ? 'Active Quests ▲' : 'Active Quests ▼'}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          {questListVisible && <QuestsList quests={userData.userData?.quests || []} mode="active" />}
+        </View>
 
-          )}
+        {/* Completed Quests Section */}
+        <View style={styles.dropdownContainer}>
+          <TouchableOpacity 
+            style={styles.section} 
+            onPress={() => setPastQuestListVisible(!pastQuestListVisible)}
+          >
+            <View>
+              <Text style={styles.sectionTitle}>
+                {pastQuestListVisible ? 'Completed ▲' : 'Completed ▼'}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          {pastQuestListVisible && <QuestsList quests={userData.userData?.quests || []} mode="inactive" />}
+        </View>
+      </View>
 
-      <TouchableOpacity 
-        style={styles.section} 
-        onPress={() => setPastQuestListVisible(!pastQuestListVisible)}
-      >
-        <Text style={styles.sectionTitle}>
-          {pastQuestListVisible ? 'Completed ▲' : 'Completed ▼'}
-        </Text>
-      </TouchableOpacity>
-        {pastQuestListVisible && 
-        (<QuestsList quests={userData.userData?.quests || []} mode="inactive" />
-        )}
-        
-        <CreateQuestModal visible={questModalVisible} onClose={() => setQuestModalVisible(false)}></CreateQuestModal>
+      {/* Quest Creation Modal */}
+      <CreateQuestModal visible={questModalVisible} onClose={() => setQuestModalVisible(false)} />
+
       {/* Add Button */}
       <Pressable style={styles.addButton} onPress={() => setQuestModalVisible(true)}>
         <Text style={styles.addButtonText}>+</Text>
       </Pressable>
     </View>
-    );
+  );
 }
 
 
@@ -122,16 +130,21 @@ const styles = StyleSheet.create({
     color: colors.textDark,
   },
   sectionTitle: {
-    fontSize: 18,
-    top: 0,
-    fontWeight: "bold",
-    color: "#4a503d",
+    fontSize: 24,
+    fontFamily: "Metamorphous_400Regular",
+    color: colors.text,
+  },
+  dropdownContainer: {
+    position: "relative",
+    marginTop: 20,
   },
   section: {
-    backgroundColor: "#c2c8a0",
+    zIndex:1, 
+    backgroundColor: colors.bgTertiary,
     padding: 10,
-    borderRadius: 10,
-    marginBottom: 20,
+    borderRadius: 8,
+    height: 60,
+    justifyContent: "center"
   },
   addButton: {
     position: "absolute",
