@@ -73,22 +73,27 @@ id,
             // Alert message for now
             // A popup graphic would be cool in the future
             let message = [];
-            message.push("You completed:\n" + quest.name + '\n');
-            if (quest.difficulty === "Easy"){
-                message.push("You gained 150 XP!\n")
-            }
-            else if(quest.difficulty === "Normal"){
+            if (quest.active) {
+                message.push("You completed:\n" + quest.name + '\n');
+                if (quest.difficulty === "Easy"){
+                    message.push("You gained 150 XP!\n")
+                }
+                else if(quest.difficulty === "Normal"){
                     message.push("You gained 300 XP!\n")
                 }
-            else{
-                message.push("You gained 450 XP!\n")
-            }
-            message.push("We'll make the graphic look cooler later!")
-            Alert.alert(
+                else{
+                    message.push("You gained 450 XP!\n")
+                }
+                message.push("We'll make the graphic look cooler later!")
+                Alert.alert(
                 "Quest Complete!",
                 message.join("")
             )
-
+            }
+            else {
+                message.push("Can't complete an inactive quest!")
+                Alert.alert(message.join(""))
+            }
             onClose();
         }
     }
