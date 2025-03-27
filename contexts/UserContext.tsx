@@ -549,9 +549,12 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           alterSkillEXP((expGain *0.25), quest.secondarySkill);
         }
         alterOverallEXP(expGain);
-        await updateDoc(docRef, {
-          active: false
-      })
+        
+        if (quest.repeatable == false) {
+          await updateDoc(docRef, {
+            active: false  
+        })
+      }
     } catch (error) {
       console.error("Error completing quest:", error);
     }
