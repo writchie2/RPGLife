@@ -1,6 +1,6 @@
 
     import React, { useEffect, useState } from "react";
-    import {Text, StyleSheet, TextInput, Button, TouchableOpacity, SafeAreaView, ScrollView, Pressable, View, Modal, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform} from "react-native";
+    import {Text, StyleSheet, TextInput, Button, TouchableOpacity, SafeAreaView, ScrollView, Pressable, View, Modal, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, Alert} from "react-native";
     import { auth } from "../FirebaseConfig"
     import DatePickerComponent from "../components/DatePickerComponent";
 
@@ -28,7 +28,7 @@
     if (!auth.currentUser) {
             return;
         }
-    const { userData, archiveSkill, activateSkill } = useUserData();
+    const { userData, editQuestName, editQuestDescription, editQuestSkills, editQuestRepeatable} = useUserData();
     const quest = userData?.quests?.find(quest => quest.id === id);
 
     const [questName, setQuestName] = useState("");
@@ -44,6 +44,86 @@
     const [isFocusSecondary, setIsFocusSecondary] = useState(false);
     
     const skills = userData?.skills || [];
+
+    const editQuest = () => {
+        // Check to make sure the quest actually exists
+        if (!quest) {
+            return;
+        }
+
+        // Set up error handling to make sure every necessary field is filled out
+        let error = false;
+        let errors = [];
+
+        if (questName.trim() === "") {
+            errors.push("Quest name must not be blank");
+            error = true;
+        }
+
+        if (primarySkill === "") {
+            errors.push("Quest needs to have a primary skill selected");
+            error = true;
+        }
+
+        if (primarySkill === secondarySkill && primarySkill!== "") {
+            errors.push("Primary skill cannot be the same as secondary skill");
+            error = true;
+        }
+
+        const questExists = userData?.quests?.some(quest => quest.name.toLowerCase() === questName.trim().toLowerCase());
+        if (questExists && (questName.trim() !== quest.name)) {
+            errors.push("A quest with that name already exists");
+            error = true;
+        }
+
+        // Set up edit handling in case a field is changed
+        let edit = false;
+        let edits= [];
+
+        if (questName.trim() !== quest.name) {
+            
+            editQuestName(quest.id, questName.trim());
+            
+            edits.push("Quest name changed to \"" + questName.trim() + "\"\n");
+            edit = true;
+        }
+
+        if (questDescription.trim() !== quest.description) {
+            
+            editQuestDescription(quest.id, questDescription.trim());
+            
+            // This might be a bad alert on account of potentially long quest descriptions
+            edits.push("Quest description changed to \"" + questDescription.trim() + "\"\n");
+            edit = true;
+        }
+
+        if (primarySkill !== quest.primarySkill || secondarySkill !== quest.secondarySkill) {
+            
+            editQuestSkills(quest.id, primarySkill, secondarySkill);
+            
+            edits.push("Quest primary skill changed to " + primarySkill + " and quest secondary skill changed to " + secondarySkill);
+            edit = true;
+        }
+
+        if (repeatable !== quest.repeatable) {
+            
+            editQuestRepeatable(quest.id, repeatable);
+            
+            edits.push("Quest repeatability changed to \"" + repeatable + "\"\n");
+            edit = true;
+        }
+
+        if (edit) {
+            const editMessage = edits.join("");
+            Alert.alert("Quest has been edited", editMessage);
+            onClose();
+        }
+        else {
+            Alert.alert("No edits were made");
+            return;
+        }
+    }
+
 
     useEffect(() => {
         if (quest) {
@@ -125,6 +205,7 @@
                             />
                     
                     {/* Due Date */} 
+                    {/* Maybe delete this field since we don't want people to be able to edit dueDate? */}
                     <View style={styles.rowGroup}>
                         <View style={styles.rowLeft}>
                         <Text style={styles.rowLabel}>Due Date:</Text>
@@ -143,6 +224,7 @@
                     </View>
 
                     {/* Difficulty Selector */}  
+                    {/* Also maybe delete this field since we don't want people to be able to edit difficulty either? */}
                     <View style={styles.difficultyButtonContainer}>
                     <Text style={styles.difficultyLabel}>Difficulty:</Text>
                     {/* Buttons likely best method to establish difficulty */}
@@ -293,7 +375,8 @@
                 </TouchableOpacity>
                 
                 <TouchableOpacity style={styles.createButton} onPress={() => {
-                        alert("You chose edit quest");
+                        editQuest()
+                        //alert("You chose edit quest");
                     }}>
                     <Text style={styles.createCancelText}>Edit</Text>
                 </TouchableOpacity>

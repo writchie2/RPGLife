@@ -23,6 +23,10 @@ interface UserContextType {
   editSkillName: (id: string, newName: string) => void;
   editSkillDescription: (id: string, newDescription: string) => void;
   editSkillTraits: (id: string, newPrimary: string, newSecondary: string) => void;
+  editQuestName: (id: string, newQuestName: string) => void;
+  editQuestDescription: (id: string, newQuestDescription: string) => void;
+  editQuestSkills: (id: string, newQuestPrimarySkill: string, newQuestSecondarySkill: string) => void;
+  editQuestRepeatable: (id: string, newQuestRepeatable: boolean) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -527,6 +531,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
             return;
         }
 
+        // Quick check to make sure a completed quest can't be used to gain EXP.
+        // Still gives a popup saying the quest was 'completed', but the user doesn't gain any more EXP from it
+        if (quest.active == false) {
+          console.log("Cannot complete a 'completed' quest!");
+          return;
+        }
+
         let expGain = 150;
         if (quest.difficulty === "Normal") {
           expGain = 300;
@@ -543,13 +554,61 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           alterSkillEXP((expGain *0.25), quest.secondarySkill);
         }
         alterOverallEXP(expGain);
-        await updateDoc(docRef, {
-          active: false
-      })
+
+        // Doesn't make the quest inactive if the quest is repeatable. Could definitely be better, but I figure it's a decent start
+        if (quest.repeatable == false) {
+          await updateDoc(docRef, {
+            active: false  
+        })
+      }
     } catch (error) {
       console.error("Error completing quest:", error);
     }
   };
+
+  const editQuestName = async(id: string, newQuestName: string) => {
+    try {
+      if (auth.currentUser) {
+        const questDoc = doc(db, "users", auth.currentUser.uid, "quests", id)
+        await updateDoc(questDoc, {name: newQuestName})
+      }
+    } catch (error) {
+        console.error("Error with editing Quest Name: ", error);
+    }
+  }
+
+  const editQuestDescription = async(id: string, newQuestDescription: string) => {
+    try {
+      if (auth.currentUser) {
+        const questDoc = doc(db, "users", auth.currentUser.uid, "quests", id)
+        await updateDoc(questDoc, {description: newQuestDescription})
+      }
+    } catch (error) {
+        console.error("Error with editing Quest Description: ", error);
+    }
+  }
+
+  const editQuestRepeatable = async(id: string, newQuestRepeatable: boolean) => {
+    try {
+      if (auth.currentUser) {
+        const questDoc = doc(db, "users", auth.currentUser.uid, "quests", id)
+        await updateDoc(questDoc, {repeatable: newQuestRepeatable})
+      }
+    } catch (error) {
+        console.error("Error with editing Quest Repeatability: ", error);
+    }
+  }
+
+  const editQuestSkills = async(id: string, newQuestPrimarySkill: string, newQuestSecondarySkill: string) => {
+    try {
+      if (auth.currentUser) {
+        const questDoc = doc(db, "users", auth.currentUser.uid, "quests", id)
+        await updateDoc(questDoc, {primarySkill: newQuestPrimarySkill, secondarySkill: newQuestSecondarySkill})
+      }
+    } catch (error) {
+        console.error("Error with editing Quest Skills: ", error);
+    }
+  }
   
   
 
@@ -711,7 +770,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     <UserContext.Provider value={{userData, setAvatar, addSkill, addQuest,
      archiveSkill, activateSkill, deleteQuest,
       completeQuest, resetAccount, editSkillName,
-       editSkillDescription, editSkillTraits, deleteSkill, }}>
+       editSkillDescription, editSkillTraits, deleteSkill, editQuestName, editQuestDescription,
+        editQuestRepeatable, editQuestSkills}}>
       {children}
     </UserContext.Provider>
   );
