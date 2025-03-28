@@ -14,13 +14,17 @@ const bgSecondary = "#C2CFA0";
 // const bgTertiary = "#8E9970CC"; // 80% oppacity
 // const bgTertiary = "#99a47a"; // color droppered to get color w/o opacity
 // const bgTertiary = "#99a67e"; // Test
- const bgQuaternary = "#9ba77d"; // Best?! - Using this to test add Skill. I like it - Henry
+const bgQuaternary = "#9ba77d"; // Best?! - Using this to test add Skill. I like it - Henry
 const bgTertiary = "#C2CFA0"; // Secondary
 // const bgDropdown = "#C2CFA0";
 // const bgDropdown = "#C9D5AB";
 // const bgDropdown = "#eaf3d3";
 const bgDropdown = "#f0f7d7";
-const cancel = "#BA6E6E";
+// const cancel = "#BA6E6E";
+// const cancel = "#d39a79";
+// const cancel = "#d6a07c";
+const cancel = "#d6a47c";
+const button3 = "#e2d98b";
 
 // Text
 const text = "#394022E6"; // 90% opacity
@@ -64,6 +68,7 @@ export default {
   bgQuaternary,
   bgDropdown,
   cancel,
+  button3,
   // Text:
   text,
   textDark,

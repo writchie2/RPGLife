@@ -50,6 +50,10 @@ import {
   Alegreya_500Medium,
 } from "@expo-google-fonts/alegreya";
 
+// ICON FONTS - look at fonts.google.com/icons for list/name of icons available
+import { MaterialIconsRound_400Regular } from "expo-google-fonts-material-icons-round/400Regular";
+import { MaterialIcons_400Regular } from "expo-google-fonts-material-icons/400Regular";
+
 // moved dummy data outside, otherwise function for lvl/exp stuff was launching twice for some reason, idk why :P
 // Hard-coded data for testing. Simulates the data that will be retreived from firestore.
 const simulatedUserData = {
@@ -114,6 +118,8 @@ export default function HomePage() {
     Metamorphous_400Regular,
     Alegreya_400Regular,
     Alegreya_500Medium,
+    MaterialIconsRound_400Regular,
+    MaterialIcons_400Regular,
   });
 
   const user = auth.currentUser;
