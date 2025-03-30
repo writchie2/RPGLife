@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BackHandler } from "react-native";
@@ -7,6 +13,8 @@ import { ProgressBar } from "react-native-paper";
 
 import colors from "@/constants/colors";
 import UserHeader from "@/components/UserHeader";
+
+import TraitGraph from "@/components/TraitGraphModal";
 
 // Define the available views
 enum ViewMode {
@@ -33,7 +41,10 @@ export default function CharacterScreen() {
       router.replace("/(main)"); // Navigate back to the home screen
       return true;
     };
-    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
     return () => backHandler.remove();
   }, []);
 
@@ -49,8 +60,13 @@ export default function CharacterScreen() {
           keyExtractor={(item) => item.name}
           renderItem={({ item }) => (
             <View style={styles.traitContainer}>
-              <Text style={styles.traitTitle}>{item.name} - Level {item.level}</Text>
-              <ProgressBar progress={item.currentExp / item.requiredExp} color="#6b8e23" />
+              <Text style={styles.traitTitle}>
+                {item.name} - Level {item.level}
+              </Text>
+              <ProgressBar
+                progress={item.currentExp / item.requiredExp}
+                color="#6b8e23"
+              />
               <Text style={styles.expText}>
                 {item.currentExp}/{item.requiredExp} EXP
               </Text>
@@ -61,7 +77,10 @@ export default function CharacterScreen() {
 
       {viewMode === ViewMode.GRAPH && (
         <View style={styles.placeholderContainer}>
-          <Text style={styles.placeholderText}>Graph View (To be implemented)</Text>
+          {/* <Text style={styles.placeholderText}>
+            Graph View (To be implemented)
+          </Text> */}
+          <TraitGraph></TraitGraph>
         </View>
       )}
 
@@ -80,13 +99,22 @@ export default function CharacterScreen() {
 
       {/* Bottom Navigation */}
       <View style={styles.navContainer}>
-        <TouchableOpacity style={styles.navButton} onPress={() => setViewMode(ViewMode.LEVELS)}>
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => setViewMode(ViewMode.LEVELS)}
+        >
           <Text style={styles.navText}>Levels</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress={() => setViewMode(ViewMode.GRAPH)}>
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => setViewMode(ViewMode.GRAPH)}
+        >
           <Text style={styles.navText}>Graph</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress={() => setViewMode(ViewMode.DESCRIPTION)}>
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => setViewMode(ViewMode.DESCRIPTION)}
+        >
           <Text style={styles.navText}>Desc.</Text>
         </TouchableOpacity>
       </View>
@@ -157,4 +185,3 @@ const styles = StyleSheet.create({
     color: "#4a503d",
   },
 });
-
