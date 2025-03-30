@@ -12,7 +12,8 @@
     "datePicker-setup": "npx expo install react-native-modal-datetime-picker @react-native-community/datetimepicker",
     "font-setup": "expo install expo-font @expo-google-fonts/metamorphous @expo-google-fonts/alegreya",
     "icon-setup": "expo install expo-google-fonts-material-icons-round expo-google-fonts-material-icons",
-    "setup": "npm run expo-setup && npm run datePicker-setup && npm run font-setup && npm run icon-setup"
+    "graph-setup": "npm install @salmonco/react-native-radar-chart react-native-svg",
+    "setup": "npm run expo-setup && npm run datePicker-setup && npm run font-setup && npm run icon-setup && npm run graph-setup"
   },
   "jest": {
     "preset": "jest-expo"
@@ -28,6 +29,7 @@
     "@react-native-picker/picker": "2.9.0",
     "@react-native-vector-icons/material-icons": "^0.0.1",
     "@react-navigation/native": "^7.0.14",
+    "@salmonco/react-native-radar-chart": "^0.0.26",
     "expo": "~52.0.28",
     "expo-auth-session": "^6.0.3",
     "expo-font": "~13.0.4",
@@ -49,6 +51,7 @@
     "react-native-reanimated": "~3.16.1",
     "react-native-safe-area-context": "4.12.0",
     "react-native-screens": "~4.4.0",
+    "react-native-svg": "^15.11.2",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.13",
     "yarn": "^1.22.22"

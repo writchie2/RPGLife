@@ -26,6 +26,13 @@ const bgDropdown = "#f0f7d7";
 const cancel = "#d6a47c";
 const button3 = "#e2d98b";
 
+// GRAPH
+const graphStart = "#C2CFA0";
+const graphEnd = "#f4fadf";
+const graphLine = "#f8ffe3";
+const graphStroke = "#b0be8b";
+const graphStrokeMain = "#9ba77d";
+
 // Text
 const text = "#394022E6"; // 90% opacity
 const textDark = "#394022";
@@ -82,4 +89,10 @@ export default {
   // Shadows:
   shadow,
   shadowLight,
+  // GRAPH
+  graphStart,
+  graphEnd,
+  graphLine,
+  graphStroke,
+  graphStrokeMain,
 };
