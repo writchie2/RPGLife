@@ -56,9 +56,7 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
   
   
   const createQuest = async () => {
-        // Check to ensure quest has a name, description, and due date for now
-        // TODO: add more checks for difficulty, primarySkill, and completionReward
-        // other fields should be optional(?) so don't need to check for them 
+    
     let error = false;
     let errors = [];
     
@@ -77,6 +75,10 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
     }
     if (primarySkill === secondarySkill && primarySkill!== ""){
       errors.push("Primary skill cannot be the same as secondary skill");
+      error = true;
+    }
+    if (!dateSelected){
+      errors.push("The quest must have a due date");
       error = true;
     }
     if (difficulty === ""){
@@ -292,20 +294,6 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
                       }
                       }}>
                       <Text style={styles.difficultyButtonText}>X</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-
-                {/* Checkpoint Button */} 
-                <View style={styles.rowGroup}>
-                  <View style={styles.rowLeft}> 
-                    <Text style={styles.rowLabel}>CheckPoint</Text>
-                  </View>
-                  <View style={styles.rowRight}>
-                    <TouchableOpacity style={styles.difficultyButton} onPress={() => {
-                      alert("This button will make checkpoints once implemented");
-                      }}>
-                      <Text style={styles.difficultyButtonText}>+</Text>
                     </TouchableOpacity>
                   </View>
                 </View>

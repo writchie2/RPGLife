@@ -46,5 +46,9 @@ export interface Quest {
  
   // Define a checkpoint structure
   export interface Checkpoint { 
-    // TO DO
+    id: string;
+    name: string;
+    description: string;
+    active: boolean;
+    createdAt: Date;
   }

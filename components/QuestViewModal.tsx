@@ -12,9 +12,13 @@ import {
 } from "react-native";
 import colors from "@/constants/colors";
 
+
 import { useEffect } from "react";
 import { useUserData } from "@/contexts/UserContext";
 import EditQuestModal from "./EditQuestModal";
+import { Checkpoint } from "@/utils/types";
+import CheckPointsList from "./CheckpointsList";
+
 
 interface QuestViewModalProps {
   visible: boolean;
@@ -34,11 +38,13 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
   onClose,
   id,
 }) => {
-  const { userData, deleteQuest, completeQuest } = useUserData();
+  const { userData, deleteQuest, completeQuest, repeatQuest } = useUserData();
 
   const quest = userData?.quests?.find((quest) => quest.id === id);
   const [questEditVisible, setQuestEditVisible] = useState(false);
   const [questID, setQuestID] = useState("");
+  const [checkpointListVisible, setCheckpointListVisible] = useState(false);
+  
 
   const deleteHandler = () => {
     if (userData && quest) {
@@ -46,13 +52,8 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
         {
           text: "Confirm",
           onPress: () => {
+            deleteQuest(quest.id);
             onClose();
-            if (quest.active) {
-              deleteQuest(quest.id);
-            } else {
-              // Should be something we can add later once game design is figured out.
-              alert("Only active quests can be deleted, not finished quests!");
-            }
           },
         },
         {
@@ -65,29 +66,110 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
 
   const completeHandler = () => {
     if (userData && quest) {
-      // TODO
-      // First check checkpoints are completed
-      // If not, return alert error
+      
+      
+      // If the quest is not repeatable, then it might have checkpoints to check
+      if (!quest.repeatable){
 
-      completeQuest(quest.id);
+        // Get the count of active checkpoints
+        // If there are no checkpoints, activeCount will be undefined
+        const activeCount = quest?.checkpoints?.filter(checkpoints => checkpoints.active).length;
 
-      // Alert message for now
-      // A popup graphic would be cool in the future
-      let message = [];
-      message.push("You completed:\n" + quest.name + "\n");
-      if (quest.difficulty === "Easy") {
-        message.push("You gained 150 XP!\n");
-      } else if (quest.difficulty === "Normal") {
-        message.push("You gained 300 XP!\n");
-      } else {
-        message.push("You gained 450 XP!\n");
+        // If there are checkpoints and at least one is active, show alert 
+        // This will not show if there are either no checkpoints, or all are completed
+        if (activeCount && activeCount != 0){
+          Alert.alert("Not Quite!", "You have " + activeCount + (activeCount > 1? " checkpoints left to finish!" : " checkpoint left to finish!") );
+          return;
+        }
+        // If checkpoints are completed, show confirmation mesage
+        else{
+          Alert.alert("Confirm Complete", quest.name, [
+            {
+              text: "Confirm",
+              onPress: () => {
+                completeQuest(quest.id);
+                let message = [];
+                message.push("You completed:\n" + quest.name + "\n");
+                if (quest.difficulty === "Easy") {
+                  message.push("You gained 150 XP!\n");
+                } else if (quest.difficulty === "Normal") {
+                  message.push("You gained 300 XP!\n");
+                } else {
+                  message.push("You gained 450 XP!\n");
+                }
+                message.push("We'll make the graphic look cooler later!");
+                Alert.alert("Quest Complete!", message.join(""));
+                onClose();
+              },
+            },
+            {
+              text: "Cancel",
+              onPress: () => {},
+            },
+          ]);
+        }
       }
-      message.push("We'll make the graphic look cooler later!");
-      Alert.alert("Quest Complete!", message.join(""));
+      // Quest is repeatable, no checkpoints to check
+      else{
 
-      onClose();
+        // Completing will set a quest to inactive, where repeating will keep it active. Confirmation message explains the difference to user
+        Alert.alert("Confirm Complete", "This quest is repeatable. Did you want to repeat it?\nCompleting it will make it no longer active.", [
+          {
+            text: "Confirm",
+            onPress: () => {
+              completeQuest(quest.id);
+              let message = [];
+              message.push("You completed:\n" + quest.name + "\n");
+              if (quest.difficulty === "Easy") {
+                message.push("You gained 150 XP!\n");
+              } else if (quest.difficulty === "Normal") {
+                message.push("You gained 300 XP!\n");
+              } else {
+                message.push("You gained 450 XP!\n");
+              }
+              message.push("We'll make the graphic look cooler later!");
+              Alert.alert("Quest Complete!", message.join(""));
+              onClose();
+            },
+          },
+          {
+            text: "Cancel",
+            onPress: () => {},
+          },
+        ]);
+      }
+      
     }
   };
+
+  const repeatHandler = () => {
+    if (userData && quest) {
+      Alert.alert("Confirm Repeat:", quest.name, [
+        {
+          text: "Confirm",
+          onPress: () => {
+            repeatQuest(quest.id);
+            let message = [];
+            message.push("You completed:\n" + quest.name + "\n");
+            if (quest.difficulty === "Easy") {
+              message.push("You gained 150 XP!\n");
+            } else if (quest.difficulty === "Normal") {
+              message.push("You gained 300 XP!\n");
+            } else {
+              message.push("You gained 450 XP!\n");
+            }
+            message.push("We'll make the graphic look cooler later!");
+            Alert.alert("Quest Repeated!", message.join(""));
+          },
+        },
+        {
+          text: "Cancel",
+          onPress: () => {},
+        },
+      ]);
+    }
+  };
+  
   return (
     <Modal
       animationType="none"
@@ -157,17 +239,35 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
                     </Text>
                   </View>
 
-                  {/* TODO Implement Checkpoints */}
-                  <View style={styles.fieldContainer}>
-                    <Text style={styles.fieldText}>Checkpoints 0/2:</Text>
-                    <Text style={styles.fieldText}>Checkpoints 1</Text>
-                    <Text style={styles.fieldText}>Checkpoints 2</Text>
+              {!quest?.repeatable && (
+              <View style={styles.dropdownContainer}>
+                  <TouchableOpacity
+                    style={styles.section}
+                    onPress={() => setCheckpointListVisible(!checkpointListVisible)}
+                  >
+                  <View style={styles.sectionTitleContainer}>
+                    <Text style={styles.sectionTitle}>
+                      {checkpointListVisible ? "Hide Checkpoints" : ("Checkpoints " + quest?.checkpoints?.filter(checkpoints => !checkpoints.active).length) + "/" + quest?.checkpoints?.length }
+                    </Text>
+                    <Text style={styles.sectionTitle}>
+                      {checkpointListVisible ? "▲" : "▼"}
+                    </Text>
                   </View>
+                  </TouchableOpacity>
+                
+                
+                {checkpointListVisible && (
+                  <CheckPointsList
+                    checkpoints={quest?.checkpoints || []}
+                    questID={quest?.id || ""}
+                  />
+                )}
+              </View>)}
 
-                  {quest?.repeatable && (
+                  {quest?.repeatable && quest?.active && (
                     <TouchableOpacity
                       style={styles.repeatButton}
-                      onPress={() => alert("You selected repeat")}
+                      onPress={() => repeatHandler()}
                     >
                       <Text style={styles.icons}>repeat</Text>
                     </TouchableOpacity>
@@ -181,13 +281,14 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
                   >
                     <Text style={styles.icons}>delete</Text>
                   </TouchableOpacity>
+                  {quest?.active &&
                   <TouchableOpacity
                     style={styles.completeButton}
                     onPress={() => completeHandler()}
                   >
                     <Text style={styles.buttonText}>Complete Quest</Text>
-                  </TouchableOpacity>
-
+                  </TouchableOpacity>}
+                  {quest?.active &&
                   <TouchableOpacity
                     style={styles.editButton}
                     onPress={() => {
@@ -200,7 +301,7 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
                     }}
                   >
                     <Text style={styles.icons}>edit</Text>
-                  </TouchableOpacity>
+                  </TouchableOpacity>}
                   <EditQuestModal
                     visible={questEditVisible}
                     id={questID}
@@ -218,6 +319,7 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
             <TouchableOpacity
               style={styles.closeButton}
               onPress={() => {
+                setCheckpointListVisible(false);
                 onClose();
               }}
             >
@@ -237,11 +339,39 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
   },
+  dropdownContainer: {
+    position: "relative",
+    // marginBottom: 20,
+    marginBottom: 40, // need to increase to compensate for scrollContainer Top Padding, also looks better?
+  },
+  section: {
+    zIndex: 1,
+    backgroundColor: colors.bgTertiary,
+    padding: 10,
+    borderRadius: 8,
+    height: 60,
+    justifyContent: "center",
+  },
+  sectionTitleContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    
+  },
+  checkpointRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    
+  },
+  sectionTitle: {
+    fontFamily: "Metamorphous_400Regular",
+    fontSize: 24,
+    color: colors.text,
+  },
   // CONTAINERS ===============================
   pageTitle: {
     width: "100%",
     alignItems: "center",
-    paddingTop: 30,
+    paddingTop: 50,
     paddingBottom: 20,
     // backgroundColor: colors.bgTertiary,
     // borderBottomWidth: 1,
@@ -266,6 +396,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     alignItems: "center",
     justifyContent: "flex-start",
+    //width: "90%"
   },
   closeButtonContainer: {
     alignItems: "center",
@@ -274,7 +405,7 @@ const styles = StyleSheet.create({
   questContainer: {
     // NOTE: parent of titleContainer, questDetailsContainer, questButtonsContainer for flex
     // flex: 1,
-    // width: "100%",
+    width: "85%",
     marginHorizontal: 20,
     marginBottom: 10, // needed so if scrolling required doesnt cut off shadow
     borderRadius: 10,
