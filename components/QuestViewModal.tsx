@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
   questContainer: {
     // NOTE: parent of titleContainer, questDetailsContainer, questButtonsContainer for flex
     // flex: 1,
-    width: "85%",
+    width: "90%",
     marginHorizontal: 20,
     marginBottom: 10, // needed so if scrolling required doesnt cut off shadow
     borderRadius: 10,
