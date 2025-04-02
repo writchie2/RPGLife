@@ -93,7 +93,12 @@
             editQuestDescription(quest.id, questDescription.trim());
             
             // This might be a bad alert on account of potentially long quest descriptions
-            edits.push("Quest description changed to \"" + questDescription.trim() + "\"\n");
+            if (questDescription.trim() === ""){
+                edits.push("Description was removed\n");
+            }
+            else{
+                edits.push("Description changed to \"" + questDescription.trim() + "\"\n");
+            }
             edit = true;
         }
 
@@ -101,15 +106,24 @@
             
             editQuestSkills(quest.id, primarySkill, secondarySkill);
             
-            edits.push("Quest primary skill changed to " + primarySkill + " and quest secondary skill changed to " + secondarySkill);
+            edits.push("Skills changed to " + primarySkill);
+            if(secondarySkill !== ""){
+                edits.push(" and " + secondarySkill);
+            }
+            edits.push("\n");
             edit = true;
         }
 
         if (repeatable !== quest.repeatable) {
             
             editQuestRepeatable(quest.id, repeatable);
+            if (repeatable){
+                edits.push("Quest was made repeatable\n");
+            }
+            else{
+                edits.push("Quest was made not repeatable\n");
+            }
             
-            edits.push("Quest repeatability changed to \"" + repeatable + "\"\n");
             edit = true;
         }
 
@@ -331,20 +345,6 @@
                         }
                         }}>
                         <Text style={styles.difficultyButtonText}>X</Text>
-                        </TouchableOpacity>
-                    </View>
-                    </View>
-
-                    {/* Checkpoint Button */} 
-                    <View style={styles.rowGroup}>
-                    <View style={styles.rowLeft}> 
-                        <Text style={styles.rowLabel}>CheckPoint</Text>
-                    </View>
-                    <View style={styles.rowRight}>
-                        <TouchableOpacity style={styles.difficultyButton} onPress={() => {
-                        alert("This button will make checkpoints once implemented");
-                        }}>
-                        <Text style={styles.difficultyButtonText}>+</Text>
                         </TouchableOpacity>
                     </View>
                     </View>
