@@ -9,11 +9,10 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
-import { UserProvider } from "../../contexts/UserContext"
+import { UserProvider } from "../../contexts/UserContext";
 
 import Colors from "@/constants/colors";
 import { useColorScheme } from "@/components/useColorScheme";
-
 
 export default function MainLayout() {
   const colorScheme = useColorScheme();
@@ -22,11 +21,15 @@ export default function MainLayout() {
     <UserProvider>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="settings" options={{ headerShown: false }} />
-        <Stack.Screen name="quests_main" options={{ headerShown: false }} />
-        <Stack.Screen name="create_quest" options={{ headerShown: false }} />
-        <Stack.Screen name="skills_main" options={{ headerShown: false }} />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="settings" options={{ headerShown: false }} />
+          <Stack.Screen name="quests_main" options={{ headerShown: false }} />
+          <Stack.Screen name="create_quest" options={{ headerShown: false }} />
+          <Stack.Screen name="skills_main" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="character_main"
+            options={{ headerShown: false }}
+          />
         </Stack>
       </ThemeProvider>
     </UserProvider>
