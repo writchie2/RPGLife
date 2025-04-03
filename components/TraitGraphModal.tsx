@@ -28,9 +28,9 @@ const TraitGraph = () => {
   }, [userData.userData?.vitalityEXP]);
 
   useEffect(() => {
-    const { level } = calcEXP(userData.userData?.staminaEXP || 0);
+    const { level } = calcEXP(userData.userData?.agilityEXP || 0);
     setLevelAGI(level);
-  }, [userData.userData?.staminaEXP]);
+  }, [userData.userData?.agilityEXP]);
 
   useEffect(() => {
     const { level } = calcEXP(userData.userData?.intelligenceEXP || 0);
@@ -66,7 +66,7 @@ const TraitGraph = () => {
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       {/* // -TEST->>>>>>>>>>>>> */}
       {/* <Text>STR: {levelSTR}</Text>
       <Text>VIT: {levelVIT}</Text>
@@ -74,7 +74,7 @@ const TraitGraph = () => {
       <Text>INT: {levelINT}</Text>
       <Text>CHR: {levelCHR}</Text> */}
       {/* // <<<<<<<<<<<<<-TEST- */}
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView>
         <RadarChart
           data={data}
           // maxValue={100}
@@ -99,6 +99,7 @@ const TraitGraph = () => {
           dataFillOpacity={0.8}
           dataStroke={colors.graphStrokeMain}
           dataStrokeWidth={2}
+          scale={1}
         />
       </SafeAreaView>
     </View>
@@ -110,6 +111,20 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    paddingHorizontal: 10,
+    position: "relative",
+    top: -70,
+    marginBottom: -70,
+    borderRadius: 8,
+    width: "100%",
+    paddingTop: 70,
+    // backgroundColor: colors.bgSecondary,
+    backgroundColor: colors.bgDropdown,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
   },
 });
 
