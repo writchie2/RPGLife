@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
     },
     modalContainer: {
-        flex: .92,
+        flex: 1,
         width: "100%",
         backgroundColor: colors.bgPrimary,
         borderRadius: 10,
@@ -252,11 +252,18 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
     },
     skillContainer: {
-        width: "100%",
-        backgroundColor: colors.bgSecondary,
+        width: "85%",
+        backgroundColor: colors.bgDropdown,
         borderRadius: 10,
         paddingBottom: 50,
         flexShrink: 1,
+        marginHorizontal: 20,
+        marginBotom: 10,
+        shadowColor: "#000",
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        elevation: 3,
       },
     titleText: {
         fontFamily: "Metamorphous_400Regular",
@@ -265,10 +272,10 @@ const styles = StyleSheet.create({
     },
     titleContainer: {
         backgroundColor: colors.bgQuaternary,
-        width: "100%",
-        justifyContent: "center",
+        //width: "100%",
+        //justifyContent: "center",
         alignItems: "center",
-        padding: "5%",
+        padding: 18,
         borderRadius:10,
         marginBottom:"2%"
     },
@@ -277,13 +284,9 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         justifyContent: 'center',
         padding: '3%',
-        backgroundColor: colors.bgSecondary, 
+        backgroundColor: colors.borderLight, 
         borderRadius: 10,
         marginVertical: 20,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 4,
         
     },
     descriptionText: {
@@ -310,6 +313,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: colors.text,
     },
+    //EXP--------------------------
     expRow: {
         flexDirection: 'row',  
         alignItems: 'center',  
@@ -367,6 +371,7 @@ const styles = StyleSheet.create({
         color: colors.textLight,
         
         },
+    //BUTTONS--------------------------
     endButtons:{
         justifyContent: "flex-end",
          
