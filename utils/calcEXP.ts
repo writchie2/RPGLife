@@ -15,12 +15,12 @@ const calcEXP = (exp: number) => {
   while (tempProgressEXP >= tempNeededEXP) {
     tempProgressEXP -= tempNeededEXP;
     tempLevel++;
-    tempNeededEXP = Math.floor(tempNeededEXP + tempNeededEXP * 0.1);
+    tempNeededEXP = tempNeededEXP + tempNeededEXP * 0.1;
   }
   return {
     level: tempLevel,
-    neededEXP: tempNeededEXP,
-    progressEXP: tempProgressEXP,
+    neededEXP: Math.floor(tempNeededEXP),
+    progressEXP: Math.floor(tempProgressEXP),
   };
 };
 export default calcEXP;

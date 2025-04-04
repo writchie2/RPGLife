@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { fetchUserData } from '@/utils/firestoreUtils';
 import { auth } from "../FirebaseConfig"
 import { saveUserData, getUserData } from '../utils/storageUtils';
-import { UserData, Skill, Quest  } from '@/utils/types';
+import { UserData, Skill, Quest, Checkpoint  } from '@/utils/types';
 import { doc, updateDoc, onSnapshot, collection, query, addDoc, deleteDoc, getDocs, where, getDoc } from 'firebase/firestore';
 import { db } from '../FirebaseConfig';
 
@@ -19,6 +19,7 @@ interface UserContextType {
   deleteQuest: (id: string) => void;
   deleteSkill: (id: string) => void;
   completeQuest: (id: string) => void;
+  repeatQuest: (id: string) => void;
   resetAccount: () => void;
   editSkillName: (id: string, newName: string) => void;
   editSkillDescription: (id: string, newDescription: string) => void;
@@ -27,6 +28,11 @@ interface UserContextType {
   editQuestDescription: (id: string, newQuestDescription: string) => void;
   editQuestSkills: (id: string, newQuestPrimarySkill: string, newQuestSecondarySkill: string) => void;
   editQuestRepeatable: (id: string, newQuestRepeatable: boolean) => void;
+  addCheckpoint: (checkpointName: string, checkpointDescription: string, questID: string) => void;
+  completeCheckpoint: (questID: string, checkpointID: string) => void;
+  deleteCheckpoint: (questID: string, checkpointID: string) => void;
+  editCheckpointName: (questID: string, checkpointID: string, newName: string) => void
+  editCheckpointDescription: (questID: string, checkpointID: string, newDewscription: string) => void
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -38,6 +44,7 @@ interface UserProviderProps {
 // Create a provider component
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [updatedCheckpoints, setUpdatedCheckpoints] = useState<Checkpoint[]>([]);
   
 
 
@@ -531,8 +538,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
             return;
         }
 
-        // Quick check to make sure a completed quest can't be used to gain EXP.
-        // Still gives a popup saying the quest was 'completed', but the user doesn't gain any more EXP from it
+        // Double check the quest is active
+        // The button should not appear when quest is inactive, so this shouldnt happen
         if (quest.active == false) {
           console.log("Cannot complete a 'completed' quest!");
           return;
@@ -554,15 +561,57 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           alterSkillEXP((expGain *0.25), quest.secondarySkill);
         }
         alterOverallEXP(expGain);
-
-        // Doesn't make the quest inactive if the quest is repeatable. Could definitely be better, but I figure it's a decent start
-        if (quest.repeatable == false) {
-          await updateDoc(docRef, {
+        
+        await updateDoc(docRef, {
             active: false  
         })
-      }
+      
     } catch (error) {
       console.error("Error completing quest:", error);
+    }
+  };
+
+  // Function rewards exp to skills and overall exp based on a quests difficulty 
+  // Almost identicle to completing a quest, only the quest is still set as active
+  // Validation of quest meeting requirements to be completed is handled in the function that calls it in QuestViewModal
+  // Input: id (string of the quest's id)
+  const repeatQuest = async(id: string) => {
+    if (!auth.currentUser || !userData) return;
+    try {
+        const docRef = doc(db, "users", auth.currentUser.uid, "quests", id)
+        const quest = userData.quests?.find(quest => quest.id === id);
+        if (!quest)
+        {
+            console.log("Tried to repeate a quest that doesn't exist!");
+            return;
+        }
+
+        // Double check the quest is active
+        // The button should not appear when quest is inactive, so this shouldnt happen
+        if (quest.active == false) {
+          console.log("Cannot repeat a 'completed' quest!");
+          return;
+        }
+
+        let expGain = 150;
+        if (quest.difficulty === "Normal") {
+          expGain = 300;
+        }
+        if (quest.difficulty === "Hard") {
+          expGain = 450;
+        }
+
+        if (!quest.secondarySkill) {
+          alterSkillEXP(expGain, quest.primarySkill);
+        }
+        else {
+          alterSkillEXP((expGain *0.75), quest.primarySkill);
+          alterSkillEXP((expGain *0.25), quest.secondarySkill);
+        }
+        alterOverallEXP(expGain);
+        
+    } catch (error) {
+      console.error("Error repeating quest:", error);
     }
   };
 
@@ -609,6 +658,83 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         console.error("Error with editing Quest Skills: ", error);
     }
   }
+
+
+
+
+
+  const addCheckpoint = async (checkpointName: string, checkpointDescription: string, questID: string) => {
+    if (!auth.currentUser) {
+      return;
+    }
+    try {
+      const questsCollectionRef = collection(db, "users", auth.currentUser.uid, "quests", questID, "checkpoints");
+      
+      const newCheckpoint: Record<string, any> = {
+        name: checkpointName,
+        description: checkpointDescription,
+        active: true,
+        createdAt: new Date()
+      };
+       
+      const docRef = await addDoc(questsCollectionRef, newCheckpoint);
+      console.log("Checkpoint added with ID:", docRef.id);
+    } catch (error) {
+      console.error("Error adding checkpoint:", error);
+    }
+  }
+
+  const completeCheckpoint = async(questID: string, checkpointID: string) => {
+    if (!auth.currentUser || !userData) return;
+    try {
+        const docRef = doc(db, "users", auth.currentUser.uid, "quests", questID, "checkpoints", checkpointID)
+        const quest = userData.quests?.find(quest => quest.id === questID);
+        const checkpoint = quest?.checkpoints?.find(checkpoint => checkpoint.id === checkpointID);
+        if (!checkpoint)
+        {
+            console.log("Tried to complete a checkpoint that doesn't exist!");
+            return;
+        }
+
+        await updateDoc(docRef, {
+          active: false  
+        })
+    } catch (error) {
+      console.error("Error completing checkpoint:", error);
+    }
+  };
+
+  const editCheckpointName = async(questID: string, checkpointID: string, newName: string) => {
+    try {
+      if (auth.currentUser) {
+        const checkpointDoc = doc(db, "users", auth.currentUser.uid, "quests", questID, "checkpoints", checkpointID)
+        await updateDoc(checkpointDoc, {name: newName})
+      }
+    } catch (error) {
+        console.error("Error with editing Quest Name: ", error);
+    }
+  }
+
+  const editCheckpointDescription = async(questID: string, checkpointID: string, newDescription: string) => {
+    try {
+      if (auth.currentUser) {
+        const checkpointDoc = doc(db, "users", auth.currentUser.uid, "quests", questID, "checkpoints", checkpointID)
+        await updateDoc(checkpointDoc, {description: newDescription})
+      }
+    } catch (error) {
+        console.error("Error with editing Quest Name: ", error);
+    }
+  }
+
+  const deleteCheckpoint = async(questID: string, checkpointID: string) => {
+    if (!auth.currentUser) return;
+    try {
+        const docRef = doc(db, "users", auth.currentUser.uid, "quests", questID, "checkpoints", checkpointID)
+        await deleteDoc(docRef);
+    } catch (error) {
+      console.error("Error deleting checkpoint:", error);
+    }
+  };
   
   
 
@@ -634,6 +760,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
 
+  // Function deletes all skill, quests, and resets all exp to 0
   const resetAccount = async () => {
     if (!auth.currentUser || !userData) return;
     try {
@@ -681,87 +808,127 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   /*
         LISTENER (unsuscribe) FUNCTIONS
   */
-  useEffect(() => {
-
-    if (!auth.currentUser) return;
-
-    const userDocRef = doc(db, 'users', auth.currentUser.uid);
-    const questsCollectionRef = collection(db, 'users', auth.currentUser.uid, 'quests');
-    const skillsCollectionRef = collection(db, 'users', auth.currentUser.uid, 'skills');
-
-    // Subscribes to user document to detect changes made and update the local data when detected
-    const unsubscribeUser = onSnapshot(userDocRef, (docSnapshot) => {
-      if (docSnapshot.exists()) {
-        const data = docSnapshot.data();
-    
-        setUserData((prev) => {
-          const updatedData: UserData = {
-            username: data.username,
-            birthday: data.birthdate?.toDate?.(),
-            email: data.email,
-            strengthEXP: data.strengthEXP,
-            vitalityEXP: data.vitalityEXP,
-            agilityEXP: data.agilityEXP,
-            staminaEXP: data.staminaEXP,
-            intelligenceEXP: data.intelligenceEXP,
-            charismaEXP: data.charismaEXP,
-            exp: data.exp,
-            avatarIndex: data.avatarIndex,
-            quests: prev?.quests || [], 
-            skills: prev?.skills || [], 
+        useEffect(() => {
+          if (!auth.currentUser) return;
+        
+          const userDocRef = doc(db, 'users', auth.currentUser.uid);
+          const questsCollectionRef = collection(db, 'users', auth.currentUser.uid, 'quests');
+          const skillsCollectionRef = collection(db, 'users', auth.currentUser.uid, 'skills');
+        
+          let checkpointUnsubscribers: Record<string, () => void> = {}; // Store checkpoint listeners
+        
+          // Subscribes to user document
+          const unsubscribeUser = onSnapshot(userDocRef, (docSnapshot) => {
+            if (docSnapshot.exists()) {
+              const data = docSnapshot.data();
+              setUserData((prev) => ({
+                username: data.username,
+                birthday: data.birthdate?.toDate?.(),
+                email: data.email,
+                strengthEXP: data.strengthEXP,
+                vitalityEXP: data.vitalityEXP,
+                agilityEXP: data.agilityEXP,
+                staminaEXP: data.staminaEXP,
+                intelligenceEXP: data.intelligenceEXP,
+                charismaEXP: data.charismaEXP,
+                exp: data.exp,
+                avatarIndex: data.avatarIndex,
+                quests: prev?.quests || [],
+                skills: prev?.skills || [],
+              }));
+            } else {
+              console.error("User document does not exist.");
+            }
+          });
+        
+          // Subscribes to quests collection
+          const unsubscribeQuests = onSnapshot(questsCollectionRef, (querySnapshot) => {
+            const updatedQuests = querySnapshot.docs.map((doc) => {
+              const data = doc.data();
+              return {
+                id: doc.id,
+                name: data.name || "", 
+                description: data.description || "",
+                difficulty: data.difficulty || "Easy", 
+                primarySkill: data.primarySkill || "",
+                secondarySkill: data.secondarySkill || "",
+                dueDate: data.dueDate?.toDate?.() || null, // Convert Firestore Timestamp
+                active: data.active ?? true, 
+                repeatable: data.repeatable ?? false,
+                reward: data.reward || "", 
+                checkpoints: [], 
+              } as Quest;
+            });
+        
+            // Cleanup old checkpoint listeners before adding new ones
+            Object.values(checkpointUnsubscribers).forEach((unsubscribe) => unsubscribe());
+            checkpointUnsubscribers = {}; // Reset stored unsubscribers
+        
+            // Listen to checkpoints inside each quest
+            updatedQuests.forEach((quest: Quest) => {
+              const checkpointsRef = collection(db, 'users', auth.currentUser!.uid, 'quests', quest.id, 'checkpoints');
+              
+              const unsubscribeCheckpoints = onSnapshot(checkpointsRef, (checkpointSnapshot) => {
+                const newCheckpoints = checkpointSnapshot.docs.map((doc) => {
+                  const data = doc.data(); 
+              
+                  return {
+                    id: doc.id,
+                    name: data.name,  
+                    description: data.description,  
+                    active: data.active,  
+                    createdAt: data.createdAt?.toDate?.() || new Date(),  
+                  } as Checkpoint;  
+                });
+                setUserData((prev) => {
+                  if (!prev) return prev;
+                
+                  return {
+                    ...prev,
+                    quests: prev.quests?.map((q) =>
+                      q.id === quest.id
+                        ? {
+                            ...q,
+                            checkpoints: newCheckpoints.map((checkpoint: Checkpoint) => ({
+                              id: checkpoint.id,
+                              name: checkpoint.name || "", 
+                              description: checkpoint.description || "", 
+                              active: checkpoint.active ?? true,
+                              createdAt: checkpoint.createdAt ? new Date(checkpoint.createdAt) : new Date(), 
+                            })) as Checkpoint[], 
+                          }
+                        : q
+                    ),
+                  };
+                });
+                
+              });
+        
+                
+        
+              checkpointUnsubscribers[quest.id] = unsubscribeCheckpoints; // Store for cleanup
+            });
+        
+            setUserData((prev) => prev ? { ...prev, quests: updatedQuests } : null);
+          });
+        
+          // Subscribes to skills collection
+          const unsubscribeSkills = onSnapshot(skillsCollectionRef, (querySnapshot) => {
+            const updatedSkills = querySnapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+        
+            setUserData((prev) => prev ? { ...prev, skills: updatedSkills as Skill[] } : null);
+          });
+        
+          return () => {
+            unsubscribeUser();
+            unsubscribeQuests();
+            unsubscribeSkills();
+            Object.values(checkpointUnsubscribers).forEach((unsubscribe) => unsubscribe()); // Cleanup checkpoints
           };
-          saveUserData(updatedData);
-          return updatedData;
-        });
-      } else {
-        console.error("User document does not exist.");
-      }
-    });
-
-    // Subscribes to quests collection to detect changes made and update the local data when detected
-    const unsubscribeQuests = onSnapshot(questsCollectionRef, (querySnapshot) => {
-      const updatedQuests = querySnapshot.docs.map((doc) => {
-      const data = doc.data();
-      
-      return {
-        id: doc.id,
-        ...data,
-        dueDate: data.dueDate?.toDate?.() || null, // Convert Firestore Timestamp to Date
-      } as Quest;
-    });
-    
-      setUserData((prev) => {
-        if (!prev) return null;
-        const updatedData: UserData = { ...prev, quests: updatedQuests };
-        saveUserData(updatedData); // Save to AsyncStorage
-        return updatedData;
-      });
-    });
-
-    // Subscribes to skills collection to detect changes made and update the local data when detected
-    const unsubscribeSkills = onSnapshot(skillsCollectionRef, (querySnapshot) => {
-      const updatedSkills = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      
-      setUserData((prev) => {
-        if (!prev) return null;
-        const updatedData: UserData = { ...prev, skills: updatedSkills as Skill[] };
-        // Save to AsyncStorage
-        saveUserData(updatedData);
-        return updatedData; 
-      });
-    });
-
-    
-    return () => {
-      unsubscribeUser();
-      unsubscribeQuests();
-      unsubscribeSkills();
-    }
-
-  }, []);
+        }, []);
 
 
   
@@ -771,7 +938,9 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
      archiveSkill, activateSkill, deleteQuest,
       completeQuest, resetAccount, editSkillName,
        editSkillDescription, editSkillTraits, deleteSkill, editQuestName, editQuestDescription,
-        editQuestRepeatable, editQuestSkills}}>
+        editQuestRepeatable, editQuestSkills, addCheckpoint,
+        completeCheckpoint, deleteCheckpoint, editCheckpointName,
+        editCheckpointDescription, repeatQuest }}>
       {children}
     </UserContext.Provider>
   );
