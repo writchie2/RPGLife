@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BackHandler } from "react-native";
@@ -7,6 +13,10 @@ import { ProgressBar } from "react-native-paper";
 
 import colors from "@/constants/colors";
 import UserHeader from "@/components/UserHeader";
+
+import TraitGraph from "@/components/TraitGraphModal";
+import CharacterTraitLevels from "@/components/CharacterTraitLevels";
+import CharacterTraitDesc from "@/components/CharacterTraitDesc";
 
 // Define the available views
 enum ViewMode {
@@ -16,77 +26,77 @@ enum ViewMode {
 }
 
 // Define the structure for character traits
-type CharacterTrait = {
-  name: string;
-  level: number;
-  currentExp: number;
-  requiredExp: number;
-  description: string;
-};
+// type CharacterTrait = {
+//   name: string;
+//   level: number;
+//   currentExp: number;
+//   requiredExp: number;
+//   description: string;
+// };
 
 export default function CharacterScreen() {
-  const [characterTraits, setCharacterTraits] = useState<CharacterTrait[]>([]);
+  // const [characterTraits, setCharacterTraits] = useState<CharacterTrait[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.LEVELS); // Default view
 
   useEffect(() => {
     const backAction = () => {
-      router.replace("/(main)"); // Navigate back to the home screen
-      return true;
+      router.replace("/(main)"); // Navigate back to home
+      return true; // Prevent default behavior
     };
-    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
     return () => backHandler.remove();
   }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      <UserHeader />
-      <Text style={styles.title}>Character Traits</Text>
+      <View style={styles.headerContainer}>
+        <UserHeader />
+      </View>
 
-      {/* Conditional Rendering Based on View Mode */}
-      {viewMode === ViewMode.LEVELS && (
-        <FlatList
-          data={characterTraits}
-          keyExtractor={(item) => item.name}
-          renderItem={({ item }) => (
-            <View style={styles.traitContainer}>
-              <Text style={styles.traitTitle}>{item.name} - Level {item.level}</Text>
-              <ProgressBar progress={item.currentExp / item.requiredExp} color="#6b8e23" />
-              <Text style={styles.expText}>
-                {item.currentExp}/{item.requiredExp} EXP
-              </Text>
-            </View>
-          )}
-        />
-      )}
+      <View style={styles.scrollLine}></View>
 
-      {viewMode === ViewMode.GRAPH && (
-        <View style={styles.placeholderContainer}>
-          <Text style={styles.placeholderText}>Graph View (To be implemented)</Text>
+      <ScrollView
+        style={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.traitsContainer}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Character Traits</Text>
+          </View>
+
+          <View style={styles.infoContainer}>
+            {/* Conditional Rendering Based on View Mode */}
+            {viewMode === ViewMode.LEVELS && <CharacterTraitLevels />}
+
+            {viewMode === ViewMode.GRAPH && <TraitGraph />}
+
+            {viewMode === ViewMode.DESCRIPTION && <CharacterTraitDesc />}
+          </View>
         </View>
-      )}
-
-      {viewMode === ViewMode.DESCRIPTION && (
-        <FlatList
-          data={characterTraits}
-          keyExtractor={(item) => item.name}
-          renderItem={({ item }) => (
-            <View style={styles.traitContainer}>
-              <Text style={styles.traitTitle}>{item.name}</Text>
-              <Text style={styles.descriptionText}>{item.description}</Text>
-            </View>
-          )}
-        />
-      )}
+      </ScrollView>
 
       {/* Bottom Navigation */}
       <View style={styles.navContainer}>
-        <TouchableOpacity style={styles.navButton} onPress={() => setViewMode(ViewMode.LEVELS)}>
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => setViewMode(ViewMode.LEVELS)}
+        >
           <Text style={styles.navText}>Levels</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress={() => setViewMode(ViewMode.GRAPH)}>
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => setViewMode(ViewMode.GRAPH)}
+        >
           <Text style={styles.navText}>Graph</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress={() => setViewMode(ViewMode.DESCRIPTION)}>
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => setViewMode(ViewMode.DESCRIPTION)}
+        >
           <Text style={styles.navText}>Desc.</Text>
         </TouchableOpacity>
       </View>
@@ -99,62 +109,69 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bgPrimary,
-    padding: 20,
+    // paddingVertical: 20,
+    paddingBottom: 20, // -TEST-
+  },
+  headerContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  scrollLine: {
+    marginHorizontal: 15,
+    borderBottomWidth: 1,
+    borderColor: colors.borderLight,
+  },
+  scrollContainer: {
+    paddingTop: 20,
+    paddingHorizontal: 20,
+  },
+  traitsContainer: {
+    position: "relative",
+    flex: 1,
+    // marginTop: 20,
+    marginBottom: 30,
+    // backgroundColor: "orange", // -TEST-
+  },
+  titleContainer: {
+    zIndex: 1,
+    backgroundColor: colors.bgTertiary,
+    padding: 10,
+    borderRadius: 8,
+    height: 60,
+    justifyContent: "center",
   },
   title: {
-    fontSize: 36,
-    fontWeight: "bold",
-    color: colors.textDark,
-    marginBottom: 10,
+    fontFamily: "Metamorphous_400Regular",
+    fontSize: 26,
+    color: colors.text,
   },
-  traitContainer: {
-    backgroundColor: "#c2c8a0",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  traitTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#4a503d",
-  },
-  expText: {
-    fontSize: 14,
-    color: "#4a503d",
-    textAlign: "right",
-  },
-  descriptionText: {
-    fontSize: 14,
-    color: "#4a503d",
-    marginTop: 5,
-  },
-  placeholderContainer: {
+  infoContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  placeholderText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#4a503d",
+    position: "relative",
+    top: -60,
+    marginBottom: -60,
+    zIndex: 0,
+    borderRadius: 8,
+    width: "100%",
+    paddingTop: 70,
   },
   navContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 20,
+    marginHorizontal: 20,
   },
   navButton: {
     flex: 1,
     padding: 10,
-    backgroundColor: "#a6aa83",
+    backgroundColor: colors.bgTertiary,
     borderRadius: 10,
     alignItems: "center",
     marginHorizontal: 5,
   },
   navText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#4a503d",
+    fontFamily: "Metamorphous_400Regular",
+    fontSize: 18,
+    color: colors.text,
   },
 });
-

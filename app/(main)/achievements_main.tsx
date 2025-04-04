@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BackHandler } from "react-native";
@@ -29,42 +29,46 @@ export default function AchievementsPage() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <UserHeader />
-      <Text style={styles.title}>Achievements</Text>
+      {/* User Header */}
+      <View style={styles.headerContainer}>
+        <UserHeader />
+      </View>
 
-      {/* Completed Achievements Section */}
-      <TouchableOpacity 
-        style={styles.section} 
-        onPress={() => {} /* Toggle visibility or fetch achievements */}
-      >
-        <Text style={styles.sectionTitle}>Completed Achievements ▼</Text>
-      </TouchableOpacity>
-      <FlatList
-        data={completedAchievements}
-        keyExtractor={(item) => item.title}
-        renderItem={({ item }) => (
-          <View style={styles.achievementItem}>
-            <Text style={styles.achievementTitle}>{item.title} Lvl{item.level}</Text>
-          </View>
-        )}
-      />
+      <View style={styles.scrollLine}></View>
 
-      {/* In-Progress Achievements Section */}
-      <TouchableOpacity 
-        style={styles.section} 
-        onPress={() => {} /* Toggle visibility or fetch achievements */}
-      >
-        <Text style={styles.sectionTitle}>In-Progress Achievements ▼</Text>
-      </TouchableOpacity>
-      <FlatList
-        data={inProgressAchievements}
-        keyExtractor={(item) => item.title}
-        renderItem={({ item }) => (
-          <View style={styles.achievementItem}>
-            <Text style={styles.achievementTitle}>{item.title} Lvl{item.level}</Text>
+      <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+        <View>
+          {/* Completed Achievements Section */}
+          <View style={styles.dropdownContainer}>
+            <TouchableOpacity style={styles.section}>
+              <View style={styles.sectionTitleContainer}>
+                <Text style={styles.sectionTitle}>Completed Achievements</Text>
+                <Text style={styles.sectionTitle}>▼</Text>
+              </View>
+            </TouchableOpacity>
+            {completedAchievements.map((item) => (
+              <View key={item.title} style={styles.achievementItem}>
+                <Text style={styles.achievementTitle}>{item.title} Lvl {item.level}</Text>
+              </View>
+            ))}
           </View>
-        )}
-      />
+
+          {/* In-Progress Achievements Section */}
+          <View style={styles.dropdownContainer}>
+            <TouchableOpacity style={styles.section}>
+              <View style={styles.sectionTitleContainer}>
+                <Text style={styles.sectionTitle}>In-Progress Achievements</Text>
+                <Text style={styles.sectionTitle}>▼</Text>
+              </View>
+            </TouchableOpacity>
+            {inProgressAchievements.map((item) => (
+              <View key={item.title} style={styles.achievementItem}>
+                <Text style={styles.achievementTitle}>{item.title} Lvl {item.level}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -74,34 +78,48 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bgPrimary,
-    padding: 20,
   },
-  title: {
-    fontSize: 36,
-    fontWeight: "bold",
-    color: colors.textDark,
-    marginBottom: 10,
+  headerContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 5, // Reduced from 20 to 5
   },
-  section: {
-    backgroundColor: "#c2c8a0",
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 10,
+  scrollLine: {
+    marginHorizontal: 15,
+    borderBottomWidth: 1,
+    borderColor: colors.borderLight,
+  },
+  scrollContainer: {
+    paddingTop: 10, // Reduced top padding
+    paddingHorizontal: 20,
+  },
+  dropdownContainer: {
+    marginBottom: 30,
+  },
+  sectionTitleContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#4a503d",
+    fontFamily: "Metamorphous_400Regular",
+    fontSize: 24,
+    color: colors.text,
+  },
+  section: {
+    backgroundColor: colors.bgTertiary,
+    padding: 10,
+    borderRadius: 8,
+    height: 60,
+    justifyContent: "center",
   },
   achievementItem: {
-    backgroundColor: "#e4e7d1",
+    backgroundColor: colors.bgSecondary,
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
   },
   achievementTitle: {
+    fontFamily: "Metamorphous_400Regular",
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#4a503d",
+    color: colors.text,
   },
 });
