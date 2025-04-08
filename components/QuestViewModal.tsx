@@ -16,6 +16,7 @@ import colors from "@/constants/colors";
 import { useEffect } from "react";
 import { useUserData } from "@/contexts/UserContext";
 import EditQuestModal from "./EditQuestModal";
+import QuestRewardModal from "./QuestRewardModal";
 import { Checkpoint } from "@/utils/types";
 import CheckPointsList from "./CheckpointsList";
 
@@ -25,6 +26,7 @@ interface QuestViewModalProps {
   onModalHide?: () => void;
   onClose: () => void;
   id: string;
+  onReward: () => void;
 }
 
 /*
@@ -37,6 +39,7 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
   visible,
   onClose,
   id,
+  onReward,
 }) => {
   const { userData, deleteQuest, completeQuest, repeatQuest } = useUserData();
 
@@ -44,6 +47,7 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
   const [questEditVisible, setQuestEditVisible] = useState(false);
   const [questID, setQuestID] = useState("");
   const [checkpointListVisible, setCheckpointListVisible] = useState(false);
+  const [questRewardVisible, setQuestRewardVisible] = useState(false);
   
 
   const deleteHandler = () => {
@@ -98,7 +102,10 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
                   message.push("You gained 450 XP!\n");
                 }
                 message.push("We'll make the graphic look cooler later!");
-                Alert.alert("Quest Complete!", message.join(""));
+                // Alert.alert("Quest Complete!", message.join(""));
+                //setQuestID(quest.id);
+                //setQuestRewardVisible(true);
+                onReward();
                 onClose();
               },
             },
@@ -128,7 +135,7 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
                 message.push("You gained 450 XP!\n");
               }
               message.push("We'll make the graphic look cooler later!");
-              Alert.alert("Quest Complete!", message.join(""));
+              // Alert.alert("Quest Complete!", message.join(""));
               onClose();
             },
           },
@@ -284,10 +291,17 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
                   {quest?.active &&
                   <TouchableOpacity
                     style={styles.completeButton}
-                    onPress={() => completeHandler()}
+                    onPress={() => {
+                      setQuestID(quest.id);
+                      setQuestRewardVisible(true);
+                      completeHandler(); 
+                      
+                    }}
                   >
                     <Text style={styles.buttonText}>Complete Quest</Text>
                   </TouchableOpacity>}
+                  
+
                   {quest?.active &&
                   <TouchableOpacity
                     style={styles.editButton}
