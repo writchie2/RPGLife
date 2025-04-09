@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -28,9 +28,10 @@ const QuestsList: React.FC<QuestsListProps> = ({
   //TO DO: change press action to route to quest page
 
   const [questsModalVisible, setQuestsModalVisible] = useState(false);
-  const [questRewardVisible, setQuestRewardVisible] = useState(false);
   const [questID, setQuestID] = useState("");
-  const [needReward, setNeedReward] = useState(false);
+  const [rewardID, setRewardID] = useState("");
+  const [questRewardVisible, setQuestRewardVisible] = useState(false);
+  
 
   const renderItem = ({ item }: { item: Quest }) => {
     // const time = new Timestamp(item.dueDate.getSeconds(), item.dueDate.getMilliseconds())
@@ -96,31 +97,27 @@ const QuestsList: React.FC<QuestsListProps> = ({
         id={questID}
         onClose={() => {
           setQuestsModalVisible(false);
-          if(needReward){
-            // launch the rewards modal 
-            setQuestRewardVisible(true);
-          }
-          else {
-            setQuestID("");
-          }
-
+          setQuestID("");
+          console.log("closing quest view")     
         }}
         onReward={() => {
-          setNeedReward(true);
+          setQuestsModalVisible(false);
+          setRewardID(questID);
+          setQuestID("");
+          setQuestRewardVisible(true);
+          console.log("reward triggered trigger")
         }}
       ></QuestViewModal>
 
-      {/* This is where you add the rewards modal */}
       <QuestRewardModal
-                    visible={questRewardVisible}
-                    id={questID}
-                    onClose={() => {
-                      setQuestRewardVisible(false);
-                      setQuestID("");
-                      setNeedReward(false);
-                      //onClose();
-                    }}
-                  ></QuestRewardModal>
+        visible={questRewardVisible}
+        id={rewardID}
+        onClose={() => {
+          setRewardID("");
+          setQuestRewardVisible(false);
+        }}
+      ></QuestRewardModal>
+
     </View>
   );
 };
