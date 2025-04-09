@@ -4,7 +4,7 @@ import { fetchUserData } from '@/utils/firestoreUtils';
 import { auth } from "../FirebaseConfig"
 import { saveUserData, getUserData } from '../utils/storageUtils';
 import { UserData, Skill, Quest, Checkpoint  } from '@/utils/types';
-import { doc, updateDoc, onSnapshot, collection, query, addDoc, deleteDoc, getDocs, where, getDoc } from 'firebase/firestore';
+import { doc, updateDoc, onSnapshot, collection, query, addDoc, deleteDoc, getDocs, where, getDoc, FieldValue, deleteField } from 'firebase/firestore';
 import { db } from '../FirebaseConfig';
 
 
@@ -34,6 +34,7 @@ interface UserContextType {
   editCheckpointName: (questID: string, checkpointID: string, newName: string) => void
   editCheckpointDescription: (questID: string, checkpointID: string, newDewscription: string) => void;
   firstLogin: () => void
+  alterOverallEXP: (alterAmount : number) => void
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -382,7 +383,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       if (auth.currentUser) {
         const skillDoc = doc(db, "users", auth.currentUser.uid, "skills", id)
         await updateDoc(skillDoc, {
-          active: false
+          active: false,
+          archiveDate: new Date()
       })
       }
     } catch (error) {
@@ -399,7 +401,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       if (auth.currentUser) {
         const skillDoc = doc(db, "users", auth.currentUser.uid, "skills", id)
         await updateDoc(skillDoc, {
-          active: true
+          active: true,
+          archiveDate: deleteField()
       })
       }
     } catch (error) {
@@ -836,7 +839,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 birthday: data.birthdate?.toDate?.(),
                 email: data.email,
                 lastLogin: data.lastLogin?.toDate?.() || null,
-                firstLoginComplete: data.firstLoginComplete ?? false,
+                firstLoginComplete: data.firstLoginComplete ?? null,
                 strengthEXP: data.strengthEXP,
                 vitalityEXP: data.vitalityEXP,
                 agilityEXP: data.agilityEXP,
@@ -952,7 +955,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
        editSkillDescription, editSkillTraits, deleteSkill, editQuestName, editQuestDescription,
         editQuestRepeatable, editQuestSkills, addCheckpoint,
         completeCheckpoint, deleteCheckpoint, editCheckpointName,
-        editCheckpointDescription, repeatQuest, firstLogin }}>
+        editCheckpointDescription, repeatQuest, firstLogin, alterOverallEXP }}>
       {children}
     </UserContext.Provider>
   );
