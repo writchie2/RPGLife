@@ -32,7 +32,8 @@ interface UserContextType {
   completeCheckpoint: (questID: string, checkpointID: string) => void;
   deleteCheckpoint: (questID: string, checkpointID: string) => void;
   editCheckpointName: (questID: string, checkpointID: string, newName: string) => void
-  editCheckpointDescription: (questID: string, checkpointID: string, newDewscription: string) => void
+  editCheckpointDescription: (questID: string, checkpointID: string, newDewscription: string) => void;
+  firstLogin: () => void
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -801,6 +802,15 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   }
 
+  const firstLogin = async () => {
+    if (!auth.currentUser || !userData) return;
+    const userDocRef = doc(db, "users", auth.currentUser.uid);
+    updateDoc(userDocRef, {
+      firstLoginComplete: true,
+      lastLogin: new Date(),
+    });
+  }
+
 
 
 
@@ -825,6 +835,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 username: data.username,
                 birthday: data.birthdate?.toDate?.(),
                 email: data.email,
+                lastLogin: data.lastLogin?.toDate?.() || null,
+                firstLoginComplete: data.firstLoginComplete ?? false,
                 strengthEXP: data.strengthEXP,
                 vitalityEXP: data.vitalityEXP,
                 agilityEXP: data.agilityEXP,
@@ -940,7 +952,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
        editSkillDescription, editSkillTraits, deleteSkill, editQuestName, editQuestDescription,
         editQuestRepeatable, editQuestSkills, addCheckpoint,
         completeCheckpoint, deleteCheckpoint, editCheckpointName,
-        editCheckpointDescription, repeatQuest }}>
+        editCheckpointDescription, repeatQuest, firstLogin }}>
       {children}
     </UserContext.Provider>
   );

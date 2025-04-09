@@ -32,6 +32,8 @@ export interface Quest {
     username: string;
     birthday: Date;  
     email: string;
+    lastLogin?: Date | null;
+    firstLoginComplete?: boolean | null;
     strengthEXP: number,
     vitalityEXP: number,
     agilityEXP: number,

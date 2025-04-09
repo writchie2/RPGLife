@@ -142,8 +142,27 @@ export default function HomePage() {
 
   // Firebase implementation moved to "@/contexts/UserContext"
   useEffect(() => {
+    if(!auth.currentUser){
+      router.replace("/(login)");
+      return;
+    }
     if (userData) {
       setLoading(false);
+      
+      if (userData.firstLoginComplete === null) {
+        // 🎉 Show first-ever login modal or message
+        alert("Welcome! This is your first login!");
+        alert(userData.firstLoginComplete)
+        //userData.firstLogin();
+      } else if (!userData.firstLoginComplete) {
+        // 🌞 Show first login of the day message
+        alert("Welcome back! First login today!");
+        alert(userData.firstLoginComplete)
+        //userData.firstLogin();
+      } else {
+        // Not first login today, do nothing
+        console.log("User has already logged in today.");
+      }  
     }
   }, [userData]);
 
