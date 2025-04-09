@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import { Timestamp } from "firebase/firestore";
 import { Quest } from "../utils/types";
 import colors from "@/constants/colors";
 import QuestViewModal from "./QuestViewModal";
+import QuestRewardModal from "./QuestRewardModal";
 
 interface QuestsListProps {
   quests: Quest[];
@@ -28,6 +29,10 @@ const QuestsList: React.FC<QuestsListProps> = ({
 
   const [questsModalVisible, setQuestsModalVisible] = useState(false);
   const [questID, setQuestID] = useState("");
+  const [rewardID, setRewardID] = useState("");
+  const [questRewardVisible, setQuestRewardVisible] = useState(false);
+  
+
   const renderItem = ({ item }: { item: Quest }) => {
     // const time = new Timestamp(item.dueDate.getSeconds(), item.dueDate.getMilliseconds())
     return (
@@ -93,8 +98,26 @@ const QuestsList: React.FC<QuestsListProps> = ({
         onClose={() => {
           setQuestsModalVisible(false);
           setQuestID("");
+          console.log("closing quest view")     
+        }}
+        onReward={() => {
+          setQuestsModalVisible(false);
+          setRewardID(questID);
+          setQuestID("");
+          setQuestRewardVisible(true);
+          console.log("reward triggered trigger")
         }}
       ></QuestViewModal>
+
+      <QuestRewardModal
+        visible={questRewardVisible}
+        id={rewardID}
+        onClose={() => {
+          setRewardID("");
+          setQuestRewardVisible(false);
+        }}
+      ></QuestRewardModal>
+
     </View>
   );
 };
