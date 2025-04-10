@@ -40,7 +40,7 @@ const QuestsList: React.FC<QuestsListProps> = ({
 
     const dueDate = quest.dueDate;
     if(!userData?.lastLogin) return -1;
-    if(userData.lastLogin.getTime() < dueDate.getTime()){
+    if(userData.lastLogin.getTime() > dueDate.getTime()){
         const overdueTime = now.getTime() - userData.lastLogin.getTime();
         const overdueDays = Math.floor(overdueTime / (1000 * 3600 * 24)); 
         if (overdueDays > 0) {

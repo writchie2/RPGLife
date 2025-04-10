@@ -94,11 +94,12 @@ export default function HomePage() {
     }
     if (userData) {
       setLoading(false);
-      
+      const now = new Date();
+      const lastLogin = userData?.lastLogin;
       if (userData.firstLoginComplete === null) {
         setWelcomeModalVisible(true);
         
-      } else if (!userData.firstLoginComplete) {
+      } else if (now.getTime() - (lastLogin?.getTime() || now.getTime()) >= 24 * 60 * 60 * 1000) {
         setReturnModalVisible(true);
       }
     }
@@ -129,7 +130,8 @@ export default function HomePage() {
             <View style={styles.dropdownContainer}>
               <TouchableOpacity
                 style={styles.section}
-                onPress={() => setSkillListVisible(!skillListVisible)}
+                //onPress={() => setSkillListVisible(!skillListVisible)}
+                onPress={() => setReturnModalVisible(!skillListVisible)}
               >
                 <View style={styles.sectionTitleContainer}>
                   <Text style={styles.sectionTitle}>
@@ -202,7 +204,7 @@ export default function HomePage() {
           visible={returnModalVisible}
           onClose={() => {
             setReturnModalVisible(false);
-            //firstLogin();
+            firstLogin();
           }}
         ></ReturnModal>
 

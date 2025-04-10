@@ -25,7 +25,8 @@ export interface Quest {
     secondaryTrait: string;
     exp: number;
     active: boolean;
-    archiveDate?: Date | null;
+    archiveDate?: Date;
+    deteriorateCount?: number;
   }
   
   // Define the structure of a Firestore user document

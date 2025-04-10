@@ -33,8 +33,9 @@ interface UserContextType {
   deleteCheckpoint: (questID: string, checkpointID: string) => void;
   editCheckpointName: (questID: string, checkpointID: string, newName: string) => void
   editCheckpointDescription: (questID: string, checkpointID: string, newDewscription: string) => void;
-  firstLogin: () => void
-  alterOverallEXP: (alterAmount : number) => void
+  firstLogin: () => void;
+  alterOverallEXP: (alterAmount : number) => void;
+  deteriorateSkill: (deteriorateAmmount: number, id: string ) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -69,9 +70,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         }
 
         const currentStrengthEXP = userSnap.data().strengthEXP;
-        
+        let newTotal = currentStrengthEXP + alterAmount
+        if(newTotal < 0){
+          newTotal = 0;
+        }
+
         await updateDoc(userDoc, {
-          strengthEXP: (currentStrengthEXP + alterAmount)
+          strengthEXP: (newTotal)
         })
       }
     } catch (error) {
@@ -93,9 +98,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         }
 
         const currentVitalityEXP = userSnap.data().vitalityEXP;
-        
+        let newTotal = currentVitalityEXP + alterAmount
+        if(newTotal < 0){
+          newTotal = 0;
+        }
+
         await updateDoc(userDoc, {
-          vitalityEXP: (currentVitalityEXP + alterAmount)
+          vitalityEXP: (newTotal)
         })
       }
     } catch (error) {
@@ -117,9 +126,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         }
 
         const currentAgilityEXP = userSnap.data().agilityEXP;
-        
+        let newTotal = currentAgilityEXP + alterAmount
+        if(newTotal < 0){
+          newTotal = 0;
+        }
+
         await updateDoc(userDoc, {
-          agilityEXP: (currentAgilityEXP + alterAmount)
+          agilityEXP: (newTotal)
         })
       }
     } catch (error) {
@@ -141,9 +154,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         }
 
         const currentStaminaEXP = userSnap.data().staminaEXP;
-        
+        let newTotal = currentStaminaEXP + alterAmount
+        if(newTotal < 0){
+          newTotal = 0;
+        }
+
         await updateDoc(userDoc, {
-          staminaEXP: (currentStaminaEXP + alterAmount)
+          staminaEXP: (newTotal)
         })
       }
     } catch (error) {
@@ -165,9 +182,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         }
 
         const currentIntelligenceEXP = userSnap.data().intelligenceEXP;
+        let newTotal = currentIntelligenceEXP + alterAmount
+        if(newTotal < 0){
+          newTotal = 0;
+        }
         
         await updateDoc(userDoc, {
-          intelligenceEXP: (currentIntelligenceEXP + alterAmount)
+          intelligenceEXP: (newTotal)
         })
       }
     } catch (error) {
@@ -189,9 +210,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         }
 
         const currentCharismaEXP = userSnap.data().charismaEXP;
+        let newTotal = currentCharismaEXP + alterAmount
+        if(newTotal < 0){
+          newTotal = 0;
+        }
         
         await updateDoc(userDoc, {
-          charismaEXP: (currentCharismaEXP + alterAmount)
+          charismaEXP: (newTotal)
         })
       }
     } catch (error) {
@@ -213,9 +238,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         }
 
         const currentEXP = userSnap.data().exp;
+        let newTotal = currentEXP + alterAmount
+        if(newTotal < 0){
+          newTotal = 0;
+        }
         
         await updateDoc(userDoc, {
-          exp: (currentEXP + alterAmount)
+          exp: (newTotal)
         })
       }
     } catch (error) {
@@ -240,17 +269,48 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
             console.log("Tried altering exp to a skill that doesn't exist");
             return
           }
-          await updateDoc(skillDoc, {
-            exp: (skill.exp + alterAmount) 
-          })
 
-          alterTraitEXP(alterAmount, skill.primaryTrait, skill.secondaryTrait || "")
+          const currentEXP = skill.exp;
+          let newTotal = currentEXP + alterAmount
+          if(newTotal < 0){
+            newTotal = 0;
+          }
+        
+          await updateDoc(skillDoc, {
+            exp: (newTotal) 
+          })
+          if(currentEXP > 0 && newTotal == 0){
+            alterTraitEXP((-1* currentEXP), skill.primaryTrait, skill.secondaryTrait || "")
+          }else if(currentEXP == 0){
+            //No deterioration.
+          }
+           else{
+            alterTraitEXP(alterAmount, skill.primaryTrait, skill.secondaryTrait || "")
+          }
+          
         }
         else {
           console.log(`No skill found with name: ${skillName}`);
         }
     } catch (error) {
       console.error("Error altering skill exp:", error);
+    }
+  }
+
+  const deteriorateSkill = async (deteriorateAmmount: number, id: string ) => {
+    if (!auth.currentUser || !userData) return;
+    try {
+      if (auth.currentUser) {
+        const skill = userData.skills?.find(skill => skill.id === id);
+        const currentDeteriorate = skill?.deteriorateCount ?? 0;
+        const skillDoc = doc(db, "users", auth.currentUser.uid, "skills", id)
+        await updateDoc(skillDoc, {
+          deteriorateCount: (deteriorateAmmount + currentDeteriorate),
+      })
+        alterSkillEXP((-500 * deteriorateAmmount), skill?.name || "")
+      }
+    } catch (error) {
+      console.error("Error archiving skill:", error);
     }
   }
 
@@ -384,7 +444,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         const skillDoc = doc(db, "users", auth.currentUser.uid, "skills", id)
         await updateDoc(skillDoc, {
           active: false,
-          archiveDate: new Date()
+          archiveDate: new Date(),
+          deteriorateCount: 0,
       })
       }
     } catch (error) {
@@ -402,7 +463,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         const skillDoc = doc(db, "users", auth.currentUser.uid, "skills", id)
         await updateDoc(skillDoc, {
           active: true,
-          archiveDate: deleteField()
+          archiveDate: deleteField(),
+          deteriorateCount: deleteField()
       })
       }
     } catch (error) {
@@ -618,6 +680,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       console.error("Error repeating quest:", error);
     }
   };
+
+
 
   const editQuestName = async(id: string, newQuestName: string) => {
     try {
@@ -929,10 +993,21 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         
           // Subscribes to skills collection
           const unsubscribeSkills = onSnapshot(skillsCollectionRef, (querySnapshot) => {
-            const updatedSkills = querySnapshot.docs.map((doc) => ({
-              id: doc.id,
-              ...doc.data(),
-            }));
+            const updatedSkills = querySnapshot.docs.map((doc) => {
+              const data = doc.data();
+              return {
+                id: doc.id,
+                name: data.name || "",
+                description: data.description || "",
+                primaryTrait: data.primaryTrait || "",
+                secondaryTrait: data.secondaryTrait || "",
+                exp: data.exp || 0,
+                active: data.active ?? true,
+                archiveDate: data.archiveDate?.toDate?.() || null,
+                deteriorateCount: data.deteriorateCount || 0,
+              }as Skill
+ 
+            });
         
             setUserData((prev) => prev ? { ...prev, skills: updatedSkills as Skill[] } : null);
           });
@@ -955,7 +1030,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
        editSkillDescription, editSkillTraits, deleteSkill, editQuestName, editQuestDescription,
         editQuestRepeatable, editQuestSkills, addCheckpoint,
         completeCheckpoint, deleteCheckpoint, editCheckpointName,
-        editCheckpointDescription, repeatQuest, firstLogin, alterOverallEXP }}>
+        editCheckpointDescription, repeatQuest, firstLogin, alterOverallEXP,
+        deteriorateSkill, }}>
       {children}
     </UserContext.Provider>
   );
