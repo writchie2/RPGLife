@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
         paddingBottom: 50,
         flexShrink: 1,
         marginHorizontal: 20,
-        marginBotom: 10,
+        //marginBotom: 10,
         shadowColor: "#000",
         shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.2,

@@ -12,6 +12,7 @@ import { Quest } from "../utils/types";
 import colors from "@/constants/colors";
 import QuestViewModal from "./QuestViewModal";
 import QuestRewardModal from "./QuestRewardModal";
+import { useUserData } from "@/contexts/UserContext";
 
 interface QuestsListProps {
   quests: Quest[];
@@ -31,6 +32,34 @@ const QuestsList: React.FC<QuestsListProps> = ({
   const [questID, setQuestID] = useState("");
   const [rewardID, setRewardID] = useState("");
   const [questRewardVisible, setQuestRewardVisible] = useState(false);
+  const { userData} = useUserData();
+
+  const calcExpLoss = (quest: Quest): number => {      
+    const now = new Date();
+    let totalOverdueDays = 0;
+
+    const dueDate = quest.dueDate;
+    if(!userData?.lastLogin) return -1;
+    if(userData.lastLogin.getTime() > dueDate.getTime()){
+        const overdueTime = now.getTime() - userData.lastLogin.getTime();
+        const overdueDays = Math.floor(overdueTime / (1000 * 3600 * 24)); 
+        if (overdueDays > 0) {
+            totalOverdueDays += overdueDays;
+        }
+    } 
+    else {
+        const overdueTime = now.getTime() - dueDate.getTime();
+        const overdueDays = Math.floor(overdueTime / (1000 * 3600 * 24)); 
+        if (overdueDays > 0) {
+            totalOverdueDays += overdueDays;
+        }
+    }
+        
+    
+    
+
+    return totalOverdueDays * 100;
+  };
   
 
   const renderItem = ({ item }: { item: Quest }) => {
@@ -43,7 +72,7 @@ const QuestsList: React.FC<QuestsListProps> = ({
           setQuestsModalVisible(true);
         }}
       >
-        <Text style={styles.questName}>{item.name}</Text>
+        <Text style={styles.questName}>{item.name} {mode ==="overdue"? ("  -" + calcExpLoss(item)+ " exp"): ""}</Text>
         <View style={styles.questDetailsContainer}>
           <Text style={styles.questDescription}>
             {item.description ? item.description : "Quest Details"}
@@ -73,6 +102,13 @@ const QuestsList: React.FC<QuestsListProps> = ({
   } else if (mode === "inactive") {
     chosenQuests = quests.filter((quest) => !quest.active);
   }
+  else if (mode === "overdue") {
+    const now = new Date();
+    chosenQuests = quests.filter((quest) => {
+        const dueDate = quest.dueDate; 
+        return quest.active && dueDate instanceof Date && dueDate.getTime() < now.setHours(0, 0, 0, 0);
+    });
+  }
 
   //If no quests are chosen, output text.
   if (chosenQuests.length == 0) {
@@ -84,7 +120,7 @@ const QuestsList: React.FC<QuestsListProps> = ({
   }
 
   return (
-    <View style={styles.list}>
+    <View style={[styles.list, { backgroundColor: mode === "overdue" ? colors.cancel : colors.bgDropdown }]}>
       <FlatList
         data={chosenQuests}
         keyExtractor={(item) => item.id}

@@ -53,65 +53,9 @@ import {
 // ICON FONTS - look at fonts.google.com/icons for list/name of icons available
 import { MaterialIconsRound_400Regular } from "expo-google-fonts-material-icons-round/400Regular";
 import { MaterialIcons_400Regular } from "expo-google-fonts-material-icons/400Regular";
+import WelcomeModal from "@/components/WelcomeModal";
+import ReturnModal from "@/components/ReturnModal";
 
-// moved dummy data outside, otherwise function for lvl/exp stuff was launching twice for some reason, idk why :P
-// Hard-coded data for testing. Simulates the data that will be retreived from firestore.
-const simulatedUserData = {
-  username: "John Doe",
-  email: "john@example.com",
-  birthdate: "1990-05-20",
-  exp: 3200,
-  quests: [
-    {
-      id: "1",
-      name: "Learn React Native",
-      dueDate: "2025-05-01",
-      description: "Complete the React Native tutorial and build an app.",
-      difficulty: "medium" as "medium",
-      primarySkill: "JavaScript",
-      secondarySkill: "React",
-      repeatable: false,
-      active: true,
-    },
-    {
-      id: "2",
-      name: "Complete Backend API",
-      dueDate: "2025-06-01",
-      description: "Finish the backend API with Express.js and MongoDB.",
-      difficulty: "hard" as "hard",
-      primarySkill: "Node.js",
-      secondarySkill: "MongoDB",
-      repeatable: true,
-      active: true,
-    },
-  ],
-  skills: [
-    {
-      id: "1",
-      name: "JavaScript",
-      description: "Programming language for building web applications.",
-      primaryTrait: "Core",
-      exp: 200,
-      active: false,
-    },
-    {
-      id: "2",
-      name: "React",
-      description: "JavaScript library for building user interfaces.",
-      primaryTrait: "Frontend",
-      exp: 100,
-      active: true,
-    },
-    {
-      id: "3",
-      name: "Node.js",
-      description: "JavaScript runtime for building server-side applications.",
-      primaryTrait: "Backend",
-      exp: 20,
-      active: true,
-    },
-  ],
-};
 
 export default function HomePage() {
   const [fontsLoaded] = useFonts({
@@ -131,19 +75,33 @@ export default function HomePage() {
   });
 
   const [skillListVisible, setSkillListVisible] = useState(false);
+  const [welcomeModalVisible, setWelcomeModalVisible] = useState(false);
+  const [returnModalVisible, setReturnModalVisible] = useState(false);
   const [questListVisible, setQuestListVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [skillsModalVisible, setSkillsModalVisible] = useState(false);
   const [questsModalVisible, setQuestsModalVisible] = useState(false);
 
   const [loading, setLoading] = useState(true); // Not used currently. could be implemented later.
-  const userData = useUserData();
+  const { userData, firstLogin } = useUserData();
   //Context for main folder that has the user data.
 
   // Firebase implementation moved to "@/contexts/UserContext"
   useEffect(() => {
+    if(!auth.currentUser){
+      router.replace("/(login)");
+      return;
+    }
     if (userData) {
       setLoading(false);
+      const now = new Date();
+      const lastLogin = userData?.lastLogin;
+      if (userData.firstLoginComplete === null) {
+        setWelcomeModalVisible(true);
+        
+      } else if (now.getTime() - (lastLogin?.getTime() || now.getTime()) >= 24 * 60 * 60 * 1000) {
+        setReturnModalVisible(true);
+      }
     }
   }, [userData]);
 
@@ -172,7 +130,8 @@ export default function HomePage() {
             <View style={styles.dropdownContainer}>
               <TouchableOpacity
                 style={styles.section}
-                onPress={() => setSkillListVisible(!skillListVisible)}
+                //onPress={() => setSkillListVisible(!skillListVisible)}
+                onPress={() => setReturnModalVisible(!skillListVisible)}
               >
                 <View style={styles.sectionTitleContainer}>
                   <Text style={styles.sectionTitle}>
@@ -185,7 +144,7 @@ export default function HomePage() {
               </TouchableOpacity>
               {skillListVisible && (
                 <SkillsList
-                  skills={userData.userData?.skills || []}
+                  skills={userData?.skills || []}
                   mode="active"
                 />
               )}
@@ -207,7 +166,7 @@ export default function HomePage() {
               </TouchableOpacity>
               {questListVisible && (
                 <QuestsList
-                  quests={userData.userData?.quests || []}
+                  quests={userData?.quests || []}
                   mode="active"
                 />
               )}
@@ -233,6 +192,21 @@ export default function HomePage() {
           visible={questsModalVisible}
           onClose={() => setQuestsModalVisible(false)}
         ></CreateQuestModal>
+
+        <WelcomeModal
+          visible={welcomeModalVisible}
+          onClose={() => {
+            setWelcomeModalVisible(false);
+            firstLogin();
+          }}
+        ></WelcomeModal>
+        <ReturnModal
+          visible={returnModalVisible}
+          onClose={() => {
+            setReturnModalVisible(false);
+            firstLogin();
+          }}
+        ></ReturnModal>
 
         {/* Modal for Add Button */}
         <Modal

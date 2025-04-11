@@ -14,6 +14,7 @@ import { Skill } from "../utils/types";
 import colors from "@/constants/colors";
 import calcEXP from "@/utils/calcEXP";
 import SkillViewModal from "./SkillViewModal";
+import { useUserData } from "@/contexts/UserContext";
 
 interface SkillsListProps {
   skills: Skill[];
@@ -26,6 +27,7 @@ const SkillsList: React.FC<SkillsListProps> = ({
 }) => {
   const [skillModalVisible, setSkillModalVisible] = useState(false);
   const [skillID, setSkillID] = useState("");
+  const { userData} = useUserData();
   //Item that will be rendered for each skill
   //TO DO: styling
   //TO DO: change press action to route to quest page
@@ -38,7 +40,7 @@ const SkillsList: React.FC<SkillsListProps> = ({
       }}
     >
       {/* <View style={styles.splitRowContainer}> */}
-      <Text style={styles.skillName}>{item.name}</Text>
+      <Text style={styles.skillName}>{item.name} {mode ==="deteriorate"? ("  -" + (calcDeteriorateNeeded(item)*500)+ " exp"): ""}</Text>
       {/* </View> */}
       <View style={styles.skillDetailsContainer}>
         <Text style={styles.skillDescription}>
@@ -83,7 +85,40 @@ const SkillsList: React.FC<SkillsListProps> = ({
     chosenSkills = chosenSkills.filter((skill) => skill.active);
   } else if (mode === "inactive") {
     chosenSkills = chosenSkills.filter((skill) => !skill.active);
+  } else if (mode === "deteriorate") {
+
+    chosenSkills = chosenSkills.filter((skill) => {
+      const { archiveDate, deteriorateCount } = skill;
+    
+      if (!archiveDate || !userData?.lastLogin) return false;
+    
+      const lastDeteriorateDate = new Date(archiveDate); // Create a fresh date object to avoid mutation
+      lastDeteriorateDate.setDate(lastDeteriorateDate.getDate() + 7 * (deteriorateCount || 0));
+    
+      const daysSinceLastDeteriorate = Math.floor(
+        (userData.lastLogin.getTime() - lastDeteriorateDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+    
+      return daysSinceLastDeteriorate >= 7;
+    
+    })
   }
+
+  const calcDeteriorateNeeded = (skill: Skill): number => {
+    const { archiveDate, deteriorateCount } = skill;
+    if (!archiveDate || !userData?.lastLogin) return 0;
+  
+    const lastDeteriorateDate = new Date(archiveDate); 
+    lastDeteriorateDate.setDate(lastDeteriorateDate.getDate() + (7 * (deteriorateCount || 0)));
+  
+    const daysSinceLastDeteriorate = Math.floor(
+      (userData.lastLogin.getTime() - lastDeteriorateDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+  
+    const deteriorateNeeded = Math.floor(daysSinceLastDeteriorate / 7); 
+  
+    return deteriorateNeeded > 0 ? deteriorateNeeded : 0;
+  };
 
   //If no skills are chosen, output text.
   if (chosenSkills.length == 0) {
@@ -95,7 +130,7 @@ const SkillsList: React.FC<SkillsListProps> = ({
   }
 
   return (
-    <View style={styles.list}>
+    <View style={[styles.list, { backgroundColor: mode === "deteriorate" ? colors.cancel : colors.bgDropdown }]}>
       <FlatList
         data={chosenSkills}
         keyExtractor={(item) => item.id}
