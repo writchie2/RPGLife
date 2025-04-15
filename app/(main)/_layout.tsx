@@ -30,6 +30,10 @@ export default function MainLayout() {
             name="character_main"
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="achievements_main"
+            options={{ headerShown: false }}
+          />
         </Stack>
       </ThemeProvider>
     </UserProvider>

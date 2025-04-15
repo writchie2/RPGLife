@@ -18,32 +18,10 @@ import { useUserData } from "@/contexts/UserContext";
 import { UserData } from "@/utils/types";
 import calcEXP from "@/utils/calcEXP";
 
-interface UserHeaderProps {}
-// Interface for Avatar object. Not exported yet as only used in header.
-interface Avatar {
-  id: number;
-  source: any;
-  unlockEXP: number;
-}
+// import list of avatars from AvatarList
+import { avatarsData, Avatar } from "@/components/AvatarList";
 
-// Array of current Avatar assets. Could expand more and/or move it to it's own file and export it
-// UserData now stores an avatarIndex which saves the choise of the user
-// unlockEXP could be used to implement rewards at certain levels.
-const avatarImages: Avatar[] = [
-  { id: 0, source: require("../assets/images/RPGiconBow.png"), unlockEXP: 0 },
-  { id: 1, source: require("../assets/images/RPGiconHarp.png"), unlockEXP: 0 },
-  {
-    id: 2,
-    source: require("../assets/images/RPGiconShield.png"),
-    unlockEXP: 0,
-  },
-  { id: 3, source: require("../assets/images/RPGiconStaff.png"), unlockEXP: 0 },
-  {
-    id: 4,
-    source: require("../assets/images/RPGiconSword.png"),
-    unlockEXP: 20000,
-  },
-];
+interface UserHeaderProps {}
 
 const UserHeader: React.FC<UserHeaderProps> = ({}) => {
   const userData = useUserData();
@@ -54,36 +32,37 @@ const UserHeader: React.FC<UserHeaderProps> = ({}) => {
   const [neededEXP, setNeededEXP] = useState(1000);
   const [progressEXP, setProgressEXP] = useState(0);
 
+  // Trait levels for avatar picker
+  const [levelSTR, setLevelSTR] = useState(0);
+  const [levelVIT, setLevelVIT] = useState(0);
+  const [levelAGI, setLevelAGI] = useState(0);
+  const [levelINT, setLevelINT] = useState(0);
+  const [levelCHR, setLevelCHR] = useState(0);
+
+  const [avatars, setAvatars] = useState<Avatar[]>(avatarsData);
+
   // Render item for the Avatar selector list
-  // Will render an avatar choice as locked or unlocked based on user's EXP level
+  // Will render an avatar choice as locked or unlocked based on user levels
   const renderAvatarItem = ({ item }: { item: Avatar }) => {
-    if (userData.userData) {
-      if (item.unlockEXP < userData.userData?.exp) {
-        return (
-          <TouchableOpacity
-            key={item.id}
-            onPress={() => {
-              setAvatarPickerVisible(false);
-              userData.setAvatar(item.id);
-            }}
-          >
-            <Image style={styles.pickAvatar} source={item.source} />
-          </TouchableOpacity>
-        );
-      } else {
-        return (
-          <TouchableOpacity
-            key={item.id}
-            onPress={() => {
-              alert("You haven't unlocked this yet!");
-            }}
-          >
-            <Image style={styles.pickAvatarLocked} source={item.source} />
-          </TouchableOpacity>
-        );
-      }
-    }
-    return null;
+    const isUnlocked = item.progress >= item.unlockLevel;
+    return (
+      <TouchableOpacity
+        onPress={() =>
+          isUnlocked
+            ? userData.setAvatar(item.id)
+            : alert("You haven't unlocked this yet!")
+        }
+        style={isUnlocked ? undefined : styles.lockedAvatarContainer}
+      >
+        {!isUnlocked && <Text style={styles.iconLock}>lock</Text>}
+        <View style={styles.pickAvatarContainer}>
+          <Image
+            style={isUnlocked ? styles.pickAvatar : styles.pickAvatarLocked}
+            source={item.source}
+          />
+        </View>
+      </TouchableOpacity>
+    );
   };
 
   // When page loads, run the function to calculate the user's Level, neededEXP, and progressEXP
@@ -95,6 +74,43 @@ const UserHeader: React.FC<UserHeaderProps> = ({}) => {
     setNeededEXP(neededEXP);
     setProgressEXP(progressEXP);
   }, [userData.userData?.exp]);
+
+  // Calculate trait levels on load
+  useEffect(() => {
+    const user = userData.userData;
+    setLevelSTR(calcEXP(user?.strengthEXP || 0).level);
+    setLevelVIT(calcEXP(user?.vitalityEXP || 0).level);
+    setLevelAGI(calcEXP(user?.agilityEXP || 0).level);
+    setLevelINT(calcEXP(user?.intelligenceEXP || 0).level);
+    setLevelCHR(calcEXP(user?.charismaEXP || 0).level);
+  }, [userData.userData]);
+
+  // Update progress when levels change
+  useEffect(() => {
+    setAvatars((prevAvatars) =>
+      prevAvatars.map((avatar) => {
+        let progress = level;
+        switch (avatar.catagory) {
+          case "strength":
+            progress = levelSTR;
+            break;
+          case "vitality":
+            progress = levelVIT;
+            break;
+          case "agility":
+            progress = levelAGI;
+            break;
+          case "intelligence":
+            progress = levelINT;
+            break;
+          case "charisma":
+            progress = levelCHR;
+            break;
+        }
+        return { ...avatar, progress };
+      })
+    );
+  }, [level, levelSTR, levelVIT, levelAGI, levelINT, levelCHR]);
 
   return (
     <View>
@@ -112,8 +128,20 @@ const UserHeader: React.FC<UserHeaderProps> = ({}) => {
           <TouchableOpacity onPress={() => setAvatarPickerVisible(true)}>
             <Image
               style={styles.avatar}
-              source={avatarImages[userData.userData?.avatarIndex || 0].source}
+              source={avatars[userData.userData?.avatarIndex || 0].source}
             />
+            {/* Shows Character Title Banner - If "- None -" is not selected */}
+            {userData.userData?.characterTitle !== "- None -" && (
+              <View>
+                <View style={styles.triangleLeft}></View>
+                <View style={styles.banner}>
+                  <Text style={styles.characterTitle}>
+                    {userData.userData?.characterTitle}
+                  </Text>
+                </View>
+                <View style={styles.triangleRight}></View>
+              </View>
+            )}
           </TouchableOpacity>
 
           {/* User Info: Username, EXP Bar, Level Info */}
@@ -145,23 +173,17 @@ const UserHeader: React.FC<UserHeaderProps> = ({}) => {
             style={styles.iconButton}
             onPress={() => setNavVisible(true)}
           >
-            <Image
-              style={styles.iconImage}
-              source={require("@/assets/images/MenuBTN.png")}
-            />
+            <Text style={styles.iconMenu}>menu</Text>
           </TouchableOpacity>
 
-          {/* Awards Button TODO */}
+          {/* Awards Button */}
           <TouchableOpacity
             style={styles.iconButton}
-            onPress={() =>
-              alert("Need to implement " + (progressEXP / neededEXP) * 100)
-            }
+            onPress={() => {
+              router.push("/(main)/achievements_main");
+            }}
           >
-            <Image
-              style={styles.iconImage}
-              source={require("@/assets/images/AchievementsBTN.png")}
-            />
+            <Text style={styles.iconMenu}>military_tech</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -179,16 +201,23 @@ const UserHeader: React.FC<UserHeaderProps> = ({}) => {
             <TouchableWithoutFeedback>
               <View style={styles.modalContainer}>
                 <View style={styles.avatarTextContainer}>
-                  <Text style={styles.avatarText}>Choose</Text>
-                  <Text style={styles.avatarText}>Avatar</Text>
+                  <Text style={styles.avatarText}>Choose Avatar</Text>
                 </View>
                 <FlatList
-                  data={avatarImages}
+                  data={avatars}
                   renderItem={renderAvatarItem}
                   keyExtractor={(item) => item.id.toString()}
                   numColumns={3}
                   contentContainerStyle={styles.avatarGrid}
                 />
+                <View style={styles.closeButtonContainer}>
+                  <TouchableOpacity
+                    onPress={() => setAvatarPickerVisible(false)}
+                    style={styles.closeButton}
+                  >
+                    <Text style={styles.icons}>close</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </TouchableWithoutFeedback>
           </View>
@@ -201,7 +230,7 @@ const UserHeader: React.FC<UserHeaderProps> = ({}) => {
 const styles = StyleSheet.create({
   headerContainer: {
     // marginBottom: 20,
-     marginTop: "10%",
+    marginTop: "10%",
     // padding: 10,
     // gap: "2%",
     // height: 130,
@@ -264,6 +293,9 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     backgroundColor: colors.bgPrimary,
     borderRadius: 40,
+
+    borderWidth: 2,
+    borderColor: colors.borderInput,
   },
   userInfo: {
     flex: 1,
@@ -273,6 +305,7 @@ const styles = StyleSheet.create({
     fontFamily: "Metamorphous_400Regular",
     color: colors.text,
   },
+  // NAV BUTTONS ===============================
   iconButton: {
     // height: "47%",
     // height: 48,
@@ -283,15 +316,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 6,
   },
-  iconImage: {
-    height: "60%",
-    width: "60%",
+  iconMenu: {
+    fontFamily: "MaterialIconsRound_400Regular",
+    fontSize: 40,
+    color: colors.textLight,
   },
-  iconButtonText: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: "#4a503d",
-  },
+  // AVATAR PICKER STYLES =========================
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.2)", // Semi-transparent background
@@ -300,51 +330,144 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     width: "90%",
-    height: "60%",
+    height: "65%",
     backgroundColor: colors.bgPrimary,
-    padding: 20,
+    // padding: 20,
     borderRadius: 10,
+    // alignItems: "center",
+    // justifyContent: "center",
+  },
+  avatarGrid: {
     alignItems: "center",
-    justifyContent: "center",
+    padding: 10,
   },
   pickAvatar: {
     width: 100,
     height: 100,
-    backgroundColor: colors.bgSecondary,
-    borderRadius: 25,
-    margin: 3,
-    borderWidth: 2,
-    borderColor: "#4a503d",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
   },
   pickAvatarLocked: {
     width: 100,
     height: 100,
+    opacity: 0.5,
+    filter: "grayscale(80%)",
+  },
+  pickAvatarContainer: {
     backgroundColor: colors.bgSecondary,
     borderRadius: 25,
+    padding: 3,
     margin: 3,
     borderWidth: 2,
-    borderColor: "#c5c5c5",
-    opacity: 0.5,
-    filter: "grayscale(100%)",
+    borderColor: colors.borderInput,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 2,
   },
-  avatarGrid: {
+  lockedAvatarContainer: {
+    alignItems: "center",
     justifyContent: "center",
   },
+  iconLock: {
+    fontFamily: "MaterialIconsRound_400Regular",
+    fontSize: 40,
+    color: colors.textDark,
+    position: "absolute",
+    zIndex: 9,
+  },
   avatarTextContainer: {
-    marginBottom: 30,
-    marginTop: 20,
+    marginTop: 10,
+    marginHorizontal: 10,
+    padding: 10,
     alignItems: "center",
+    borderBottomWidth: 1,
+    borderColor: colors.borderLight,
   },
   avatarText: {
     fontFamily: "Metamorphous_400Regular",
-    fontSize: 42,
+    fontSize: 32,
     color: colors.text,
     // marginBottom: 30,
     // marginTop: 20,
+  },
+  closeButtonContainer: {
+    marginVertical: 10,
+    alignItems: "center",
+  },
+  closeButton: {
+    width: 53,
+    height: 53,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.bgSecondary,
+    borderRadius: 100,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  icons: {
+    fontFamily: "MaterialIconsRound_400Regular",
+    fontSize: 30,
+    color: colors.text,
+  },
+  // Character Title Banner ======================
+  banner: {
+    backgroundColor: colors.bgPrimary,
+    borderWidth: 1,
+    borderColor: colors.borderInput,
+    justifyContent: "center",
+    alignItems: "center",
+
+    height: 18,
+    position: "absolute",
+    bottom: -5,
+    width: "100%",
+    zIndex: 2,
+  },
+  characterTitle: {
+    fontFamily: "Metamorphous_400Regular",
+    fontSize: 9,
+    // padding: 2,
+    color: colors.textDark,
+  },
+
+  triangleLeft: {
+    width: 0,
+    height: 0,
+    backgroundColor: "transparent",
+
+    borderRightWidth: 9,
+    borderTopWidth: 9,
+    borderBottomWidth: 9,
+
+    borderRightColor: colors.borderInput,
+    borderTopColor: "transparent",
+    borderBottomColor: "transparent",
+
+    position: "absolute",
+    bottom: -5,
+    left: -5,
+    zIndex: 0,
+  },
+  triangleRight: {
+    width: 0,
+    height: 0,
+    backgroundColor: "transparent",
+
+    borderLeftWidth: 9,
+    borderTopWidth: 9,
+    borderBottomWidth: 9,
+
+    borderLeftColor: colors.borderInput,
+    borderTopColor: "transparent",
+    borderBottomColor: "transparent",
+
+    position: "absolute",
+    bottom: -5,
+    right: -5,
+    zIndex: 0,
   },
 });
 
