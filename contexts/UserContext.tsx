@@ -6,6 +6,7 @@ import { saveUserData, getUserData } from '../utils/storageUtils';
 import { UserData, Skill, Quest, Checkpoint  } from '@/utils/types';
 import { doc, updateDoc, onSnapshot, collection, query, addDoc, deleteDoc, getDocs, where, getDoc, FieldValue, deleteField } from 'firebase/firestore';
 import { db } from '../FirebaseConfig';
+import { toMidnight } from '@/utils/toMidnight';
 
 
 
@@ -444,7 +445,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         const skillDoc = doc(db, "users", auth.currentUser.uid, "skills", id)
         await updateDoc(skillDoc, {
           active: false,
-          archiveDate: new Date(),
+          archiveDate: toMidnight(new Date()),
           deteriorateCount: 0,
       })
       }
@@ -561,7 +562,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       const newQuest: Record<string, any> = {
         name: questName,
         description: questDescription,
-        dueDate: dueDate,
+        dueDate: toMidnight(dueDate),
         difficulty: difficulty,
         primarySkill: primarySkill,
         secondarySkill: secondarySkill,
@@ -742,7 +743,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         name: checkpointName,
         description: checkpointDescription,
         active: true,
-        createdAt: new Date()
+        createdAt: toMidnight(new Date())
       };
        
       const docRef = await addDoc(questsCollectionRef, newCheckpoint);
@@ -874,7 +875,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const userDocRef = doc(db, "users", auth.currentUser.uid);
     updateDoc(userDocRef, {
       firstLoginComplete: true,
-      lastLogin: new Date(),
+      lastLogin: toMidnight(new Date()),
     });
   }
 
@@ -900,9 +901,9 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
               const data = docSnapshot.data();
               setUserData((prev) => ({
                 username: data.username,
-                birthday: data.birthdate?.toDate?.(),
+                birthday: toMidnight(data.birthdate?.toDate?.()),
                 email: data.email,
-                lastLogin: data.lastLogin?.toDate?.() || null,
+                lastLogin: toMidnight(data.lastLogin?.toDate?.()) || null,
                 firstLoginComplete: data.firstLoginComplete ?? null,
                 strengthEXP: data.strengthEXP,
                 vitalityEXP: data.vitalityEXP,
@@ -931,7 +932,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 difficulty: data.difficulty || "Easy", 
                 primarySkill: data.primarySkill || "",
                 secondarySkill: data.secondarySkill || "",
-                dueDate: data.dueDate?.toDate?.() || null, // Convert Firestore Timestamp
+                dueDate: toMidnight(data.dueDate?.toDate?.()) || null, // Convert Firestore Timestamp
                 active: data.active ?? true, 
                 repeatable: data.repeatable ?? false,
                 reward: data.reward || "", 
@@ -956,7 +957,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                     name: data.name,  
                     description: data.description,  
                     active: data.active,  
-                    createdAt: data.createdAt?.toDate?.() || new Date(),  
+                    createdAt: toMidnight(data.createdAt?.toDate?.()) || toMidnight(new Date()),  
                   } as Checkpoint;  
                 });
                 setUserData((prev) => {
@@ -973,7 +974,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                               name: checkpoint.name || "", 
                               description: checkpoint.description || "", 
                               active: checkpoint.active ?? true,
-                              createdAt: checkpoint.createdAt ? new Date(checkpoint.createdAt) : new Date(), 
+                              createdAt: checkpoint.createdAt ? toMidnight(new Date(checkpoint.createdAt)) : toMidnight(new Date()), 
                             })) as Checkpoint[], 
                           }
                         : q
@@ -1003,7 +1004,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 secondaryTrait: data.secondaryTrait || "",
                 exp: data.exp || 0,
                 active: data.active ?? true,
-                archiveDate: data.archiveDate?.toDate?.() || null,
+                archiveDate: toMidnight(data.archiveDate?.toDate?.()) || null,
                 deteriorateCount: data.deteriorateCount || 0,
               }as Skill
  

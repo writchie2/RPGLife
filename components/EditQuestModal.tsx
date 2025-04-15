@@ -224,7 +224,8 @@
                         <View style={styles.rowLeft}>
                         <Text style={styles.rowLabel}>Due Date:</Text>
                         </View>
-                        <View style={styles.rowRight}>
+                        <View style={styles.rowRight} pointerEvents="none">
+                        
                         <DatePickerComponent
                             style={styles.inputDate}
                             label={dueDate.toDateString()}
@@ -234,6 +235,7 @@
                             setDateSelected(true);
                             }}
                         />
+                        
                         </View>
                     </View>
 

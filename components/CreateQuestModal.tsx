@@ -77,10 +77,16 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
       errors.push("Primary skill cannot be the same as secondary skill");
       error = true;
     }
-    if (!dateSelected){
+    if (!dateSelected && !repeatable){
       errors.push("The quest must have a due date");
       error = true;
     }
+    
+    if (dueDate && new Date(dueDate).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0)) {
+      errors.push("The due date cannot be in the past");
+      error = true;
+    }
+
     if (difficulty === ""){
         errors.push("Must choose the difficulty");
         error = true;

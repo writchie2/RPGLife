@@ -24,18 +24,22 @@ onClose,
 
     let overdueQuests: Quest[] = (userData?.quests || []).filter((quest) => {
         const dueDate = quest.dueDate; 
-        return quest.active &&  Math.floor(dueDate.getTime() - now.setHours(0, 0, 0, 0)) > 0;
+        return quest.active && dueDate instanceof Date && dueDate.getTime() < now.setHours(0, 0, 0, 0) && !quest.repeatable;
     });
+    overdueQuests.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
 
     let dueSoonQuests: Quest[] = (userData?.quests || []).filter((quest) => {
         const dueDate = quest.dueDate; 
         return (
             quest.active &&
+            !quest.repeatable &&
             dueDate instanceof Date &&
             dueDate.getTime() >= now.setHours(0, 0, 0, 0) && 
             dueDate.getTime() <= sevenDaysLater.setHours(0, 0, 0, 0) 
         );
       });
+
+    dueSoonQuests.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
 
     const calcQuestDaysOverdue = (quests: Quest[]): number => {
         
@@ -45,7 +49,7 @@ onClose,
         quests.forEach((quest) => {
         const dueDate = quest.dueDate;
         if(!userData?.lastLogin) return -1;
-        if(userData.lastLogin.getTime() < dueDate.getTime()){
+        if(userData.lastLogin.getTime() > dueDate.getTime()){
             const overdueTime = now.getTime() - userData.lastLogin.getTime();
             const overdueDays = Math.floor(overdueTime / (1000 * 3600 * 24));
             if (overdueDays > 0) {
