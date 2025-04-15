@@ -212,6 +212,7 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
                       {quest?.description ? quest?.description : "Overview"}
                     </Text>
                   </View>
+                  {!quest?.repeatable &&
                   <View style={styles.fieldContainer}>
                     <Text style={styles.fieldText}>
                       Due:{" "}
@@ -219,7 +220,7 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
                         {quest?.dueDate.toDateString()}
                       </Text>
                     </Text>
-                  </View>
+                  </View>}
                   <View style={styles.fieldContainer}>
                     <Text style={styles.fieldText}>
                       Difficulty:{" "}

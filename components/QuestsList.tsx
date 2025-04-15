@@ -13,6 +13,7 @@ import colors from "@/constants/colors";
 import QuestViewModal from "./QuestViewModal";
 import QuestRewardModal from "./QuestRewardModal";
 import { useUserData } from "@/contexts/UserContext";
+import { toMidnight } from "@/utils/toMidnight";
 
 interface QuestsListProps {
   quests: Quest[];
@@ -35,7 +36,7 @@ const QuestsList: React.FC<QuestsListProps> = ({
   const { userData} = useUserData();
 
   const calcExpLoss = (quest: Quest): number => {      
-    const now = new Date();
+    const now = toMidnight(new Date());
     let totalOverdueDays = 0;
 
     const dueDate = quest.dueDate;
@@ -79,7 +80,7 @@ const QuestsList: React.FC<QuestsListProps> = ({
           </Text>
           <View style={styles.questDetailsContainer2}>
             <Text style={styles.questDetails}>
-              Difficulty: {item.difficulty} | Due: {item.dueDate.toDateString()}
+              Difficulty: {item.difficulty} | {!item.repeatable? "Due: " + item.dueDate.toDateString(): "Repeatable"}
             </Text>
             <Text style={styles.questSkills}>
               Primary Skill: {item.primarySkill}{" "}
@@ -87,9 +88,9 @@ const QuestsList: React.FC<QuestsListProps> = ({
                 ? "| Secondary Skill: " + item.secondarySkill
                 : ""}
             </Text>
-            <Text style={styles.questRepeatability}>
+            { /*<Text style={styles.questRepeatability}>
               Repeatable: {item.repeatable ? "Yes" : "No"}
-            </Text>
+            </Text>*/}
           </View>
         </View>
       </TouchableOpacity>
@@ -106,7 +107,7 @@ const QuestsList: React.FC<QuestsListProps> = ({
     const now = new Date();
     chosenQuests = quests.filter((quest) => {
         const dueDate = quest.dueDate; 
-        return quest.active && dueDate instanceof Date && dueDate.getTime() < now.setHours(0, 0, 0, 0);
+        return quest.active && dueDate instanceof Date && dueDate.getTime() < now.setHours(0, 0, 0, 0) && !quest.repeatable;
     });
   }
 
@@ -134,14 +135,14 @@ const QuestsList: React.FC<QuestsListProps> = ({
         onClose={() => {
           setQuestsModalVisible(false);
           setQuestID("");
-          console.log("closing quest view")     
+          //console.log("closing quest view")     
         }}
         onReward={() => {
           setQuestsModalVisible(false);
           setRewardID(questID);
           setQuestID("");
           setQuestRewardVisible(true);
-          console.log("reward triggered trigger")
+          //console.log("reward triggered trigger")
         }}
       ></QuestViewModal>
 

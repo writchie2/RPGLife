@@ -130,8 +130,8 @@ export default function HomePage() {
             <View style={styles.dropdownContainer}>
               <TouchableOpacity
                 style={styles.section}
-                //onPress={() => setSkillListVisible(!skillListVisible)}
-                onPress={() => setReturnModalVisible(!skillListVisible)}
+                onPress={() => setSkillListVisible(!skillListVisible)}
+                // onPress={() => setReturnModalVisible(!skillListVisible)} //I was using this to test
               >
                 <View style={styles.sectionTitleContainer}>
                   <Text style={styles.sectionTitle}>

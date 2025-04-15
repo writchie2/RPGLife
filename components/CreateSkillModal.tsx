@@ -14,14 +14,11 @@ interface CreateSkillModalProps {
 }
 
 const traits = [
-    
     { label: 'Strength', value: 'Strength' },
     { label: 'Vitality', value: 'Vitality' },
     { label: 'Agility', value: 'Agility' },
-    { label: 'Stamina', value: 'Stamina' },
     { label: 'Intelligence', value: 'Intelligence' },
     { label: 'Charisma', value: 'Charisma' },
-    //{ label: "None", value: "" },
   ];
 
 const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
