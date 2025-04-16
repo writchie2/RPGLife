@@ -38,23 +38,13 @@ import colors from "@/constants/colors";
 
 import AvatarList from "@/components/AvatarList"; // allow selecting avatars from settings
 import TitlesList from "@/components/TitlesList"; // allow selecting character titles from settings
+import EditUsernameModal from "@/components/EditUsernameModal";
 
 export default function Settings() {
   const { resetAccount } = useUserData();
+  const [editUsernameVisible, setEditUsernameVisible] = useState(false);
 
-  useEffect(() => {
-    const backAction = () => {
-      router.replace("/(main)"); // Navigate back to home
-      return true; // Prevent default behavior
-    };
 
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => backHandler.remove(); // Cleanup
-  }, []);
 
   const resetHandler = () => {
     Alert.alert(
@@ -88,6 +78,17 @@ export default function Settings() {
           <AvatarList />
           <TitlesList />
           <TouchableOpacity
+            onPress={() => setEditUsernameVisible(true)}
+            style={styles.section}
+          >
+            <View style={styles.splitRowContainer}>
+              <Text style={styles.sectionTitle}>Change Username</Text>
+              <Text style={styles.icon}>
+                person
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
             style={styles.button}
             onPress={() => resetHandler()}
           >
@@ -95,6 +96,14 @@ export default function Settings() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <EditUsernameModal
+        visible={editUsernameVisible}
+        onClose={() => {
+          setEditUsernameVisible(false);
+        }}
+        >
+
+      </EditUsernameModal>
     </View>
   );
 }
@@ -103,6 +112,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bgPrimary,
+    paddingVertical: 20,
   },
   headerContainer: {
     paddingHorizontal: 20,
@@ -127,6 +137,23 @@ const styles = StyleSheet.create({
   },
   settingsContainer: {
     alignItems: "center",
+  },
+  splitRowContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+  },
+  section: {
+    backgroundColor: colors.bgTertiary,
+    padding: 10,
+    borderRadius: 8,
+    height: 50,
+  },
+  sectionTitle: {
+    width: "100%",
+    fontFamily: "Metamorphous_400Regular",
+    fontSize: 24,
+    color: colors.text,
   },
   logo: {
     height: 200,
@@ -170,11 +197,11 @@ const styles = StyleSheet.create({
     width: "56%",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.bgSecondary,
-    borderRadius: 100, // full rounded corners
+    backgroundColor: colors.cancel,
+    borderRadius: 100,
     marginTop: 25,
     padding: 18,
-    shadowColor: colors.shadow, // Shadow color to match the button for a cohesive look
+    shadowColor: colors.shadow, 
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
@@ -182,7 +209,14 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontFamily: "Metamorphous_400Regular",
-    color: colors.textDark, // match title color, slightly darker due to being on darker bg
-    fontSize: 20, // Slightly larger for emphasis
+    color: colors.textDark, 
+    fontSize: 20, 
+  },
+  icon: {
+    fontFamily: "MaterialIconsRound_400Regular",
+    fontSize: 50,
+    color: colors.text,
+    position: "absolute",
+    right: 0,
   },
 });

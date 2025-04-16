@@ -48,18 +48,6 @@ export default function SkillsPage() {
   const user = auth.currentUser;
   const userData = useUserData();
 
-  useEffect(() => {
-    const backAction = () => {
-      router.replace("/(main)"); // Navigate back to home
-      return true; // Prevent default behavior
-    };
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-    return () => backHandler.remove();
-  }, []);
-
   const [skillsListVisible, setSkillsListVisible] = useState(false);
   const [pastSkillsListVisible, setPastSkillsListVisible] = useState(false);
   const [skillsModalVisible, setSkillsModalVisible] = useState(false);

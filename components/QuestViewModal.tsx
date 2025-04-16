@@ -351,39 +351,14 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
   },
-  dropdownContainer: {
-    position: "relative",
-    // marginBottom: 20,
-    marginBottom: 40, // need to increase to compensate for scrollContainer Top Padding, also looks better?
-  },
-  section: {
-    zIndex: 1,
-    backgroundColor: colors.bgTertiary,
-    padding: 10,
-    borderRadius: 8,
-    height: 60,
-    justifyContent: "center",
-  },
-  sectionTitleContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    
-  },
-  checkpointRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    
-  },
-  sectionTitle: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 24,
-    color: colors.text,
-  },
+  
+  
+  
   // CONTAINERS ===============================
   pageTitle: {
     width: "100%",
     alignItems: "center",
-    paddingTop: 50,
+    paddingTop: 60,
     paddingBottom: 20,
     // backgroundColor: colors.bgTertiary,
     // borderBottomWidth: 1,
@@ -459,6 +434,28 @@ const styles = StyleSheet.create({
     borderColor: colors.borderLight,
     marginHorizontal: 10,
     paddingVertical: 20,
+  },
+  dropdownContainer: {
+    position: "relative",
+    marginBottom: 40, 
+  },
+  section: {
+    zIndex: 1,
+    backgroundColor: colors.bgTertiary,
+    padding: 10,
+    borderRadius: 8,
+    height: 60,
+    justifyContent: "center",
+  },
+  sectionTitleContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    
+  },
+  checkpointRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    
   },
   // BUTTONS ==================================
   repeatButton: {
@@ -565,6 +562,11 @@ const styles = StyleSheet.create({
     // fontFamily: "MaterialIcons_400Regular",
     fontFamily: "MaterialIconsRound_400Regular",
     fontSize: 30,
+    color: colors.text,
+  },
+  sectionTitle: {
+    fontFamily: "Metamorphous_400Regular",
+    fontSize: 24,
     color: colors.text,
   },
 });

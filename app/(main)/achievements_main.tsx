@@ -24,20 +24,8 @@ export default function AchievementsPage() {
   //   Achievement[]
   // >([]);
 
-  useEffect(() => {
-    const backAction = () => {
-      router.replace("/(main)"); // Navigate back to home
-      return true;
-    };
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-    return () => backHandler.remove();
-  }, []);
-
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {/* User Header */}
       <View style={styles.headerContainer}>
         <UserHeader />
@@ -54,7 +42,7 @@ export default function AchievementsPage() {
       >
         <AchievementsList />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -63,6 +51,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bgPrimary,
+    paddingVertical: 20,
   },
   headerContainer: {
     paddingHorizontal: 20,

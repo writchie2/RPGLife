@@ -122,111 +122,127 @@ id,
         onRequestClose={onClose}
         >
             {/* TouchableWithoutFeedback to detect taps outside the modal. Also somewhat simulates slide to cancel for iOS. */}    
-            <TouchableWithoutFeedback onPress={onClose}>
+            
                 <View style={styles.overlay} >
-                    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                    <TouchableWithoutFeedback onPress={onClose}>
+                        <View style={styles.pageTitle}>
+                            <Text style={styles.pageTitleText}>- Skill Details -</Text>
+                        </View>
+                    </TouchableWithoutFeedback>
+                    
                         <View style={styles.modalContainer}>
+                            <View style={styles.scrollLine}></View>
                             {/* ScrollView makes the form scrollable if it does not fit fully on a small screen */} 
-                            <ScrollView 
-                                contentContainerStyle={styles.scrollContainer} 
-                                keyboardShouldPersistTaps="handled"
-                                showsVerticalScrollIndicator={false}
-                            >
-                                <View style={styles.skillContainer}>
-                                    {/* Title */}
-                                    <View style={styles.titleContainer}>
-                                        <Text style={styles.titleText}>{skill?.name}</Text>
-                                    </View>
-                                    <View style={styles.expRow}>
-                                        <View style={styles.expRowLeft}>
-                                            <Text style={styles.levelText}>
-                                            {calcEXP(skill?.exp || 0).level}
-                                            </Text>
-                                        </View>
-                                        <View style={styles.expRowRight}>
-                                            <View style={styles.expBarContainer}>
-                                                <View style={styles.expBar}>
-                                                    <View
-                                                    style={{
-                                                        height: "100%",
-                                                        width: `${
-                                                        (calcEXP(skill?.exp || 0).progressEXP / calcEXP(skill?.exp || 1).neededEXP) *
-                                                        100
-                                                        }%`,
-                                                        backgroundColor: colors.text,
-                                                        borderRadius: 99,
-                                                    }}
-                                                    ></View>
+                                <ScrollView 
+                                    contentContainerStyle={styles.scrollContainer} 
+                                    keyboardShouldPersistTaps="handled"
+                                    showsVerticalScrollIndicator={false}
+                                >
+                                    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                                        <View style={styles.skillContainer}>
+                                            {/* Title */}
+                                            <View style={styles.titleContainer}>
+                                                <Text style={styles.titleText}>{skill?.name}</Text>
+                                            </View>
+                                            <View style={styles.expRow}>
+                                                <View style={styles.expRowLeft}>
+                                                    <Text style={styles.levelText}>
+                                                    {calcEXP(skill?.exp || 0).level}
+                                                    </Text>
                                                 </View>
-                                                <Text style={styles.expTrait}>
-                                                    {calcEXP(skill?.exp || 0).progressEXP}/{calcEXP(skill?.exp || 1).neededEXP} exp 
-                                                </Text>
+                                                <View style={styles.expRowRight}>
+                                                    <View style={styles.expBarContainer}>
+                                                        <View style={styles.expBar}>
+                                                            <View
+                                                            style={{
+                                                                height: "100%",
+                                                                width: `${
+                                                                (calcEXP(skill?.exp || 0).progressEXP / calcEXP(skill?.exp || 1).neededEXP) *
+                                                                100
+                                                                }%`,
+                                                                backgroundColor: colors.text,
+                                                                borderRadius: 99,
+                                                            }}
+                                                            ></View>
+                                                        </View>
+                                                        <Text style={styles.expTrait}>
+                                                            {calcEXP(skill?.exp || 0).progressEXP}/{calcEXP(skill?.exp || 1).neededEXP} exp 
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                            <View style={styles.skillDetailsContainer}>
+                                                <View style={styles.descriptionContainer}>
+                                                    <Text style={styles.descriptionText}>{skill?.description === ""? "Skill Details" : skill?.description}</Text>
+                                                </View>
+                                                <View style={styles.fieldContainer}>
+                                                    <Text style={styles.fieldText}>Traits:{" "}
+                                                        <Text style={styles.contentText}>
+                                                            {skill?.primaryTrait}
+                                                            {skill?.secondaryTrait && `, ${skill?.secondaryTrait}`}
+                                                        </Text>
+                                                    </Text>
+                                                </View>
+                                            </View>
+
+                                            <View style={styles.skillButtonsContainer}>
+                                                <TouchableOpacity
+                                                    style={styles.deleteButton}
+                                                    onPress={() => deleteHandler()}
+                                                >
+                                                    <Text style={styles.icons}>delete</Text>
+                                                </TouchableOpacity>
+
+
+                                                {skill?.active ? (
+                                                    <TouchableOpacity style={styles.archiveButton} onPress={() => archiveHandler()}>
+                                                        <Text style={styles.buttonText}>Archive Skill</Text>
+                                                    </TouchableOpacity>
+                                                ) : (
+                                                    <TouchableOpacity style={styles.archiveButton} onPress={() => activateHandler()}>
+                                                        <Text style={styles.buttonText}>Activate Skill</Text>
+                                                    </TouchableOpacity>
+                                                )}
+
+                                                <TouchableOpacity
+                                                    style={styles.editButton}
+                                                    onPress={() => {
+                                                        if (skill){
+                                                            setSkillID(skill.id);
+                                                            setSkillEditVisible(true);
+                                                        }
+                                                    }}
+                                                >
+                                                    <Text style={styles.icons}>edit</Text>
+                                                </TouchableOpacity>
+                                                <EditSkillModal 
+                                                visible={skillEditVisible} 
+                                                id={skillID} 
+                                                onClose={() => {
+                                                    setSkillEditVisible(false); 
+                                                    setSkillID("");
+                                                    }}
+                                                ></EditSkillModal>
+
                                             </View>
                                         </View>
-                                    </View>
-                                    
-                                    <View style={styles.descriptionContainer}>
-                                        <Text style={styles.descriptionText}>{skill?.description === ""? "No description necessary!" : skill?.description}</Text>
-                                    </View>
-                                    <View style={styles.fieldContainer}>
-                                        <Text style={styles.fieldText}>Traits: {skill?.primaryTrait}{skill?.secondaryTrait && `, ${skill.secondaryTrait}`}</Text>
-                                    </View>
-                                    
-
-                                    {/* TODO Implement Achievements */}
-                                    <View style={styles.fieldContainer}>
-                                        <Text style={styles.fieldText}>Achievements 0/2:</Text>
-                                        <Text style={styles.fieldText}>WORK IN PROGRESS</Text>
-                                        <Text style={styles.fieldText}>Achievement 1</Text>
-                                        <Text style={styles.fieldText}>Achievement 2</Text>
-                                    </View>
-
-                                    <View style={styles.buttonContainer}>
-                                        {skill?.active ? (
-                                            <TouchableOpacity style={styles.archiveButton} onPress={() => archiveHandler()}>
-                                                <Text style={styles.buttonText}>Archive Skill</Text>
-                                            </TouchableOpacity>
-                                        ) : (
-                                            <TouchableOpacity style={styles.archiveButton} onPress={() => activateHandler()}>
-                                                <Text style={styles.buttonText}>Re Activate Skill</Text>
-                                            </TouchableOpacity>
-                                        )}
-
-                                        <TouchableOpacity style={styles.deleteButton} onPress={() => deleteHandler()}>
-                                            <Text style={styles.buttonText}>Delete Skill</Text>
-                                        </TouchableOpacity>
-                                    </View>
-
-                                </View>    
-                            </ScrollView>
-                            {/* Create and Cancel Buttons */}
-                            <View style={styles.endButtons}>
-                                <View style={styles.editCloseContainer}>
+                                    </TouchableWithoutFeedback>    
+                                </ScrollView>
+                            {/* Close Button */}
+                            
+                                <View style={styles.closeButtonContainer}>
                                     <TouchableOpacity 
                                         style={ styles.closeButton} 
                                         onPress={() =>{
                                             onClose();
                                         }}
                                     >
-                                    <Text style={styles.buttonText}>Close</Text>
+                                        <Text style={styles.icons}>close</Text>
                                     </TouchableOpacity>
                                     
-                                    <TouchableOpacity style={styles.editButton} onPress={() =>{
-                                        if (skill){
-                                            setSkillID(skill.id);
-                                            setSkillEditVisible(true);
-                                        } 
-                                    }}>
-                                        <Text style={styles.buttonText}>Edit</Text>
-                                    </TouchableOpacity>
-                                    <EditSkillModal visible={skillEditVisible} id={skillID} onClose={() => {setSkillEditVisible(false); setSkillID("");}}></EditSkillModal>
                                 </View>
-                            </View>
                         </View>
-                    </TouchableWithoutFeedback>
                 </View>
-            </TouchableWithoutFeedback>
-
         </Modal>
     );
 };
@@ -238,87 +254,91 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
         alignItems: "center",
     },
+
+    // CONTAINERS ===============================
     scrollContainer: {
-        flexGrow: 1,
+        paddingTop: 20,
         alignItems: "center",
         justifyContent: "flex-start",
     },
     modalContainer: {
         flex: 1,
-        width: "100%",
+        width: "90%",
         backgroundColor: colors.bgPrimary,
         borderRadius: 10,
-        padding: 20,
+        //padding: 20,
         justifyContent: "space-between",
     },
+    scrollLine: {
+        // marginHorizontal: 15,
+        borderBottomWidth: 1,
+        borderColor: colors.borderLight,
+      },
     skillContainer: {
-        width: "85%",
-        backgroundColor: colors.bgDropdown,
-        borderRadius: 10,
-        paddingBottom: 50,
-        flexShrink: 1,
+        width: "100%",
         marginHorizontal: 20,
-        //marginBotom: 10,
+        marginBottom: 10, // needed so if scrolling required doesnt cut off shadow
+        borderRadius: 10,
+        backgroundColor: colors.bgDropdown,
+        // Shadow effect
         shadowColor: "#000",
-        shadowOffset: {width: 0, height: 2},
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 5,
         elevation: 3,
+        
       },
-    titleText: {
-        fontFamily: "Metamorphous_400Regular",
-        fontSize: 36,
-        color: colors.text,
+    skillDetailsContainer: {
+        flexGrow: 1,
+        marginHorizontal: 10,
+    },
+    pageTitle: {
+        width: "100%",
+        alignItems: "center",
+        paddingTop: 60,
+        paddingBottom: 20,
     },
     titleContainer: {
-        backgroundColor: colors.bgQuaternary,
+        backgroundColor: colors.bgTertiary,
         //width: "100%",
         //justifyContent: "center",
         alignItems: "center",
         padding: 18,
         borderRadius:10,
-        marginBottom:"2%"
+        //marginBottom:"2%"
     },
     descriptionContainer: {
-        width: '90%',
-        alignSelf: "center",
-        justifyContent: 'center',
-        padding: '3%',
-        backgroundColor: colors.borderLight, 
-        borderRadius: 10,
         marginVertical: 20,
+        paddingVertical: 10,
+        borderTopWidth: 0.5,
+        borderColor: colors.borderLight,
         
     },
-    descriptionText: {
-        fontFamily: 'Metamorphous_400Regular',
-        fontSize: 22,
-        color: colors.text,
-        lineHeight: 30,
-    },
     fieldContainer: {
-        width: '90%',
-        alignSelf: "center",
-        justifyContent: 'center',
-        padding: '3%',
-        backgroundColor: colors.bgSecondary,
-        borderRadius: 10,
-        marginBottom: 10,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 4,
+        marginBottom: "4%",
     },
-    fieldText: {
-        fontFamily: "Metamorphous_400Regular",
-        fontSize: 20,
-        color: colors.text,
+    closeButtonContainer: {
+        alignItems: "center",
+        padding: 20,
     },
+    skillButtonsContainer: {
+        flexDirection: "row",
+        justifyContent: "center",
+        gap: 10,
+        marginTop: 20,
+        borderTopWidth: 0.5,
+        borderColor: colors.borderLight,
+        marginHorizontal: 10,
+        paddingVertical: 20,
+      },
+    
     //EXP--------------------------
     expRow: {
         flexDirection: 'row',  
         alignItems: 'center',  
         width:"100%",
         justifyContent: 'space-between',
+        paddingTop: 20
     },
     expRowLeft: {
         justifyContent: "center", 
@@ -372,81 +392,97 @@ const styles = StyleSheet.create({
         
         },
     //BUTTONS--------------------------
-    endButtons:{
-        justifyContent: "flex-end",
-         
+    
+    editButton: {
+        width: 53,
+        height: 53,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: colors.bgSecondary,
+        borderRadius: 100,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.5,
+        shadowRadius: 4,
+        elevation: 5,
     },
-    editCloseContainer: {
-        flexDirection: 'row',
-        justifyContent: "space-between", 
+    closeButton: {
+        width: 53,
+        height: 53,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: colors.bgSecondary,
+        borderRadius: 100,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.5,
+        shadowRadius: 4,
+        elevation: 5,
     },
+    archiveButton: {
+        height: 53,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: colors.bgSecondary,
+        borderRadius: 100,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.5,
+        shadowRadius: 4,
+        elevation: 5,
+        paddingVertical: "3%",
+        paddingHorizontal: 20,
+    },
+    deleteButton: {
+        width: 53,
+        height: 53,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: colors.cancel,
+        borderRadius: 100,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.5,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    // TEXT & ICONS =============================
+    icons: {
+        fontFamily: "MaterialIconsRound_400Regular",
+        fontSize: 30,
+        color: colors.text,
+      },
     buttonText: {
         fontFamily: "Metamorphous_400Regular",
         color: colors.textDark, 
         fontSize: 20,
     },
-    editButton: {
-        width: "40%",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: colors.bgSecondary,
-        borderRadius: 100,
-        shadowColor: colors.shadow, 
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,  
-        margin:"2%",
-        padding:"3%", 
+    contentText: {
+        fontFamily: "Alegreya_400Regular",
+        // fontSize: 24,
+        },
+    pageTitleText: {
+        fontFamily: "Metamorphous_400Regular",
+        fontSize: 30,
+        color: colors.text,
     },
-    closeButton: {
-        width: "40%",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: colors.cancel,
-        borderRadius: 100,
-        shadowColor: colors.shadow, 
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
-        padding:"3%",
-        margin:"2%"  
+        
+    titleText: {
+        fontFamily: "Metamorphous_400Regular",
+        fontSize: 36,
+        color: colors.text,
     },
-    buttonContainer: {
-        flexDirection: "row",
-        justifyContent: "space-evenly", 
-        alignItems: "center", 
-        width: "100%", 
-        paddingHorizontal: 20, 
+    
+    descriptionText: {
+        fontFamily: "Alegreya_400Regular",
+        fontSize: 24,
+        color: colors.text,
     },
-    archiveButton: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: colors.bgQuaternary,
-        borderRadius: 100,
-        shadowColor: colors.shadow, 
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,  
-        margin:"2%",
-        padding:"3%", 
-    },
-    deleteButton: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: colors.cancel,
-        borderRadius: 100,
-        shadowColor: colors.shadow, 
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,  
-        margin:"2%",
-        padding:"3%", 
+    
+    fieldText: {
+        fontFamily: "Alegreya_500Medium",
+        fontSize: 22,
+        color: colors.text,
     },
 });
 

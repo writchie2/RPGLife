@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,10 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import { router } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { BackHandler } from "react-native";
-import { ProgressBar } from "react-native-paper";
 
 import colors from "@/constants/colors";
 import UserHeader from "@/components/UserHeader";
@@ -17,6 +13,7 @@ import UserHeader from "@/components/UserHeader";
 import TraitGraph from "@/components/TraitGraphModal";
 import CharacterTraitLevels from "@/components/CharacterTraitLevels";
 import CharacterTraitDesc from "@/components/CharacterTraitDesc";
+import { usePreventRemove } from "@react-navigation/native";
 
 // Define the available views
 enum ViewMode {
@@ -38,21 +35,10 @@ export default function CharacterScreen() {
   // const [characterTraits, setCharacterTraits] = useState<CharacterTrait[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.LEVELS); // Default view
 
-  useEffect(() => {
-    const backAction = () => {
-      router.replace("/(main)"); // Navigate back to home
-      return true; // Prevent default behavior
-    };
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => backHandler.remove();
-  }, []);
+  
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.headerContainer}>
         <UserHeader />
       </View>
@@ -100,7 +86,7 @@ export default function CharacterScreen() {
           <Text style={styles.navText}>Desc.</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -109,8 +95,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bgPrimary,
-    // paddingVertical: 20,
-    paddingBottom: 20, // -TEST-
+    paddingVertical: 20,
   },
   headerContainer: {
     paddingHorizontal: 20,
