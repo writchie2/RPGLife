@@ -45,6 +45,7 @@ export interface UserData {
   exp: number;
   avatarIndex: number;
   characterTitle: string; // store selected character title
+  theme: string; // store selected theme
   quests?: Quest[]; // Optional quests list (can be empty)
   skills?: Skill[]; // Optional skills list (can be empty)
 }

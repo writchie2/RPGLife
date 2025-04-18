@@ -9,7 +9,8 @@ import {
   Image,
 } from "react-native";
 
-import colors from "@/constants/colors";
+// import colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 import { useUserData } from "@/contexts/UserContext";
 import calcEXP from "@/utils/calcEXP";
 
@@ -20,6 +21,7 @@ export type Avatar = {
   source: any;
   unlockLevel: number;
   progress: number;
+  message: string;
 };
 
 export const avatarsData: Avatar[] = [
@@ -29,6 +31,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/iconDefault.png"),
     unlockLevel: 0,
     progress: 0,
+    message: "Unlocked at Character level 0!",
   },
   {
     id: 1,
@@ -36,6 +39,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/iconSTR-v1.png"),
     unlockLevel: 0,
     progress: 0,
+    message: "Unlocked at Character level 0!",
   },
   {
     id: 2,
@@ -43,6 +47,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/iconVIT-v1.png"),
     unlockLevel: 0,
     progress: 0,
+    message: "Unlocked at Character level 0!",
   },
   {
     id: 3,
@@ -50,6 +55,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/iconAGI-v1.png"),
     unlockLevel: 0,
     progress: 0,
+    message: "Unlocked at Character level 0!",
   },
   {
     id: 4,
@@ -57,6 +63,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/iconINT-v1.png"),
     unlockLevel: 0,
     progress: 0,
+    message: "Unlocked at Character level 0!",
   },
   {
     id: 5,
@@ -64,6 +71,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/iconCHR-v1.png"),
     unlockLevel: 0,
     progress: 0,
+    message: "Unlocked at Character level 0!",
   },
   {
     id: 6,
@@ -71,6 +79,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/iconSTR-v2.png"),
     unlockLevel: 5,
     progress: 0,
+    message: "Unlocked at Strength level 5!",
   },
   {
     id: 7,
@@ -78,6 +87,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/iconVIT-v2.png"),
     unlockLevel: 5,
     progress: 0,
+    message: "Unlocked at Vitality level 5!",
   },
   {
     id: 8,
@@ -85,6 +95,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/iconAGI-v2.png"),
     unlockLevel: 5,
     progress: 0,
+    message: "Unlocked at Agility level 5!",
   },
   {
     id: 9,
@@ -92,6 +103,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/iconINT-v2.png"),
     unlockLevel: 5,
     progress: 0,
+    message: "Unlocked at Intelligence level 5!",
   },
   {
     id: 10,
@@ -99,6 +111,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/iconCHR-v2.png"),
     unlockLevel: 5,
     progress: 0,
+    message: "Unlocked at Charisma level 5!",
   },
   {
     id: 11,
@@ -106,6 +119,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/avatarSTR-v1.png"),
     unlockLevel: 15,
     progress: 0,
+    message: "Unlocked at Strength level 15!",
   },
   {
     id: 12,
@@ -113,6 +127,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/avatarVIT-v1.png"),
     unlockLevel: 15,
     progress: 0,
+    message: "Unlocked at Vitality level 15!",
   },
   {
     id: 13,
@@ -120,6 +135,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/avatarAGI-v1.png"),
     unlockLevel: 15,
     progress: 0,
+    message: "Unlocked at Agility level 15!",
   },
   {
     id: 14,
@@ -127,6 +143,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/avatarINT-v1.png"),
     unlockLevel: 15,
     progress: 0,
+    message: "Unlocked at Intelligence level 15!",
   },
   {
     id: 15,
@@ -134,6 +151,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/avatarCHR-v1.png"),
     unlockLevel: 15,
     progress: 0,
+    message: "Unlocked at Charisma level 15!",
   },
   {
     id: 16,
@@ -141,6 +159,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/avatarSTR-v2.png"),
     unlockLevel: 25,
     progress: 0,
+    message: "Unlocked at Strength level 25!",
   },
   {
     id: 17,
@@ -148,6 +167,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/avatarVIT-v2.png"),
     unlockLevel: 25,
     progress: 0,
+    message: "Unlocked at Vitality level 25!",
   },
   {
     id: 18,
@@ -155,6 +175,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/avatarAGI-v2.png"),
     unlockLevel: 25,
     progress: 0,
+    message: "Unlocked at Agility level 25!",
   },
   {
     id: 19,
@@ -162,6 +183,7 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/avatarINT-v2.png"),
     unlockLevel: 25,
     progress: 0,
+    message: "Unlocked at Intelligence level 25!",
   },
   {
     id: 20,
@@ -169,10 +191,102 @@ export const avatarsData: Avatar[] = [
     source: require("../assets/images/avatarCHR-v2.png"),
     unlockLevel: 25,
     progress: 0,
+    message: "Unlocked at Charisma level 25!",
   },
 ];
 
 const AvatarList = () => {
+  const colors = useTheme(); // used for themes, replaces colors import
+
+  const styles = StyleSheet.create({
+    listContainer: {
+      marginBottom: 20,
+    },
+    splitRowContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    section: {
+      backgroundColor: colors.bgTertiary,
+      padding: 10,
+      borderRadius: 8,
+      height: 50,
+    },
+    sectionTitle: {
+      width: "100%",
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 24,
+      color: colors.text,
+    },
+    avatarListContainer: {
+      position: "relative",
+      top: -50,
+      marginBottom: -50,
+      zIndex: -1,
+      borderRadius: 8,
+      width: "100%",
+      paddingTop: 50,
+      backgroundColor: colors.bgDropdown,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 5,
+      elevation: 3,
+    },
+    avatarGrid: {
+      alignItems: "center",
+      padding: 10,
+    },
+    pickAvatar: {
+      width: 100,
+      height: 100,
+    },
+    pickAvatarLocked: {
+      width: 100,
+      height: 100,
+      opacity: 0.5,
+      filter: "grayscale(80%)",
+    },
+    icon: {
+      fontFamily: "MaterialIconsRound_400Regular",
+      fontSize: 50,
+      color: colors.text,
+      position: "absolute",
+      right: 0,
+    },
+    lockedAvatarContainer: {
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    iconLock: {
+      // backgroundColor: colors.bgSecondary,
+      // borderRadius: 99,
+      // padding: 4,
+      // borderWidth: 2,
+      // fontSize: 32,
+      borderColor: colors.borderInput,
+      fontFamily: "MaterialIconsRound_400Regular",
+      fontSize: 40,
+      color: colors.textDark,
+      position: "absolute",
+      zIndex: 9,
+    },
+    pickAvatarContainer: {
+      backgroundColor: colors.bgSecondary,
+      borderRadius: 25,
+      padding: 3,
+      margin: 3,
+      borderWidth: 2,
+      borderColor: colors.borderInput,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 5,
+      elevation: 2,
+    },
+  });
+
   // GET USER LEVEL DATA
   const userData = useUserData();
   const [levelOverall, setLevelOverall] = useState(0);
@@ -231,9 +345,7 @@ const AvatarList = () => {
     return (
       <TouchableOpacity
         onPress={() =>
-          isUnlocked
-            ? userData.setAvatar(item.id)
-            : alert("You haven't unlocked this yet!")
+          isUnlocked ? userData.setAvatar(item.id) : alert(item.message)
         }
         style={isUnlocked ? undefined : styles.lockedAvatarContainer}
       >
@@ -277,94 +389,5 @@ const AvatarList = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  listContainer: {
-    marginBottom: 20,
-  },
-  splitRowContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  section: {
-    backgroundColor: colors.bgTertiary,
-    padding: 10,
-    borderRadius: 8,
-    height: 50,
-  },
-  sectionTitle: {
-    width: "100%",
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 24,
-    color: colors.text,
-  },
-  avatarListContainer: {
-    position: "relative",
-    top: -50,
-    marginBottom: -50,
-    zIndex: -1,
-    borderRadius: 8,
-    width: "100%",
-    paddingTop: 50,
-    backgroundColor: colors.bgDropdown,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  avatarGrid: {
-    alignItems: "center",
-    padding: 10,
-  },
-  pickAvatar: {
-    width: 100,
-    height: 100,
-  },
-  pickAvatarLocked: {
-    width: 100,
-    height: 100,
-    opacity: 0.5,
-    filter: "grayscale(80%)",
-  },
-  icon: {
-    fontFamily: "MaterialIconsRound_400Regular",
-    fontSize: 50,
-    color: colors.text,
-    position: "absolute",
-    right: 0,
-  },
-  lockedAvatarContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  iconLock: {
-    // backgroundColor: colors.bgSecondary,
-    // borderRadius: 99,
-    // padding: 4,
-    // borderWidth: 2,
-    // fontSize: 32,
-    borderColor: colors.borderInput,
-    fontFamily: "MaterialIconsRound_400Regular",
-    fontSize: 40,
-    color: colors.textDark,
-    position: "absolute",
-    zIndex: 9,
-  },
-  pickAvatarContainer: {
-    backgroundColor: colors.bgSecondary,
-    borderRadius: 25,
-    padding: 3,
-    margin: 3,
-    borderWidth: 2,
-    borderColor: colors.borderInput,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 2,
-  },
-});
 
 export default AvatarList;

@@ -34,12 +34,104 @@ import { useEffect } from "react";
 import { BackHandler } from "react-native";
 import { useUserData } from "@/contexts/UserContext";
 
-import colors from "@/constants/colors";
+// import colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 
 import AvatarList from "@/components/AvatarList"; // allow selecting avatars from settings
 import TitlesList from "@/components/TitlesList"; // allow selecting character titles from settings
+import ThemeList from "@/components/ThemeList"; // allow selecting app themes from settings
 
 export default function Settings() {
+  const colors = useTheme(); // used for themes, replaces colors import
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.bgPrimary,
+    },
+    headerContainer: {
+      paddingHorizontal: 20,
+      marginBottom: 20,
+    },
+    pageTitle: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 28,
+      color: colors.text,
+      textAlign: "center",
+    },
+    scrollLine: {
+      marginHorizontal: 15,
+      padding: 5,
+      borderBottomWidth: 1,
+      borderTopWidth: 1,
+      borderColor: colors.borderLight,
+    },
+    scrollContainer: {
+      paddingTop: 20,
+      paddingHorizontal: 20,
+    },
+    settingsContainer: {
+      alignItems: "center",
+    },
+    logo: {
+      height: 200,
+      aspectRatio: 1, // maintains correct image width -> aspectRation = width/height
+      // marginTop: 5,
+      marginBottom: 10,
+    },
+    form: {
+      backgroundColor: colors.bgSecondary,
+      marginTop: 15,
+      padding: 15,
+      borderRadius: 8,
+      width: "90%",
+      shadowColor: colors.shadowLight, // Shadow color
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    inputGroup: {
+      marginBottom: 8,
+    },
+    inputLabel: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 18,
+      color: colors.text,
+      marginBottom: 2,
+    },
+    inputField: {
+      fontFamily: "Alegreya_400Regular",
+      fontSize: 18,
+      color: colors.textInput,
+      paddingHorizontal: 10,
+      backgroundColor: colors.bgPrimary,
+      height: 48,
+      borderColor: colors.borderInput,
+      borderWidth: 2,
+      borderRadius: 6,
+    },
+    button: {
+      width: "56%",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.bgSecondary,
+      borderRadius: 100, // full rounded corners
+      marginTop: 25,
+      padding: 18,
+      shadowColor: colors.shadow, // Shadow color to match the button for a cohesive look
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    buttonText: {
+      fontFamily: "Metamorphous_400Regular",
+      color: colors.textDark, // match title color, slightly darker due to being on darker bg
+      fontSize: 20, // Slightly larger for emphasis
+    },
+  });
+
   const { resetAccount } = useUserData();
 
   useEffect(() => {
@@ -87,6 +179,7 @@ export default function Settings() {
         <View style={styles.settingsContainer}>
           <AvatarList />
           <TitlesList />
+          <ThemeList />
           <TouchableOpacity
             style={styles.button}
             onPress={() => resetHandler()}
@@ -98,91 +191,3 @@ export default function Settings() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bgPrimary,
-  },
-  headerContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  pageTitle: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 28,
-    color: colors.text,
-    textAlign: "center",
-  },
-  scrollLine: {
-    marginHorizontal: 15,
-    padding: 5,
-    borderBottomWidth: 1,
-    borderTopWidth: 1,
-    borderColor: colors.borderLight,
-  },
-  scrollContainer: {
-    paddingTop: 20,
-    paddingHorizontal: 20,
-  },
-  settingsContainer: {
-    alignItems: "center",
-  },
-  logo: {
-    height: 200,
-    aspectRatio: 1, // maintains correct image width -> aspectRation = width/height
-    // marginTop: 5,
-    marginBottom: 10,
-  },
-  form: {
-    backgroundColor: colors.bgSecondary,
-    marginTop: 15,
-    padding: 15,
-    borderRadius: 8,
-    width: "90%",
-    shadowColor: colors.shadowLight, // Shadow color
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  inputGroup: {
-    marginBottom: 8,
-  },
-  inputLabel: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 18,
-    color: colors.text,
-    marginBottom: 2,
-  },
-  inputField: {
-    fontFamily: "Alegreya_400Regular",
-    fontSize: 18,
-    color: colors.textInput,
-    paddingHorizontal: 10,
-    backgroundColor: colors.bgPrimary,
-    height: 48,
-    borderColor: colors.borderInput,
-    borderWidth: 2,
-    borderRadius: 6,
-  },
-  button: {
-    width: "56%",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.bgSecondary,
-    borderRadius: 100, // full rounded corners
-    marginTop: 25,
-    padding: 18,
-    shadowColor: colors.shadow, // Shadow color to match the button for a cohesive look
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  buttonText: {
-    fontFamily: "Metamorphous_400Regular",
-    color: colors.textDark, // match title color, slightly darker due to being on darker bg
-    fontSize: 20, // Slightly larger for emphasis
-  },
-});

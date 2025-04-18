@@ -4,7 +4,8 @@ import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BackHandler } from "react-native";
 
-import colors from "@/constants/colors";
+// import colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 import UserHeader from "@/components/UserHeader";
 
 import AchievementsList from "@/components/AchievementsList";
@@ -17,6 +18,35 @@ import AchievementsList from "@/components/AchievementsList";
 // };
 
 export default function AchievementsPage() {
+  const colors = useTheme(); // used for themes, replaces colors import
+  // Styles
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.bgPrimary,
+    },
+    headerContainer: {
+      paddingHorizontal: 20,
+      marginBottom: 20,
+    },
+    pageTitle: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 28,
+      padding: 5,
+      color: colors.text,
+      textAlign: "center",
+    },
+    scrollLine: {
+      marginHorizontal: 15,
+      borderBottomWidth: 1,
+      borderColor: colors.borderLight,
+    },
+    scrollContainer: {
+      paddingTop: 20,
+      paddingHorizontal: 20,
+    },
+  });
+
   // const [completedAchievements, setCompletedAchievements] = useState<
   //   Achievement[]
   // >([]);
@@ -57,31 +87,3 @@ export default function AchievementsPage() {
     </SafeAreaView>
   );
 }
-
-// Styles
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bgPrimary,
-  },
-  headerContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  pageTitle: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 28,
-    padding: 5,
-    color: colors.text,
-    textAlign: "center",
-  },
-  scrollLine: {
-    marginHorizontal: 15,
-    borderBottomWidth: 1,
-    borderColor: colors.borderLight,
-  },
-  scrollContainer: {
-    paddingTop: 20,
-    paddingHorizontal: 20,
-  },
-});

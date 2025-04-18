@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import colors from "@/constants/colors";
+// import colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 
 interface DatePickerProps {
   style: any;
   label: string;
   dateSelected: Boolean;
   onDateChange?: (date: Date) => void;
-  
 }
 
 const DatePickerComponent: React.FC<DatePickerProps> = ({
@@ -17,6 +17,26 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
   dateSelected,
   onDateChange,
 }) => {
+  const colors = useTheme(); // used for themes, replaces colors import
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      // alignItems: "center",
+    },
+    textLabel: {
+      fontFamily: "Alegreya_400Regular",
+      fontSize: 18,
+      color: colors.textPlaceholder,
+    },
+    textSelected: {
+      fontFamily: "Alegreya_400Regular",
+      fontSize: 18,
+      color: colors.textInput,
+    },
+  });
+
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
 
@@ -57,23 +77,5 @@ const DatePickerComponent: React.FC<DatePickerProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    // alignItems: "center",
-  },
-  textLabel: {
-    fontFamily: "Alegreya_400Regular",
-    fontSize: 18,
-    color: colors.textPlaceholder,
-  },
-  textSelected: {
-    fontFamily: "Alegreya_400Regular",
-    fontSize: 18,
-    color: colors.textInput,
-  },
-});
 
 export default DatePickerComponent;
