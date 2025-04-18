@@ -38,11 +38,11 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
 
     const questReward = () => {
         if (userData && quest) {
-            const calcLevelBefore = calcEXP(userData?.exp || 0).level
-            setLevelBefore(calcLevelBefore)
+            const calcLevelBefore = calcEXP(userData?.exp || 0).level;
+            setLevelBefore(calcLevelBefore);
             completeQuest(quest.id);
-            const calcLevelAfter = calcEXP(userData?.exp || 0).level
-            setLevelAfter(calcLevelAfter)
+            const calcLevelAfter = calcEXP(userData?.exp || 0).level;
+            setLevelAfter(calcLevelAfter);
             if (levelAfter > levelBefore) {
                 onLevelUp();
             } else {
@@ -63,7 +63,7 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
         animationType="slide"
         transparent={true}
         visible={visible}
-        onRequestClose={onClose}
+        onRequestClose={questReward}
         >
         
         <View style={styles.overlay}>
