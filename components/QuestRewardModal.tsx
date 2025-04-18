@@ -9,26 +9,47 @@ import React, { useEffect, useState } from "react";
     import { Dropdown } from 'react-native-element-dropdown';
     import colors from "@/constants/colors";
     import { useUserData } from "@/contexts/UserContext";
+    import calcEXP from "@/utils/calcEXP";
+    import LevelUpModal from "./LevelUpModal";
 
 interface QuestRewardModalProps {
     visible: boolean;
     onModalHide?: () => void;
     onClose: () => void;
+    onLevelUp: () => void;
     id: string;
 }
 
 const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
     visible,
     onClose,
+    onLevelUp,
     id,
 }) => {
     if (!auth.currentUser) {
         return;
     }
-    const {userData} = useUserData();
+    const {userData, completeQuest} = useUserData();
     const quest = userData?.quests?.find(quest => quest.id === id);
-    
+    const [levelBefore, setLevelBefore] = useState(0)
+    const [levelAfter, setLevelAfter] = useState(0)
+
     const [completionReward, setCompletionReward] = useState("");
+
+    const questReward = () => {
+        if (userData && quest) {
+            const calcLevelBefore = calcEXP(userData?.exp || 0).level
+            setLevelBefore(calcLevelBefore)
+            completeQuest(quest.id);
+            const calcLevelAfter = calcEXP(userData?.exp || 0).level
+            setLevelAfter(calcLevelAfter)
+            if (levelAfter > levelBefore) {
+                onLevelUp();
+            } else {
+                onClose();
+            }
+        }
+    }
 
     useEffect(() => {
         if (quest) {
@@ -46,7 +67,7 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
         >
         
         <View style={styles.overlay}>
-        <TouchableWithoutFeedback onPress={onClose}> 
+        <TouchableWithoutFeedback onPress={questReward}> 
             {/* Title */}
             <View style={styles.titleContainer}>
             <Text style={styles.title}>Quest Complete!</Text>
@@ -81,6 +102,17 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
               </View>
             </TouchableWithoutFeedback>
           </ScrollView>
+
+          <View style={styles.closeButtonContainer}>
+            <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => {
+                    questReward();
+                }}
+            >
+            <Text style={styles.icons}>close</Text>
+            </TouchableOpacity>
+          </View>
         </View>
              
         </View>
@@ -390,6 +422,25 @@ const styles = StyleSheet.create({
         // marginHorizontal: 15,
         borderBottomWidth: 1,
         borderColor: colors.borderLight,
+    },
+    icons: {
+        // fontFamily: "MaterialIcons_400Regular",
+        fontFamily: "MaterialIconsRound_400Regular",
+        fontSize: 30,
+        color: colors.text,
+    },
+    closeButton: {
+        width: 53,
+        height: 53,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: colors.bgSecondary,
+        borderRadius: 100,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.5,
+        shadowRadius: 4,
+        elevation: 5,
     },
 });
 

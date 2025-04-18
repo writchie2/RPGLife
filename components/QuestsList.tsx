@@ -12,6 +12,7 @@ import { Quest } from "../utils/types";
 import colors from "@/constants/colors";
 import QuestViewModal from "./QuestViewModal";
 import QuestRewardModal from "./QuestRewardModal";
+import LevelUpModal from "./LevelUpModal";
 
 interface QuestsListProps {
   quests: Quest[];
@@ -31,6 +32,7 @@ const QuestsList: React.FC<QuestsListProps> = ({
   const [questID, setQuestID] = useState("");
   const [rewardID, setRewardID] = useState("");
   const [questRewardVisible, setQuestRewardVisible] = useState(false);
+  const [levelUpModalVisible, setLevelUpModalVisible] = useState(false);
   
 
   const renderItem = ({ item }: { item: Quest }) => {
@@ -107,6 +109,14 @@ const QuestsList: React.FC<QuestsListProps> = ({
           setQuestRewardVisible(true);
           console.log("reward triggered trigger")
         }}
+
+        // MIGHT NEED TO DELETE THIS SECTION AND FIX QUESTVIEWMODAL >:(
+        onLevelUp={() => {
+          setQuestsModalVisible(false);
+          setQuestID("");
+          setLevelUpModalVisible(true);
+          console.log("quest triggered level up")
+        }}
       ></QuestViewModal>
 
       <QuestRewardModal
@@ -116,7 +126,20 @@ const QuestsList: React.FC<QuestsListProps> = ({
           setRewardID("");
           setQuestRewardVisible(false);
         }}
+        onLevelUp={() => {
+          setQuestRewardVisible(false);
+          setQuestID("");
+          setLevelUpModalVisible(true);
+          console.log("quest triggered level up")
+        }}
       ></QuestRewardModal>
+
+      <LevelUpModal
+        visible={levelUpModalVisible}
+        onClose={() => {
+          setLevelUpModalVisible(false)
+        }}
+      ></LevelUpModal>
 
     </View>
   );
