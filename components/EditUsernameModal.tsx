@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Modal,
@@ -23,7 +22,6 @@ const EditUsernameModal: React.FC<EditUsernameModalProps> = ({
   visible,
   onClose,
 }) => {
-
   const colors = useTheme(); // used for themes, replaces colors import
   const styles = StyleSheet.create({
     overlay: {
@@ -105,6 +103,23 @@ const EditUsernameModal: React.FC<EditUsernameModalProps> = ({
     },
   });
 
+  const { userData, editUsername } = useUserData();
+  const [username, setUsername] = useState("");
+
+  const saveHandler = () => {
+    if (username.trim() === "") {
+      alert("Username cannot be blank!");
+      return;
+    } else if (username.trim() === userData?.username) {
+      // The username is the same, don't need to query database
+      setUsername("");
+      onClose();
+    } else {
+      editUsername(username);
+      setUsername("");
+      onClose();
+    }
+  };
   return (
     <Modal
       animationType="slide"
@@ -112,7 +127,6 @@ const EditUsernameModal: React.FC<EditUsernameModalProps> = ({
       visible={visible}
       onRequestClose={onClose}
     >
-
       <TouchableWithoutFeedback
         onPress={() => {
           setUsername("");
@@ -147,10 +161,8 @@ const EditUsernameModal: React.FC<EditUsernameModalProps> = ({
           </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
-
     </Modal>
   );
 };
 
 export default EditUsernameModal;
-

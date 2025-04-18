@@ -30,7 +30,7 @@ export const themeData: theme[] = [
     id: 0,
     catagory: "default",
     title: "Default",
-    unlockLevel: 30,
+    unlockLevel: 0,
     progress: 0,
     preview: ["#f1f3de", "#C2CFA0", "#656E4A", "#394022"],
     message: "Unlocked at Character level 0!",
