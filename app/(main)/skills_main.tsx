@@ -58,7 +58,7 @@ export default function SkillsPage() {
     },
     headerContainer: {
       paddingHorizontal: 20,
-      marginBottom: 20,
+      marginVertical: 20,
     },
     scrollLine: {
       marginHorizontal: 15,

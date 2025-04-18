@@ -43,7 +43,6 @@ import TitlesList from "@/components/TitlesList"; // allow selecting character t
 import EditUsernameModal from "@/components/EditUsernameModal";
 import ThemeList from "@/components/ThemeList"; // allow selecting app themes from settings
 
-
 export default function Settings() {
   const colors = useTheme(); // used for themes, replaces colors import
 
@@ -162,8 +161,6 @@ export default function Settings() {
   const { resetAccount } = useUserData();
   const [editUsernameVisible, setEditUsernameVisible] = useState(false);
 
-
-
   const resetHandler = () => {
     Alert.alert(
       "Confirm Reset",
@@ -202,9 +199,7 @@ export default function Settings() {
           >
             <View style={styles.splitRowContainer}>
               <Text style={styles.sectionTitle}>Change Username</Text>
-              <Text style={styles.icon}>
-                person
-              </Text>
+              <Text style={styles.icon}>person</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
@@ -220,9 +215,7 @@ export default function Settings() {
         onClose={() => {
           setEditUsernameVisible(false);
         }}
-        >
-
-      </EditUsernameModal>
+      ></EditUsernameModal>
     </View>
   );
 }

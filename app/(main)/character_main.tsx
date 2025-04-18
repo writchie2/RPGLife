@@ -43,7 +43,7 @@ export default function CharacterScreen() {
     },
     headerContainer: {
       paddingHorizontal: 20,
-      marginBottom: 20,
+      marginVertical: 20,
     },
     scrollLine: {
       marginHorizontal: 15,
@@ -105,11 +105,8 @@ export default function CharacterScreen() {
     },
   });
 
-  
   // const [characterTraits, setCharacterTraits] = useState<CharacterTrait[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.LEVELS); // Default view
-
-  
 
   return (
     <View style={styles.container}>

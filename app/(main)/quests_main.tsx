@@ -52,7 +52,7 @@ export default function QuestMainPage() {
     },
     headerContainer: {
       paddingHorizontal: 20,
-      marginBottom: 20,
+      marginVertical: 20,
     },
     scrollLine: {
       marginHorizontal: 15,
@@ -111,7 +111,6 @@ export default function QuestMainPage() {
   const [questListVisible, setQuestListVisible] = useState(false);
   const [pastQuestListVisible, setPastQuestListVisible] = useState(false);
   const [questModalVisible, setQuestModalVisible] = useState(false);
-
 
   return (
     <View style={styles.container}>

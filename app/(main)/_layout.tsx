@@ -24,40 +24,44 @@ export default function MainLayout() {
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <ThemeContext>
           <Stack>
-            <Stack.Screen 
-              name="index" 
-              options={{ 
+            <Stack.Screen
+              name="index"
+              options={{
                 headerShown: false,
-                gestureEnabled: false, 
-                }} />
-            <Stack.Screen 
-              name="settings" 
-              options={{ 
+                gestureEnabled: false,
+              }}
+            />
+            <Stack.Screen
+              name="settings"
+              options={{
                 headerShown: false,
-                gestureEnabled: false, 
-                }} />
-            <Stack.Screen 
-              name="quests_main" 
-              options={{ 
+                gestureEnabled: false,
+              }}
+            />
+            <Stack.Screen
+              name="quests_main"
+              options={{
                 headerShown: false,
-                gestureEnabled: false, 
-                }} />
-            <Stack.Screen 
-              name="skills_main" 
-              options={{ 
+                gestureEnabled: false,
+              }}
+            />
+            <Stack.Screen
+              name="skills_main"
+              options={{
                 headerShown: false,
-                gestureEnabled: false, 
-                }} />
+                gestureEnabled: false,
+              }}
+            />
             <Stack.Screen
               name="character_main"
-              options={{ 
+              options={{
                 headerShown: false,
-                gestureEnabled: false, 
+                gestureEnabled: false,
               }}
             />
             <Stack.Screen
               name="achievements_main"
-              options={{ 
+              options={{
                 headerShown: false,
                 gestureEnabled: false,
               }}

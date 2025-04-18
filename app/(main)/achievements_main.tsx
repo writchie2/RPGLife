@@ -27,7 +27,7 @@ export default function AchievementsPage() {
     },
     headerContainer: {
       paddingHorizontal: 20,
-      marginBottom: 20,
+      marginVertical: 20,
     },
     pageTitle: {
       fontFamily: "Metamorphous_400Regular",
@@ -75,4 +75,3 @@ export default function AchievementsPage() {
     </View>
   );
 }
-

@@ -69,7 +69,7 @@ export default function HomePage() {
     },
     headerContainer: {
       paddingHorizontal: 20,
-      marginBottom: 20,
+      marginVertical: 20,
     },
     scrollLine: {
       marginHorizontal: 15,
