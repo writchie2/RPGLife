@@ -495,5 +495,243 @@ const SkillViewModal: React.FC<SkillViewModalProps> = ({
 
   
 
-  
+  const { userData, archiveSkill, activateSkill, deleteSkill } = useUserData();
+
+  const skill = userData?.skills?.find((skill) => skill.id === id);
+  const [skillEditVisible, setSkillEditVisible] = useState(false);
+  const [skillID, setSkillID] = useState("");
+
+  const archiveHandler = () => {
+    Alert.alert(
+      "Confirm Archive",
+      "This will set your skill as inactive. You can reactivate it at any time.\nYou will keep gained trait exp, but it will deteriorate over time!",
+      [
+        {
+          text: "Confirm",
+          onPress: () => {
+            if (userData && skill) {
+              const matchingQuests = userData.quests?.filter(
+                (quest) =>
+                  (quest.primarySkill === skill.name && quest.active) ||
+                  (quest.secondarySkill === skill.name && quest.active)
+              );
+              if (matchingQuests && matchingQuests?.length > 0) {
+                let activeQuests = [];
+                activeQuests.push(
+                  "There are quests active with this skill:\n\n"
+                );
+                matchingQuests.map((quest, index) =>
+                  activeQuests.push(`${index + 1}: ${quest.name}\n`)
+                );
+                activeQuests.push(
+                  "\nPlease complete these quests or delete them."
+                );
+                const questMessage = activeQuests.join("");
+                Alert.alert("Error!", questMessage);
+              } else {
+                archiveSkill(skill.id);
+                onClose();
+              }
+            }
+          },
+        },
+        {
+          text: "Cancel",
+          onPress: () => {},
+        },
+      ]
+    );
+  };
+
+  const deleteHandler = () => {
+    Alert.alert(
+      "Confirm Delete",
+      "This will delete your skill and any trait experience gained for it!",
+      [
+        {
+          text: "Confirm",
+          onPress: () => {
+            if (userData && skill) {
+              const matchingQuests = userData.quests?.filter(
+                (quest) =>
+                  (quest.primarySkill === skill.name && quest.active) ||
+                  (quest.secondarySkill === skill.name && quest.active)
+              );
+              if (matchingQuests && matchingQuests?.length > 0) {
+                let activeQuests = [];
+                activeQuests.push(
+                  "There are quests active with this skill:\n\n"
+                );
+                matchingQuests.map((quest, index) =>
+                  activeQuests.push(`${index + 1}: ${quest.name}\n`)
+                );
+                activeQuests.push(
+                  "\nPlease complete these quests or delete them."
+                );
+                const questMessage = activeQuests.join("");
+                Alert.alert("Error!", questMessage);
+              } else {
+                deleteSkill(skill.id);
+                onClose();
+              }
+            }
+          },
+        },
+        {
+          text: "Cancel",
+          onPress: () => {},
+        },
+      ]
+    );
+  };
+  const activateHandler = () => {
+    if (userData && skill) {
+      activateSkill(skill.id);
+      onClose();
+    }
+  };
+
+  return (
+    <Modal
+      animationType="none"
+      transparent={true}
+      visible={visible}
+      onRequestClose={onClose}
+    >
+      {/* TouchableWithoutFeedback to detect taps outside the modal. Also somewhat simulates slide to cancel for iOS. */}
+
+      <View style={styles.overlay}>
+        <TouchableWithoutFeedback onPress={onClose}>
+          <View style={styles.pageTitle}>
+            <Text style={styles.pageTitleText}>- Skill Details -</Text>
+          </View>
+        </TouchableWithoutFeedback>
+
+        <View style={styles.modalContainer}>
+          <View style={styles.scrollLine}></View>
+          {/* ScrollView makes the form scrollable if it does not fit fully on a small screen */}
+          <ScrollView
+            contentContainerStyle={styles.scrollContainer}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+              <View style={styles.skillContainer}>
+                {/* Title */}
+                <View style={styles.titleContainer}>
+                  <Text style={styles.titleText}>{skill?.name}</Text>
+                </View>
+                <View style={styles.expRow}>
+                  <View style={styles.expRowLeft}>
+                    <Text style={styles.levelText}>
+                      {calcEXP(skill?.exp || 0).level}
+                    </Text>
+                  </View>
+                  <View style={styles.expRowRight}>
+                    <View style={styles.expBarContainer}>
+                      <View style={styles.expBar}>
+                        <View
+                          style={{
+                            height: "100%",
+                            width: `${
+                              (calcEXP(skill?.exp || 0).progressEXP /
+                                calcEXP(skill?.exp || 1).neededEXP) *
+                              100
+                            }%`,
+                            backgroundColor: colors.text,
+                            borderRadius: 99,
+                          }}
+                        ></View>
+                      </View>
+                      <Text style={styles.expTrait}>
+                        {calcEXP(skill?.exp || 0).progressEXP}/
+                        {calcEXP(skill?.exp || 1).neededEXP} exp
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.skillDetailsContainer}>
+                  <View style={styles.descriptionContainer}>
+                    <Text style={styles.descriptionText}>
+                      {skill?.description === ""
+                        ? "Skill Details"
+                        : skill?.description}
+                    </Text>
+                  </View>
+                  <View style={styles.fieldContainer}>
+                    <Text style={styles.fieldText}>
+                      Traits:{" "}
+                      <Text style={styles.contentText}>
+                        {skill?.primaryTrait}
+                        {skill?.secondaryTrait && `, ${skill?.secondaryTrait}`}
+                      </Text>
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.skillButtonsContainer}>
+                  <TouchableOpacity
+                    style={styles.deleteButton}
+                    onPress={() => deleteHandler()}
+                  >
+                    <Text style={styles.icons}>delete</Text>
+                  </TouchableOpacity>
+
+                  {skill?.active ? (
+                    <TouchableOpacity
+                      style={styles.archiveButton}
+                      onPress={() => archiveHandler()}
+                    >
+                      <Text style={styles.buttonText}>Archive Skill</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.archiveButton}
+                      onPress={() => activateHandler()}
+                    >
+                      <Text style={styles.buttonText}>Activate Skill</Text>
+                    </TouchableOpacity>
+                  )}
+
+                  <TouchableOpacity
+                    style={styles.editButton}
+                    onPress={() => {
+                      if (skill) {
+                        setSkillID(skill.id);
+                        setSkillEditVisible(true);
+                      }
+                    }}
+                  >
+                    <Text style={styles.icons}>edit</Text>
+                  </TouchableOpacity>
+                  <EditSkillModal
+                    visible={skillEditVisible}
+                    id={skillID}
+                    onClose={() => {
+                      setSkillEditVisible(false);
+                      setSkillID("");
+                    }}
+                  ></EditSkillModal>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </ScrollView>
+          {/* Close Button */}
+
+          <View style={styles.closeButtonContainer}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => {
+                onClose();
+              }}
+            >
+              <Text style={styles.icons}>close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
 export default SkillViewModal;
