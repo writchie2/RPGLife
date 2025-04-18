@@ -43,7 +43,8 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
           <View style={styles.pageTitle}>
             <Text style={styles.pageTitleText}>- Level Up! -</Text>
           </View>
-
+        </TouchableWithoutFeedback>
+        
         <View style={styles.modalContainer}>
         {/* Styling ripped from QuestReward modal. TODO: update fields to make sense and look nice :^) */}
         <View style={styles.questDetailsContainer}>
@@ -55,7 +56,7 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
           </View>
         </View>
         </View>
-        </TouchableWithoutFeedback>
+        
       </View>
     </Modal>
   );

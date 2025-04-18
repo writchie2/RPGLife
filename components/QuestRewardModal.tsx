@@ -9,8 +9,11 @@ import React, { useEffect, useState } from "react";
     import { Dropdown } from 'react-native-element-dropdown';
     import colors from "@/constants/colors";
     import { useUserData } from "@/contexts/UserContext";
+    import { UserData } from "@/utils/types";
     import calcEXP from "@/utils/calcEXP";
     import LevelUpModal from "./LevelUpModal";
+    import { doc, updateDoc, onSnapshot, collection, query, addDoc, deleteDoc, getDocs, where, getDoc } from 'firebase/firestore';
+    import { db } from '../FirebaseConfig';
 
 interface QuestRewardModalProps {
     visible: boolean;
@@ -29,21 +32,28 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
     if (!auth.currentUser) {
         return;
     }
-    const {userData, completeQuest} = useUserData();
-    const quest = userData?.quests?.find(quest => quest.id === id);
+
+    const userData = useUserData();
+    const {completeQuest} = useUserData();
+    const quest = userData.userData?.quests?.find(quest => quest.id === id);
     const [levelBefore, setLevelBefore] = useState(0)
     const [levelAfter, setLevelAfter] = useState(0)
 
     const [completionReward, setCompletionReward] = useState("");
 
-    const questReward = () => {
-        if (userData && quest) {
-            const calcLevelBefore = calcEXP(userData?.exp || 0).level;
-            setLevelBefore(calcLevelBefore);
+    const questReward = async () => {
+        if ((userData && quest) && auth.currentUser) {
+            const neededEXP = calcEXP(userData.userData?.exp || 0).neededEXP;
+            const progressEXP = calcEXP(userData.userData?.exp || 0).progressEXP
+            console.log("calc level before is: ", neededEXP)
+            console.log("calc level after is: ", progressEXP)
             completeQuest(quest.id);
-            const calcLevelAfter = calcEXP(userData?.exp || 0).level;
-            setLevelAfter(calcLevelAfter);
-            if (levelAfter > levelBefore) {
+
+           // Calculating level states for before and after was a bust
+           // Only way to get the level up modal to appear momentarily is by taking the difference
+           // between needed and progress EXP.
+           // TODO: Set up different cases for quest difficulties and different progress amounts :)
+            if ((neededEXP - progressEXP) < 150) {
                 onLevelUp();
             } else {
                 onClose();
@@ -56,7 +66,14 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
             // add quest title bozo
             setCompletionReward(quest.reward);
         }
-    }, [quest]);
+
+        /*
+        const levelBefore = calcEXP(
+            userData.userData?.exp || 0
+          );
+          setLevelBefore(levelBefore);
+        */
+          }, [quest]);
 
     return (
         <Modal
