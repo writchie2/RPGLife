@@ -76,31 +76,3 @@ export default function AchievementsPage() {
   );
 }
 
-// Styles
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bgPrimary,
-    paddingVertical: 20,
-  },
-  headerContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  pageTitle: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 28,
-    padding: 5,
-    color: colors.text,
-    textAlign: "center",
-  },
-  scrollLine: {
-    marginHorizontal: 15,
-    borderBottomWidth: 1,
-    borderColor: colors.borderLight,
-  },
-  scrollContainer: {
-    paddingTop: 20,
-    paddingHorizontal: 20,
-  },
-});
