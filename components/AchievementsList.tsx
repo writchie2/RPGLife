@@ -8,7 +8,8 @@ import {
   FlatList,
 } from "react-native";
 
-import colors from "@/constants/colors";
+// import colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 import { useUserData } from "@/contexts/UserContext";
 import calcEXP from "@/utils/calcEXP";
 
@@ -27,6 +28,96 @@ type Section = {
 };
 
 const AchievementsList = () => {
+  const colors = useTheme(); // used for themes, replaces colors import
+
+  const styles = StyleSheet.create({
+    listContainer: {
+      marginBottom: 20,
+    },
+    splitRowContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    sectionContainer: {
+      marginBottom: 20,
+    },
+    section: {
+      backgroundColor: colors.bgTertiary,
+      padding: 10,
+      borderRadius: 8,
+      height: 50,
+    },
+    sectionTitleContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 2,
+    },
+    sectionTitle: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 24,
+      color: colors.text,
+    },
+    achievementListContainer: {
+      position: "relative",
+      top: -50,
+      marginBottom: -50,
+      zIndex: -1,
+      borderRadius: 8,
+      width: "100%",
+      paddingTop: 50,
+      backgroundColor: colors.bgDropdown,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 5,
+      elevation: 3,
+    },
+    achievement: {
+      marginHorizontal: 10,
+      marginBottom: 5,
+      paddingHorizontal: 5,
+      paddingVertical: 10,
+      borderColor: colors.borderLight,
+      borderBottomWidth: 1,
+    },
+    achievementTitle: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 18,
+      color: colors.textLight,
+    },
+    achievementTextContainer: {
+      paddingLeft: 5,
+      // paddingTop: 2,
+      borderColor: colors.borderLight,
+      borderLeftWidth: 0.5,
+    },
+    achievementText: {
+      // marginTop: 5,
+      marginTop: 2,
+      fontSize: 16,
+      color: colors.textLight,
+    },
+    textFont1: {
+      fontFamily: "Alegreya_400Regular",
+    },
+    textFont2: {
+      fontFamily: "Alegreya_500Medium",
+    },
+    icon: {
+      fontFamily: "MaterialIconsRound_400Regular",
+      fontSize: 50,
+      color: colors.text,
+      position: "absolute",
+      right: 0,
+    },
+    icon2: {
+      fontFamily: "MaterialIconsRound_400Regular",
+      fontSize: 24,
+      color: colors.text,
+    },
+  });
+
   // GET USER LEVEL DATA
   const userData = useUserData();
   const [levelOverall, setLevelOverall] = useState(0);
@@ -404,7 +495,7 @@ const AchievementsList = () => {
           <Text style={styles.textFont1}>
             {item.progress / item.level >= 1
               ? "Complete"
-              : `${item.progress}/${item.level}`}
+              : `${Math.ceil((item.progress / item.level) * 100)}%`}
           </Text>
         </Text>
       </View>
@@ -471,93 +562,5 @@ const AchievementsList = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  listContainer: {
-    marginBottom: 20,
-  },
-  splitRowContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  sectionContainer: {
-    marginBottom: 20,
-  },
-  section: {
-    backgroundColor: colors.bgTertiary,
-    padding: 10,
-    borderRadius: 8,
-    height: 50,
-  },
-  sectionTitleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 2,
-  },
-  sectionTitle: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 24,
-    color: colors.text,
-  },
-  achievementListContainer: {
-    position: "relative",
-    top: -50,
-    marginBottom: -50,
-    zIndex: -1,
-    borderRadius: 8,
-    width: "100%",
-    paddingTop: 50,
-    backgroundColor: colors.bgDropdown,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  achievement: {
-    marginHorizontal: 10,
-    marginBottom: 5,
-    paddingHorizontal: 5,
-    paddingVertical: 10,
-    borderColor: colors.borderLight,
-    borderBottomWidth: 1,
-  },
-  achievementTitle: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 18,
-    color: colors.textLight,
-  },
-  achievementTextContainer: {
-    paddingLeft: 5,
-    // paddingTop: 2,
-    borderColor: colors.borderLight,
-    borderLeftWidth: 0.5,
-  },
-  achievementText: {
-    // marginTop: 5,
-    marginTop: 2,
-    fontSize: 16,
-    color: colors.textLight,
-  },
-  textFont1: {
-    fontFamily: "Alegreya_400Regular",
-  },
-  textFont2: {
-    fontFamily: "Alegreya_500Medium",
-  },
-  icon: {
-    fontFamily: "MaterialIconsRound_400Regular",
-    fontSize: 50,
-    color: colors.text,
-    position: "absolute",
-    right: 0,
-  },
-  icon2: {
-    fontFamily: "MaterialIconsRound_400Regular",
-    fontSize: 24,
-    color: colors.text,
-  },
-});
 
 export default AchievementsList;
