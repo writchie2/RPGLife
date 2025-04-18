@@ -1,8 +1,53 @@
 import React from "react";
 import { Text, StyleSheet, View } from "react-native";
-import colors from "@/constants/colors";
+// import colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 
 const CharacterTraitDesc = () => {
+  const colors = useTheme(); // used for themes, replaces colors import
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "space-evenly",
+      paddingHorizontal: 10,
+      position: "relative",
+      top: -70,
+      marginBottom: -70,
+      borderRadius: 8,
+      width: "100%",
+      paddingTop: 65,
+      paddingBottom: 10,
+      // backgroundColor: colors.bgSecondary,
+      backgroundColor: colors.bgDropdown,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 5,
+      elevation: 3,
+    },
+    traitInfo: {
+      width: "100%",
+      paddingVertical: 10,
+      paddingHorizontal: 6,
+      marginBottom: 5,
+      backgroundColor: "transparent",
+      borderBottomWidth: 0.5,
+      borderColor: colors.borderLight,
+    },
+    traitName: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 20,
+      color: colors.text,
+    },
+    traitDesc: {
+      // fontFamily: "Alegreya_400Regular",
+      fontFamily: "Alegreya_500Medium",
+      marginTop: 2,
+      fontSize: 14,
+      color: colors.textLight,
+    },
+  });
   return (
     <View style={styles.container}>
       {/* Trait Info: Trait, EXP Bar, Level Info */}
@@ -53,48 +98,5 @@ const CharacterTraitDesc = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "space-evenly",
-    paddingHorizontal: 10,
-    position: "relative",
-    top: -70,
-    marginBottom: -70,
-    borderRadius: 8,
-    width: "100%",
-    paddingTop: 65,
-    paddingBottom: 10,
-    // backgroundColor: colors.bgSecondary,
-    backgroundColor: colors.bgDropdown,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  traitInfo: {
-    width: "100%",
-    paddingVertical: 10,
-    paddingHorizontal: 6,
-    marginBottom: 5,
-    backgroundColor: "transparent",
-    borderBottomWidth: 0.5,
-    borderColor: colors.borderLight,
-  },
-  traitName: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 20,
-    color: colors.text,
-  },
-  traitDesc: {
-    // fontFamily: "Alegreya_400Regular",
-    fontFamily: "Alegreya_500Medium",
-    marginTop: 2,
-    fontSize: 14,
-    color: colors.textLight,
-  },
-});
 
 export default CharacterTraitDesc;

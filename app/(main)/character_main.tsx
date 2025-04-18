@@ -7,7 +7,8 @@ import {
   ScrollView,
 } from "react-native";
 
-import colors from "@/constants/colors";
+// import colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 import UserHeader from "@/components/UserHeader";
 
 import TraitGraph from "@/components/TraitGraphModal";
@@ -32,6 +33,7 @@ enum ViewMode {
 // };
 
 export default function CharacterScreen() {
+  const colors = useTheme(); // used for themes, replaces colors import
   // const [characterTraits, setCharacterTraits] = useState<CharacterTrait[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.LEVELS); // Default view
 
@@ -89,6 +91,7 @@ export default function CharacterScreen() {
     </View>
   );
 }
+  const colors = useTheme(); // used for themes, replaces colors import
 
 // Styles
 const styles = StyleSheet.create({

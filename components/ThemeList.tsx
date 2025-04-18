@@ -15,283 +15,76 @@ import { useUserData } from "@/contexts/UserContext";
 import calcEXP from "@/utils/calcEXP";
 
 // Types for Title object
-export type charTitle = {
+export type theme = {
   id: number;
   catagory: string;
   title: string;
   unlockLevel: number;
   progress: number;
+  preview: any;
   message: string;
 };
 
-export const charTitlesData: charTitle[] = [
+export const themeData: theme[] = [
   {
     id: 0,
     catagory: "default",
-    title: "- None -",
+    title: "Default",
     unlockLevel: 0,
     progress: 0,
+    preview: ["#f1f3de", "#C2CFA0", "#656E4A", "#394022"],
     message: "Unlocked at Character level 0!",
   },
   {
     id: 1,
-    catagory: "default",
-    title: "Plebeian",
-    unlockLevel: 0,
+    catagory: "strength",
+    title: "Strength",
+    unlockLevel: 30,
     progress: 0,
-    message: "Unlocked at Character level 0!",
+    preview: ["#262629", "#b5b5b9", "#833134", "#962427"],
+    message: "Unlocked at Strength level 30!",
   },
-  // CHARACTER ACHIEVEMENTS
   {
     id: 2,
-    catagory: "character",
-    title: "Novice",
-    unlockLevel: 5,
+    catagory: "vitality",
+    title: "Vitality",
+    unlockLevel: 30,
     progress: 0,
-    message: "Unlocked at Character level 5!",
+    preview: ["#262629", "#b5b5b9", "#2b6881", "#247d9a"],
+    message: "Unlocked at Vitality level 30!",
   },
   {
     id: 3,
-    catagory: "character",
-    title: "Adventurer",
-    unlockLevel: 10,
+    catagory: "agility",
+    title: "Agility",
+    unlockLevel: 30,
     progress: 0,
-    message: "Unlocked at Character level 10!",
+    preview: ["#262629", "#b5b5b9", "#48642d", "#456d00"],
+    message: "Unlocked at Agility level 30!",
   },
   {
     id: 4,
-    catagory: "character",
-    title: "Adept",
-    unlockLevel: 15,
+    catagory: "intelligence",
+    title: "Intelligence",
+    unlockLevel: 30,
     progress: 0,
-    message: "Unlocked at Character level 15!",
+    preview: ["#262629", "#b5b5b9", "#673273", "#824092"],
+    message: "Unlocked at Intelligence level 30!",
   },
   {
     id: 5,
-    catagory: "character",
-    title: "Heroic",
-    unlockLevel: 20,
-    progress: 0,
-    message: "Unlocked at Character level 20!",
-  },
-  {
-    id: 6,
-    catagory: "character",
-    title: "Master",
-    unlockLevel: 25,
-    progress: 0,
-    message: "Unlocked at Character level 25!",
-  },
-  {
-    id: 7,
-    catagory: "character",
-    title: "Lord",
-    unlockLevel: 30,
-    progress: 0,
-    message: "Unlocked at Character level 30!",
-  },
-  {
-    id: 8,
-    catagory: "character",
-    title: "Grandmaster",
-    unlockLevel: 35,
-    progress: 0,
-    message: "Unlocked at Character level 35!",
-  },
-  {
-    id: 9,
-    catagory: "character",
-    title: "Overlord",
-    unlockLevel: 40,
-    progress: 0,
-    message: "Unlocked at Character level 40!",
-  },
-  {
-    id: 10,
-    catagory: "character",
-    title: "Emperor",
-    unlockLevel: 45,
-    progress: 0,
-    message: "Unlocked at Character level 45!",
-  },
-  {
-    id: 11,
-    catagory: "character",
-    title: "Demigod",
-    unlockLevel: 50,
-    progress: 0,
-    message: "Unlocked at Character level 50!",
-  },
-  // STRENGTH ACHIEVEMENTS
-  {
-    id: 12,
-    catagory: "strength",
-    title: "Squire",
-    unlockLevel: 1,
-    progress: 0,
-    message: "Unlocked at Strength level 1!",
-  },
-  {
-    id: 13,
-    catagory: "strength",
-    title: "Legionary",
-    unlockLevel: 10,
-    progress: 0,
-    message: "Unlocked at Strength level 10!",
-  },
-  {
-    id: 14,
-    catagory: "strength",
-    title: "Knight",
-    unlockLevel: 20,
-    progress: 0,
-    message: "Unlocked at Strength level 20!",
-  },
-  {
-    id: 15,
-    catagory: "strength",
-    title: "Paladin",
-    unlockLevel: 30,
-    progress: 0,
-    message: "Unlocked at Strength level 30!",
-  },
-  // VITALITY ACHIEVEMENTS
-  {
-    id: 16,
-    catagory: "vitality",
-    title: "Disciple",
-    unlockLevel: 1,
-    progress: 0,
-    message: "Unlocked at Vitality level 1!",
-  },
-  {
-    id: 17,
-    catagory: "vitality",
-    title: "Pugilist",
-    unlockLevel: 10,
-    progress: 0,
-    message: "Unlocked at Vitality level 10!",
-  },
-  {
-    id: 18,
-    catagory: "vitality",
-    title: "Monk",
-    unlockLevel: 20,
-    progress: 0,
-    message: "Unlocked at Vitality level 20!",
-  },
-  {
-    id: 19,
-    catagory: "vitality",
-    title: "Buddha",
-    unlockLevel: 30,
-    progress: 0,
-    message: "Unlocked at Vitality level 30!",
-  },
-  // AGILITY ACHIEVEMENTS
-  {
-    id: 20,
-    catagory: "agility",
-    title: "Scout",
-    unlockLevel: 1,
-    progress: 0,
-    message: "Unlocked at Agility level 1!",
-  },
-  {
-    id: 21,
-    catagory: "agility",
-    title: "Ranger",
-    unlockLevel: 10,
-    progress: 0,
-    message: "Unlocked at Agility level 10!",
-  },
-  {
-    id: 22,
-    catagory: "agility",
-    title: "Strider",
-    unlockLevel: 20,
-    progress: 0,
-    message: "Unlocked at Agility level 20!",
-  },
-  {
-    id: 23,
-    catagory: "agility",
-    title: "Assassin",
-    unlockLevel: 30,
-    progress: 0,
-    message: "Unlocked at Agility level 30!",
-  },
-  // INTELLIGENCE ACHIEVEMENTS
-  {
-    id: 24,
-    catagory: "intelligence",
-    title: "Apprentice",
-    unlockLevel: 1,
-    progress: 0,
-    message: "Unlocked at Intelligence level 1!",
-  },
-  {
-    id: 25,
-    catagory: "intelligence",
-    title: "Mage",
-    unlockLevel: 10,
-    progress: 0,
-    message: "Unlocked at Intelligence level 10!",
-  },
-  {
-    id: 26,
-    catagory: "intelligence",
-    title: "Archmage",
-    unlockLevel: 20,
-    progress: 0,
-    message: "Unlocked at Intelligence level 20!",
-  },
-  {
-    id: 27,
-    catagory: "intelligence",
-    title: "Wise One",
-    unlockLevel: 30,
-    progress: 0,
-    message: "Unlocked at Intelligence level 30!",
-  },
-  // CHARISMA ACHIEVEMENTS
-  {
-    id: 28,
     catagory: "charisma",
-    title: "Storyteller",
-    unlockLevel: 1,
-    progress: 0,
-    message: "Unlocked at Charisma level 1!",
-  },
-  {
-    id: 29,
-    catagory: "charisma",
-    title: "Bard",
-    unlockLevel: 10,
-    progress: 0,
-    message: "Unlocked at Charisma level 10!",
-  },
-  {
-    id: 30,
-    catagory: "charisma",
-    title: "Socialite",
-    unlockLevel: 20,
-    progress: 0,
-    message: "Unlocked at Charisma level 20!",
-  },
-  {
-    id: 31,
-    catagory: "charisma",
-    title: "Silver-tongued",
+    title: "Charisma",
     unlockLevel: 30,
     progress: 0,
+    preview: ["#262629", "#b5b5b9", "#60522b", "#816c2f"],
     message: "Unlocked at Charisma level 30!",
   },
 ];
 
-const TitlesList = () => {
+const ThemeList = () => {
   const colors = useTheme(); // used for themes, replaces colors import
-
+  // styles needs to be inside to use with the themes
   const styles = StyleSheet.create({
     listContainer: {
       marginBottom: 20,
@@ -326,18 +119,18 @@ const TitlesList = () => {
       fontSize: 24,
       color: colors.text,
     },
-    charTitleListContainer: {
+    themeListContainer: {
       // not needed
     },
-    charTitleList: {
+    themeList: {
       padding: 10,
     },
-    pickCharTitle: {
+    pickTheme: {
       fontFamily: "Alegreya_500Medium",
       fontSize: 18,
       color: colors.text,
     },
-    pickCharTitleLocked: {
+    pickThemeLocked: {
       fontFamily: "Alegreya_500Medium",
       fontSize: 18,
       color: colors.text,
@@ -350,7 +143,7 @@ const TitlesList = () => {
       position: "absolute",
       right: 0,
     },
-    lockedCharTitleContainer: {
+    lockedThemeContainer: {
       // alignItems: "center",
       // justifyContent: "center",
     },
@@ -360,7 +153,7 @@ const TitlesList = () => {
       fontSize: 32,
       color: colors.text,
     },
-    pickCharTitleContainer: {
+    pickThemeContainer: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
@@ -378,6 +171,27 @@ const TitlesList = () => {
       shadowRadius: 5,
       elevation: 2,
     },
+    colorPreviewContainer: {
+      flexDirection: "row",
+      borderWidth: 1,
+      borderColor: colors.borderLight,
+
+      position: "absolute",
+      right: "35%",
+    },
+    colorPreviewContainerLocked: {
+      flexDirection: "row",
+      borderWidth: 1,
+      borderColor: colors.borderLight,
+      opacity: 0.5,
+
+      position: "absolute",
+      right: "35%",
+    },
+    colorPreview: {
+      height: 20,
+      width: 20,
+    },
   });
 
   // GET USER LEVEL DATA
@@ -391,9 +205,8 @@ const TitlesList = () => {
 
   const [isVisible, setIsVisible] = useState(false);
 
-  // TITLES OBJECT ARRAY
-  const [characterTitles, setCharacterTitles] =
-    useState<charTitle[]>(charTitlesData);
+  // THEMES OBJECT ARRAY
+  const [themes, setThemes] = useState<theme[]>(themeData);
 
   // Calculate levels on load
   useEffect(() => {
@@ -408,10 +221,10 @@ const TitlesList = () => {
 
   // Update progress when levels change
   useEffect(() => {
-    setCharacterTitles((prevCharTitles) =>
-      prevCharTitles.map((title) => {
+    setThemes((prevTheme) =>
+      prevTheme.map((theme) => {
         let progress = levelOverall;
-        switch (title.catagory) {
+        switch (theme.catagory) {
           case "character":
             progress = levelOverall;
             break;
@@ -431,37 +244,63 @@ const TitlesList = () => {
             progress = levelCHR;
             break;
         }
-        return { ...title, progress };
+        return { ...theme, progress };
       })
     );
   }, [levelOverall, levelSTR, levelVIT, levelAGI, levelINT, levelCHR]);
 
-  // FLATLIST DISPLAY TITLES
-  const renderCharTitleItem = ({ item }: { item: charTitle }) => {
+  // FLATLIST DISPLAY THEMES
+  const renderThemeItem = ({ item }: { item: theme }) => {
     const isUnlocked = item.progress >= item.unlockLevel;
     return (
       <TouchableOpacity
         onPress={() =>
-          isUnlocked
-            ? userData.setCharacterTitle(item.title)
-            : alert(item.message)
+          isUnlocked ? userData.setTheme(item.title) : alert(item.message)
         }
-        style={isUnlocked ? undefined : styles.lockedCharTitleContainer}
+        style={isUnlocked ? undefined : styles.lockedThemeContainer}
       >
-        <View style={styles.pickCharTitleContainer}>
-          <Text
-            style={
-              isUnlocked ? styles.pickCharTitle : styles.pickCharTitleLocked
-            }
-          >
+        <View style={styles.pickThemeContainer}>
+          <Text style={isUnlocked ? styles.pickTheme : styles.pickThemeLocked}>
             {item.title}
           </Text>
+          <View
+            style={
+              isUnlocked
+                ? styles.colorPreviewContainer
+                : styles.colorPreviewContainerLocked
+            }
+          >
+            <View
+              style={[
+                styles.colorPreview,
+                { backgroundColor: item.preview[0] },
+              ]}
+            ></View>
+            <View
+              style={[
+                styles.colorPreview,
+                { backgroundColor: item.preview[1] },
+              ]}
+            ></View>
+            <View
+              style={[
+                styles.colorPreview,
+                { backgroundColor: item.preview[2] },
+              ]}
+            ></View>
+            <View
+              style={[
+                styles.colorPreview,
+                { backgroundColor: item.preview[3] },
+              ]}
+            ></View>
+          </View>
           {/* set icon to lock, checked or unchecked */}
           {!isUnlocked && <Text style={styles.iconPick}>lock</Text>}
-          {isUnlocked && userData.userData?.characterTitle === item.title && (
+          {isUnlocked && userData.userData?.theme === item.title && (
             <Text style={styles.iconPick}>radio_button_checked</Text>
           )}
-          {isUnlocked && userData.userData?.characterTitle !== item.title && (
+          {isUnlocked && userData.userData?.theme !== item.title && (
             <Text style={styles.iconPick}>radio_button_unchecked</Text>
           )}
         </View>
@@ -476,7 +315,7 @@ const TitlesList = () => {
         style={styles.section}
       >
         <View style={styles.splitRowContainer}>
-          <Text style={styles.sectionTitle}>Titles</Text>
+          <Text style={styles.sectionTitle}>Themes</Text>
           <Text style={styles.icon}>
             {isVisible ? "arrow_drop_down" : "arrow_right"}
           </Text>
@@ -484,12 +323,12 @@ const TitlesList = () => {
       </TouchableOpacity>
 
       {isVisible && (
-        <View style={styles.charTitleListContainer}>
+        <View style={styles.themeListContainer}>
           <FlatList
-            data={characterTitles}
+            data={themes}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={renderCharTitleItem}
-            contentContainerStyle={styles.charTitleList}
+            renderItem={renderThemeItem}
+            contentContainerStyle={styles.themeList}
             scrollEnabled={false}
           />
         </View>
@@ -498,4 +337,92 @@ const TitlesList = () => {
   );
 };
 
-export default TitlesList;
+// const styles = StyleSheet.create({
+//   listContainer: {
+//     marginBottom: 20,
+//     position: "relative",
+//     // top: -50,
+//     // marginBottom: -50,
+//     zIndex: -1,
+//     borderRadius: 8,
+//     width: "100%",
+//     // paddingTop: 50,
+//     backgroundColor: colors.bgDropdown,
+//     shadowColor: "#000",
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.2,
+//     shadowRadius: 5,
+//     elevation: 3,
+//   },
+//   splitRowContainer: {
+//     flexDirection: "row",
+//     justifyContent: "space-between",
+//     alignItems: "center",
+//   },
+//   section: {
+//     backgroundColor: colors.bgTertiary,
+//     padding: 10,
+//     borderRadius: 8,
+//     height: 50,
+//   },
+//   sectionTitle: {
+//     width: "100%",
+//     fontFamily: "Metamorphous_400Regular",
+//     fontSize: 24,
+//     color: colors.text,
+//   },
+//   themeListContainer: {
+//     // not needed
+//   },
+//   themeList: {
+//     padding: 10,
+//   },
+//   pickTheme: {
+//     fontFamily: "Alegreya_500Medium",
+//     fontSize: 18,
+//     color: colors.text,
+//   },
+//   pickThemeLocked: {
+//     fontFamily: "Alegreya_500Medium",
+//     fontSize: 18,
+//     color: colors.text,
+//     opacity: 0.5,
+//   },
+//   icon: {
+//     fontFamily: "MaterialIconsRound_400Regular",
+//     fontSize: 50,
+//     color: colors.text,
+//     position: "absolute",
+//     right: 0,
+//   },
+//   lockedThemeContainer: {
+//     // alignItems: "center",
+//     // justifyContent: "center",
+//   },
+//   iconPick: {
+//     borderColor: colors.borderInput,
+//     fontFamily: "MaterialIconsRound_400Regular",
+//     fontSize: 32,
+//     color: colors.text,
+//   },
+//   pickThemeContainer: {
+//     flexDirection: "row",
+//     justifyContent: "space-between",
+//     alignItems: "center",
+
+//     backgroundColor: colors.bgSecondary,
+//     borderRadius: 4,
+//     paddingVertical: 2,
+//     paddingHorizontal: 5,
+//     margin: 3,
+//     borderWidth: 2,
+//     borderColor: colors.borderInput,
+//     shadowColor: "#000",
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.2,
+//     shadowRadius: 5,
+//     elevation: 2,
+//   },
+// });
+
+export default ThemeList;

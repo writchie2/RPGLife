@@ -26,11 +26,11 @@ import {
   deleteField,
 } from "firebase/firestore";
 import { db } from "../FirebaseConfig";
-import { toMidnight } from '@/utils/toMidnight';
-
+import { toMidnight } from "@/utils/toMidnight";
 
 interface UserContextType {
   userData: UserData | null;
+  setTheme: (themeName: string) => void;
   setCharacterTitle: (title: string) => void;
   setAvatar: (index: number) => void;
   addSkill: (
@@ -852,8 +852,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         name: checkpointName,
         description: checkpointDescription,
         active: true,
-        createdAt: toMidnight(new Date())
-
+        createdAt: toMidnight(new Date()),
       };
 
       const docRef = await addDoc(questsCollectionRef, newCheckpoint);
@@ -960,6 +959,22 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         SETTING FUNCTIONS
 */
 
+  // Function updates the user's document to change the theme selected
+  // Input: string (the theme used/selected in settings)
+  const setTheme = async (themeName: string) => {
+    if (!userData) return;
+    try {
+      if (auth.currentUser) {
+        const userDoc = doc(db, "users", auth.currentUser.uid);
+        await updateDoc(userDoc, {
+          theme: themeName,
+        });
+      }
+    } catch (error) {
+      console.error("Error altering app theme:", error);
+    }
+  };
+
   // Function updates the user's document to change the characterTitle selected
   // Input: string (the title used in UserHeader)
   const setCharacterTitle = async (title: string) => {
@@ -1057,145 +1072,179 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         LISTENER (unsuscribe) FUNCTIONS
   */
 
-        useEffect(() => {
-          if (!auth.currentUser) return;
-        
-          const userDocRef = doc(db, 'users', auth.currentUser.uid);
-          const questsCollectionRef = collection(db, 'users', auth.currentUser.uid, 'quests');
-          const skillsCollectionRef = collection(db, 'users', auth.currentUser.uid, 'skills');
-        
-          let checkpointUnsubscribers: Record<string, () => void> = {}; // Store checkpoint listeners
-        
-          // Subscribes to user document
-          const unsubscribeUser = onSnapshot(userDocRef, (docSnapshot) => {
-            if (docSnapshot.exists()) {
-              const data = docSnapshot.data();
-              setUserData((prev) => ({
-                username: data.username,
-                birthday: toMidnight(data.birthdate?.toDate?.()),
-                email: data.email,
-                lastLogin: toMidnight(data.lastLogin?.toDate?.()) || null,
-                firstLoginComplete: data.firstLoginComplete ?? null,
-                strengthEXP: data.strengthEXP,
-                vitalityEXP: data.vitalityEXP,
-                agilityEXP: data.agilityEXP,
-                staminaEXP: data.staminaEXP,
-                intelligenceEXP: data.intelligenceEXP,
-                charismaEXP: data.charismaEXP,
-                exp: data.exp,
-                avatarIndex: data.avatarIndex,
-                characterTitle: data.characterTitle,
-                quests: prev?.quests || [],
-                skills: prev?.skills || [],
-              }));
-            } else {
-              console.error("User document does not exist.");
-            }
-          });
-        
-          // Subscribes to quests collection
-          const unsubscribeQuests = onSnapshot(questsCollectionRef, (querySnapshot) => {
-            const updatedQuests = querySnapshot.docs.map((doc) => {
-              const data = doc.data();
-              return {
-                id: doc.id,
-                name: data.name || "", 
-                description: data.description || "",
-                difficulty: data.difficulty || "Easy", 
-                primarySkill: data.primarySkill || "",
-                secondarySkill: data.secondarySkill || "",
-                dueDate: toMidnight(data.dueDate?.toDate?.()) || null, // Convert Firestore Timestamp
-                active: data.active ?? true, 
-                repeatable: data.repeatable ?? false,
-                reward: data.reward || "", 
-                checkpoints: [], 
-              } as Quest;
-            });
-        
-            // Cleanup old checkpoint listeners before adding new ones
-            Object.values(checkpointUnsubscribers).forEach((unsubscribe) => unsubscribe());
-            checkpointUnsubscribers = {}; // Reset stored unsubscribers
-        
-            // Listen to checkpoints inside each quest
-            updatedQuests.forEach((quest: Quest) => {
-              const checkpointsRef = collection(db, 'users', auth.currentUser!.uid, 'quests', quest.id, 'checkpoints');
-              
-              const unsubscribeCheckpoints = onSnapshot(checkpointsRef, (checkpointSnapshot) => {
-                const newCheckpoints = checkpointSnapshot.docs.map((doc) => {
-                  const data = doc.data(); 
-              
-                  return {
-                    id: doc.id,
-                    name: data.name,  
-                    description: data.description,  
-                    active: data.active,  
-                    createdAt: toMidnight(data.createdAt?.toDate?.()) || toMidnight(new Date()),  
-                  } as Checkpoint;  
-                });
-                setUserData((prev) => {
-                  if (!prev) return prev;
-                
-                  return {
-                    ...prev,
-                    quests: prev.quests?.map((q) =>
-                      q.id === quest.id
-                        ? {
-                            ...q,
-                            checkpoints: newCheckpoints.map((checkpoint: Checkpoint) => ({
+  useEffect(() => {
+    if (!auth.currentUser) return;
+
+    const userDocRef = doc(db, "users", auth.currentUser.uid);
+    const questsCollectionRef = collection(
+      db,
+      "users",
+      auth.currentUser.uid,
+      "quests"
+    );
+    const skillsCollectionRef = collection(
+      db,
+      "users",
+      auth.currentUser.uid,
+      "skills"
+    );
+
+    let checkpointUnsubscribers: Record<string, () => void> = {}; // Store checkpoint listeners
+
+    // Subscribes to user document
+    const unsubscribeUser = onSnapshot(userDocRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const data = docSnapshot.data();
+        setUserData((prev) => ({
+          username: data.username,
+          birthday: toMidnight(data.birthdate?.toDate?.()),
+          email: data.email,
+          lastLogin: toMidnight(data.lastLogin?.toDate?.()) || null,
+          firstLoginComplete: data.firstLoginComplete ?? null,
+          strengthEXP: data.strengthEXP,
+          vitalityEXP: data.vitalityEXP,
+          agilityEXP: data.agilityEXP,
+          staminaEXP: data.staminaEXP,
+          intelligenceEXP: data.intelligenceEXP,
+          charismaEXP: data.charismaEXP,
+          exp: data.exp,
+          avatarIndex: data.avatarIndex,
+          characterTitle: data.characterTitle,
+          theme: data.theme,
+          quests: prev?.quests || [],
+          skills: prev?.skills || [],
+        }));
+      } else {
+        console.error("User document does not exist.");
+      }
+    });
+
+    // Subscribes to quests collection
+    const unsubscribeQuests = onSnapshot(
+      questsCollectionRef,
+      (querySnapshot) => {
+        const updatedQuests = querySnapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            name: data.name || "",
+            description: data.description || "",
+            difficulty: data.difficulty || "Easy",
+            primarySkill: data.primarySkill || "",
+            secondarySkill: data.secondarySkill || "",
+            dueDate: toMidnight(data.dueDate?.toDate?.()) || null, // Convert Firestore Timestamp
+            active: data.active ?? true,
+            repeatable: data.repeatable ?? false,
+            reward: data.reward || "",
+            checkpoints: [],
+          } as Quest;
+        });
+
+        // Cleanup old checkpoint listeners before adding new ones
+        Object.values(checkpointUnsubscribers).forEach((unsubscribe) =>
+          unsubscribe()
+        );
+        checkpointUnsubscribers = {}; // Reset stored unsubscribers
+
+        // Listen to checkpoints inside each quest
+        updatedQuests.forEach((quest: Quest) => {
+          const checkpointsRef = collection(
+            db,
+            "users",
+            auth.currentUser!.uid,
+            "quests",
+            quest.id,
+            "checkpoints"
+          );
+
+          const unsubscribeCheckpoints = onSnapshot(
+            checkpointsRef,
+            (checkpointSnapshot) => {
+              const newCheckpoints = checkpointSnapshot.docs.map((doc) => {
+                const data = doc.data();
+
+                return {
+                  id: doc.id,
+                  name: data.name,
+                  description: data.description,
+                  active: data.active,
+                  createdAt:
+                    toMidnight(data.createdAt?.toDate?.()) ||
+                    toMidnight(new Date()),
+                } as Checkpoint;
+              });
+              setUserData((prev) => {
+                if (!prev) return prev;
+
+                return {
+                  ...prev,
+                  quests: prev.quests?.map((q) =>
+                    q.id === quest.id
+                      ? {
+                          ...q,
+                          checkpoints: newCheckpoints.map(
+                            (checkpoint: Checkpoint) => ({
                               id: checkpoint.id,
                               name: checkpoint.name || "",
                               description: checkpoint.description || "",
                               active: checkpoint.active ?? true,
 
-                              createdAt: checkpoint.createdAt ? toMidnight(new Date(checkpoint.createdAt)) : toMidnight(new Date()), 
-                            })) as Checkpoint[], 
-                          }
-                        : q
-                    ),
-                  };
-                });
-                
+                              createdAt: checkpoint.createdAt
+                                ? toMidnight(new Date(checkpoint.createdAt))
+                                : toMidnight(new Date()),
+                            })
+                          ) as Checkpoint[],
+                        }
+                      : q
+                  ),
+                };
               });
-        
-                
-        
-              checkpointUnsubscribers[quest.id] = unsubscribeCheckpoints; // Store for cleanup
-            });
-        
-            setUserData((prev) => prev ? { ...prev, quests: updatedQuests } : null);
-          });
-        
-          // Subscribes to skills collection
-          const unsubscribeSkills = onSnapshot(skillsCollectionRef, (querySnapshot) => {
-            const updatedSkills = querySnapshot.docs.map((doc) => {
-              const data = doc.data();
-              return {
-                id: doc.id,
-                name: data.name || "",
-                description: data.description || "",
-                primaryTrait: data.primaryTrait || "",
-                secondaryTrait: data.secondaryTrait || "",
-                exp: data.exp || 0,
-                active: data.active ?? true,
-                archiveDate: toMidnight(data.archiveDate?.toDate?.()) || null,
-                deteriorateCount: data.deteriorateCount || 0,
-              }as Skill
- 
-            });
-        
-            setUserData((prev) => prev ? { ...prev, skills: updatedSkills as Skill[] } : null);
-          });
-        
-          return () => {
-            unsubscribeUser();
-            unsubscribeQuests();
-            unsubscribeSkills();
-            Object.values(checkpointUnsubscribers).forEach((unsubscribe) => unsubscribe()); // Cleanup checkpoints
-          };
-        }, []);
+            }
+          );
 
+          checkpointUnsubscribers[quest.id] = unsubscribeCheckpoints; // Store for cleanup
+        });
 
+        setUserData((prev) =>
+          prev ? { ...prev, quests: updatedQuests } : null
+        );
+      }
+    );
 
+    // Subscribes to skills collection
+    const unsubscribeSkills = onSnapshot(
+      skillsCollectionRef,
+      (querySnapshot) => {
+        const updatedSkills = querySnapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            name: data.name || "",
+            description: data.description || "",
+            primaryTrait: data.primaryTrait || "",
+            secondaryTrait: data.secondaryTrait || "",
+            exp: data.exp || 0,
+            active: data.active ?? true,
+            archiveDate: toMidnight(data.archiveDate?.toDate?.()) || null,
+            deteriorateCount: data.deteriorateCount || 0,
+          } as Skill;
+        });
+
+        setUserData((prev) =>
+          prev ? { ...prev, skills: updatedSkills as Skill[] } : null
+        );
+      }
+    );
+
+    return () => {
+      unsubscribeUser();
+      unsubscribeQuests();
+      unsubscribeSkills();
+      Object.values(checkpointUnsubscribers).forEach((unsubscribe) =>
+        unsubscribe()
+      ); // Cleanup checkpoints
+    };
+  }, []);
 
   return (
     <UserContext.Provider
@@ -1203,6 +1252,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         userData,
         setAvatar,
         setCharacterTitle,
+        setTheme,
         addSkill,
         addQuest,
         archiveSkill,

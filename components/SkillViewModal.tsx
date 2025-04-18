@@ -1,9 +1,18 @@
-
 import React, { useState } from "react";
-import {Text, StyleSheet, TouchableOpacity, ScrollView, View, Modal, TouchableWithoutFeedback, Keyboard, Alert} from "react-native";
+import {
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  View,
+  Modal,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Alert,
+} from "react-native";
 import calcEXP from "@/utils/calcEXP";
 import colors from "@/constants/colors";
-
+import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 
 import { useEffect } from "react";
 
@@ -11,11 +20,11 @@ import { useUserData } from "@/contexts/UserContext";
 import EditSkillModal from "./EditSkillModal";
 
 interface SkillViewModalProps {
-    visible: boolean;
-    onModalHide?: () => void;
-    onClose: () => void;
-    id: string;
-  }
+  visible: boolean;
+  onModalHide?: () => void;
+  onClose: () => void;
+  id: string;
+}
 
 /*
 TODO:
@@ -23,9 +32,9 @@ Implement archive skill button functionality
 styling
 */
 const SkillViewModal: React.FC<SkillViewModalProps> = ({
-visible,
-onClose,
-id,
+  visible,
+  onClose,
+  id,
 }) => {
     
     const { userData, archiveSkill, activateSkill, deleteSkill } = useUserData();
@@ -247,12 +256,12 @@ id,
     );
 };
 
-const styles = StyleSheet.create({
+  const styles = StyleSheet.create({
     overlay: {
-        flex: 1,
-        backgroundColor: colors.bgPrimary, 
-        justifyContent: "flex-end",
-        alignItems: "center",
+      flex: 1,
+      backgroundColor: colors.bgPrimary,
+      justifyContent: "flex-end",
+      alignItems: "center",
     },
 
     // CONTAINERS ===============================
@@ -341,56 +350,53 @@ const styles = StyleSheet.create({
         paddingTop: 20
     },
     expRowLeft: {
-        justifyContent: "center", 
-        alignItems: "center",  
-        flex: 0.2,  
-        backgroundColor: colors.bgQuaternary,  
-        width: "90%",
-        marginLeft: 10,  
-        aspectRatio: 1,
-        borderRadius: 40,  
-        borderWidth: 3,
-        borderColor: colors.borderInput,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
+      justifyContent: "center",
+      alignItems: "center",
+      flex: 0.2,
+      backgroundColor: colors.bgQuaternary,
+      width: "90%",
+      marginLeft: 10,
+      aspectRatio: 1,
+      borderRadius: 40,
+      borderWidth: 3,
+      borderColor: colors.borderInput,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 3,
     },
     expRowRight: {
-        justifyContent: "center",
-        flex: 1,
-        flexDirection: "row",
+      justifyContent: "center",
+      flex: 1,
+      flexDirection: "row",
     },
     expBarContainer: {
-        alignItems: "flex-end", 
-        width: "90%",  
+      alignItems: "flex-end",
+      width: "90%",
     },
     levelText: {
-        fontFamily: "Alegreya_500Medium",
-        fontSize: 50,
-        color: colors.textDark,
-        lineHeight: 60,
-        
+      fontFamily: "Alegreya_500Medium",
+      fontSize: 50,
+      color: colors.textDark,
+      lineHeight: 60,
     },
     expBar: {
-        marginTop: 5,
-        height: 12,
-        backgroundColor: colors.bgPrimary,
-        borderWidth: 1,
-        borderColor: colors.borderInput,
-        borderRadius: 99,
-        justifyContent: "center",
-        overflow: "hidden",
-        width:"100%",
-        
+      marginTop: 5,
+      height: 12,
+      backgroundColor: colors.bgPrimary,
+      borderWidth: 1,
+      borderColor: colors.borderInput,
+      borderRadius: 99,
+      justifyContent: "center",
+      overflow: "hidden",
+      width: "100%",
     },
     expTrait: {
-        fontFamily: "Alegreya_500Medium",
-        marginTop: 2,
-        fontSize: 14,
-        color: colors.textLight,
-        
-        },
+      fontFamily: "Alegreya_500Medium",
+      marginTop: 2,
+      fontSize: 14,
+      color: colors.textLight,
+    },
     //BUTTONS--------------------------
     
     editButton: {
@@ -484,6 +490,7 @@ const styles = StyleSheet.create({
         fontSize: 22,
         color: colors.text,
     },
-});
+  });
 
+  
 export default SkillViewModal;

@@ -10,8 +10,8 @@ import {
   Keyboard,
   Alert,
 } from "react-native";
-import colors from "@/constants/colors";
-
+// import colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 
 import { useEffect } from "react";
 import { useUserData } from "@/contexts/UserContext";
@@ -20,14 +20,12 @@ import QuestRewardModal from "./QuestRewardModal";
 import { Checkpoint } from "@/utils/types";
 import CheckPointsList from "./CheckpointsList";
 
-
 interface QuestViewModalProps {
   visible: boolean;
   onModalHide?: () => void;
   onClose: () => void;
   onReward: () => void;
   id: string;
-  
 }
 
 /*
@@ -41,15 +39,237 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
   onClose,
   onReward,
   id,
-  
 }) => {
+  const colors = useTheme(); // used for themes, replaces colors import
+
+  const styles = StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: colors.bgPrimary,
+      justifyContent: "flex-end",
+      alignItems: "center",
+    },
+    dropdownContainer: {
+      position: "relative",
+      // marginBottom: 20,
+      marginBottom: 40, // need to increase to compensate for scrollContainer Top Padding, also looks better?
+    },
+    section: {
+      zIndex: 1,
+      backgroundColor: colors.bgTertiary,
+      padding: 10,
+      borderRadius: 8,
+      height: 60,
+      justifyContent: "center",
+    },
+    sectionTitleContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+    checkpointRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+    sectionTitle: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 24,
+      color: colors.text,
+    },
+    // CONTAINERS ===============================
+    pageTitle: {
+      width: "100%",
+      alignItems: "center",
+      paddingTop: 50,
+      paddingBottom: 20,
+      // backgroundColor: colors.bgTertiary,
+      // borderBottomWidth: 1,
+      // borderColor: colors.borderLight,
+    },
+    modalContainer: {
+      // NOTE: parent of scrollContainer & closeButtonContainer for flex
+      flex: 1,
+      width: "100%",
+      backgroundColor: colors.bgPrimary,
+      borderRadius: 10,
+      justifyContent: "space-between",
+    },
+    scrollLine: {
+      // marginHorizontal: 15,
+      borderBottomWidth: 1,
+      borderColor: colors.borderLight,
+    },
+    scrollContainer: {
+      // flex: 1,
+      // flexShrink: 1,
+      paddingTop: 20,
+      alignItems: "center",
+      justifyContent: "flex-start",
+      //width: "90%"
+    },
+    closeButtonContainer: {
+      alignItems: "center",
+      padding: 20,
+    },
+    questContainer: {
+      // NOTE: parent of titleContainer, questDetailsContainer, questButtonsContainer for flex
+      // flex: 1,
+      width: "90%",
+      marginHorizontal: 20,
+      marginBottom: 10, // needed so if scrolling required doesnt cut off shadow
+      borderRadius: 10,
+      backgroundColor: colors.bgDropdown,
+      // Shadow effect
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 5,
+      elevation: 3,
+    },
+    titleContainer: {
+      backgroundColor: colors.bgTertiary,
+      // width: "100%",
+      // justifyContent: "center",
+      alignItems: "center",
+      padding: 18,
+      borderRadius: 10,
+    },
+    questDetailsContainer: {
+      flexGrow: 1,
+      marginHorizontal: 10,
+    },
+    descriptionContainer: {
+      marginVertical: 20,
+      paddingBottom: 10,
+      borderBottomWidth: 0.5,
+      borderColor: colors.borderLight,
+    },
+    fieldContainer: {
+      marginBottom: "4%",
+    },
+    questButtonsContainer: {
+      flexDirection: "row",
+      justifyContent: "center",
+      gap: 10,
+      marginTop: 20,
+      borderTopWidth: 0.5,
+      borderColor: colors.borderLight,
+      marginHorizontal: 10,
+      paddingVertical: 20,
+    },
+    // BUTTONS ==================================
+    repeatButton: {
+      width: 53,
+      height: 53,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.button3,
+      borderRadius: 100,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    deleteButton: {
+      width: 53,
+      height: 53,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.cancel,
+      borderRadius: 100,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    completeButton: {
+      height: 53,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.bgSecondary,
+      borderRadius: 100,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 5,
+      paddingVertical: "3%",
+      paddingHorizontal: 20,
+    },
+    editButton: {
+      width: 53,
+      height: 53,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.bgSecondary,
+      borderRadius: 100,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    closeButton: {
+      width: 53,
+      height: 53,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.bgSecondary,
+      borderRadius: 100,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    // TEXT & ICONS =============================
+    pageTitleText: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 30,
+      color: colors.text,
+    },
+    titleText: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 36,
+      color: colors.text,
+    },
+    descriptionText: {
+      // fontFamily: "Metamorphous_400Regular",
+      // fontSize: 22,
+      fontFamily: "Alegreya_400Regular",
+      fontSize: 24,
+      color: colors.text,
+    },
+    fieldText: {
+      // fontFamily: "Metamorphous_400Regular",
+      // fontSize: 20,
+      fontFamily: "Alegreya_500Medium",
+      fontSize: 22,
+      color: colors.text,
+    },
+    contentText: {
+      fontFamily: "Alegreya_400Regular",
+      // fontSize: 24,
+    },
+    buttonText: {
+      fontFamily: "Metamorphous_400Regular",
+      color: colors.textDark,
+      fontSize: 20,
+    },
+    icons: {
+      // fontFamily: "MaterialIcons_400Regular",
+      fontFamily: "MaterialIconsRound_400Regular",
+      fontSize: 30,
+      color: colors.text,
+    },
+  });
+
   const { userData, deleteQuest, completeQuest, repeatQuest } = useUserData();
 
   const quest = userData?.quests?.find((quest) => quest.id === id);
   const [questEditVisible, setQuestEditVisible] = useState(false);
   const [checkpointListVisible, setCheckpointListVisible] = useState(false);
-  
-  
 
   const deleteHandler = () => {
     if (userData && quest) {
@@ -71,27 +291,33 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
 
   const completeHandler = () => {
     if (userData && quest) {
-      
-      
       // If the quest is not repeatable, then it might have checkpoints to check
-      if (!quest.repeatable){
-
+      if (!quest.repeatable) {
         // Get the count of active checkpoints
         // If there are no checkpoints, activeCount will be undefined
-        const activeCount = quest?.checkpoints?.filter(checkpoints => checkpoints.active).length;
+        const activeCount = quest?.checkpoints?.filter(
+          (checkpoints) => checkpoints.active
+        ).length;
 
-        // If there are checkpoints and at least one is active, show alert 
+        // If there are checkpoints and at least one is active, show alert
         // This will not show if there are either no checkpoints, or all are completed
-        if (activeCount && activeCount != 0){
-          Alert.alert("Not Quite!", "You have " + activeCount + (activeCount > 1? " checkpoints left to finish!" : " checkpoint left to finish!") );
+        if (activeCount && activeCount != 0) {
+          Alert.alert(
+            "Not Quite!",
+            "You have " +
+              activeCount +
+              (activeCount > 1
+                ? " checkpoints left to finish!"
+                : " checkpoint left to finish!")
+          );
           return;
         }
         // If checkpoints are completed, show confirmation mesage
-        else{
+        else {
           Alert.alert("Confirm Complete", quest.name, [
             {
               text: "Confirm",
-              onPress:() => {
+              onPress: () => {
                 completeQuest(quest.id);
                 let message = [];
                 message.push("You completed:\n" + quest.name + "\n");
@@ -117,35 +343,37 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
         }
       }
       // Quest is repeatable, no checkpoints to check
-      else{
-
+      else {
         // Completing will set a quest to inactive, where repeating will keep it active. Confirmation message explains the difference to user
-        Alert.alert("Confirm Complete", "This quest is repeatable. Did you want to repeat it?\nCompleting it will make it no longer active.", [
-          {
-            text: "Confirm",
-            onPress: () => {
-              completeQuest(quest.id);
-              let message = [];
-              message.push("You completed:\n" + quest.name + "\n");
-              if (quest.difficulty === "Easy") {
-                message.push("You gained 150 XP!\n");
-              } else if (quest.difficulty === "Normal") {
-                message.push("You gained 300 XP!\n");
-              } else {
-                message.push("You gained 450 XP!\n");
-              }
-              message.push("We'll make the graphic look cooler later!");
-              // Alert.alert("Quest Complete!", message.join(""));
-              onReward();
+        Alert.alert(
+          "Confirm Complete",
+          "This quest is repeatable. Did you want to repeat it?\nCompleting it will make it no longer active.",
+          [
+            {
+              text: "Confirm",
+              onPress: () => {
+                completeQuest(quest.id);
+                let message = [];
+                message.push("You completed:\n" + quest.name + "\n");
+                if (quest.difficulty === "Easy") {
+                  message.push("You gained 150 XP!\n");
+                } else if (quest.difficulty === "Normal") {
+                  message.push("You gained 300 XP!\n");
+                } else {
+                  message.push("You gained 450 XP!\n");
+                }
+                message.push("We'll make the graphic look cooler later!");
+                // Alert.alert("Quest Complete!", message.join(""));
+                onReward();
+              },
             },
-          },
-          {
-            text: "Cancel",
-            onPress: () => {},
-          },
-        ]);
+            {
+              text: "Cancel",
+              onPress: () => {},
+            },
+          ]
+        );
       }
-      
     }
   };
 
@@ -176,7 +404,7 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
       ]);
     }
   };
-  
+
   return (
     <Modal
       animationType="none"
@@ -212,15 +440,16 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
                       {quest?.description ? quest?.description : "Overview"}
                     </Text>
                   </View>
-                  {!quest?.repeatable &&
-                  <View style={styles.fieldContainer}>
-                    <Text style={styles.fieldText}>
-                      Due:{" "}
-                      <Text style={styles.contentText}>
-                        {quest?.dueDate.toDateString()}
+                  {!quest?.repeatable && (
+                    <View style={styles.fieldContainer}>
+                      <Text style={styles.fieldText}>
+                        Due:{" "}
+                        <Text style={styles.contentText}>
+                          {quest?.dueDate.toDateString()}
+                        </Text>
                       </Text>
-                    </Text>
-                  </View>}
+                    </View>
+                  )}
                   <View style={styles.fieldContainer}>
                     <Text style={styles.fieldText}>
                       Difficulty:{" "}
@@ -247,30 +476,39 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
                     </Text>
                   </View>
 
-              {!quest?.repeatable && (
-              <View style={styles.dropdownContainer}>
-                  <TouchableOpacity
-                    style={styles.section}
-                    onPress={() => setCheckpointListVisible(!checkpointListVisible)}
-                  >
-                  <View style={styles.sectionTitleContainer}>
-                    <Text style={styles.sectionTitle}>
-                      {checkpointListVisible ? "Hide Checkpoints" : ("Checkpoints " + quest?.checkpoints?.filter(checkpoints => !checkpoints.active).length) + "/" + quest?.checkpoints?.length }
-                    </Text>
-                    <Text style={styles.sectionTitle}>
-                      {checkpointListVisible ? "▲" : "▼"}
-                    </Text>
-                  </View>
-                  </TouchableOpacity>
-                
-                
-                {checkpointListVisible && (
-                  <CheckPointsList
-                    checkpoints={quest?.checkpoints || []}
-                    questID={quest?.id || ""}
-                  />
-                )}
-              </View>)}
+                  {!quest?.repeatable && (
+                    <View style={styles.dropdownContainer}>
+                      <TouchableOpacity
+                        style={styles.section}
+                        onPress={() =>
+                          setCheckpointListVisible(!checkpointListVisible)
+                        }
+                      >
+                        <View style={styles.sectionTitleContainer}>
+                          <Text style={styles.sectionTitle}>
+                            {checkpointListVisible
+                              ? "Hide Checkpoints"
+                              : "Checkpoints " +
+                                quest?.checkpoints?.filter(
+                                  (checkpoints) => !checkpoints.active
+                                ).length +
+                                "/" +
+                                quest?.checkpoints?.length}
+                          </Text>
+                          <Text style={styles.sectionTitle}>
+                            {checkpointListVisible ? "▲" : "▼"}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+
+                      {checkpointListVisible && (
+                        <CheckPointsList
+                          checkpoints={quest?.checkpoints || []}
+                          questID={quest?.id || ""}
+                        />
+                      )}
+                    </View>
+                  )}
 
                   {quest?.repeatable && quest?.active && (
                     <TouchableOpacity
@@ -289,32 +527,31 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
                   >
                     <Text style={styles.icons}>delete</Text>
                   </TouchableOpacity>
-                  {quest?.active &&
-                  <TouchableOpacity
-                    style={styles.completeButton}
-                    onPress={() => {
-                      completeHandler(); 
-                    }}
-                  >
-                    <Text style={styles.buttonText}>Complete Quest</Text>
-                  </TouchableOpacity>}
+                  {quest?.active && (
+                    <TouchableOpacity
+                      style={styles.completeButton}
+                      onPress={() => {
+                        completeHandler();
+                      }}
+                    >
+                      <Text style={styles.buttonText}>Complete Quest</Text>
+                    </TouchableOpacity>
+                  )}
 
-                  
-                  
-
-                  {quest?.active &&
-                  <TouchableOpacity
-                    style={styles.editButton}
-                    onPress={() => {
-                      if (quest?.active) {
-                        setQuestEditVisible(true);
-                      } else {
-                        alert("Only active quests can be edited!");
-                      }
-                    }}
-                  >
-                    <Text style={styles.icons}>edit</Text>
-                  </TouchableOpacity>}
+                  {quest?.active && (
+                    <TouchableOpacity
+                      style={styles.editButton}
+                      onPress={() => {
+                        if (quest?.active) {
+                          setQuestEditVisible(true);
+                        } else {
+                          alert("Only active quests can be edited!");
+                        }
+                      }}
+                    >
+                      <Text style={styles.icons}>edit</Text>
+                    </TouchableOpacity>
+                  )}
                   <EditQuestModal
                     visible={questEditVisible}
                     id={quest?.id || ""}
@@ -344,231 +581,5 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: colors.bgPrimary,
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  
-  
-  
-  // CONTAINERS ===============================
-  pageTitle: {
-    width: "100%",
-    alignItems: "center",
-    paddingTop: 60,
-    paddingBottom: 20,
-    // backgroundColor: colors.bgTertiary,
-    // borderBottomWidth: 1,
-    // borderColor: colors.borderLight,
-  },
-  modalContainer: {
-    // NOTE: parent of scrollContainer & closeButtonContainer for flex
-    flex: 1,
-    width: "100%",
-    backgroundColor: colors.bgPrimary,
-    borderRadius: 10,
-    justifyContent: "space-between",
-  },
-  scrollLine: {
-    // marginHorizontal: 15,
-    borderBottomWidth: 1,
-    borderColor: colors.borderLight,
-  },
-  scrollContainer: {
-    // flex: 1,
-    // flexShrink: 1,
-    paddingTop: 20,
-    alignItems: "center",
-    justifyContent: "flex-start",
-    //width: "90%"
-  },
-  closeButtonContainer: {
-    alignItems: "center",
-    padding: 20,
-  },
-  questContainer: {
-    // NOTE: parent of titleContainer, questDetailsContainer, questButtonsContainer for flex
-    // flex: 1,
-    width: "90%",
-    marginHorizontal: 20,
-    marginBottom: 10, // needed so if scrolling required doesnt cut off shadow
-    borderRadius: 10,
-    backgroundColor: colors.bgDropdown,
-    // Shadow effect
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  titleContainer: {
-    backgroundColor: colors.bgTertiary,
-    // width: "100%",
-    // justifyContent: "center",
-    alignItems: "center",
-    padding: 18,
-    borderRadius: 10,
-  },
-  questDetailsContainer: {
-    flexGrow: 1,
-    marginHorizontal: 10,
-  },
-  descriptionContainer: {
-    marginVertical: 20,
-    paddingBottom: 10,
-    borderBottomWidth: 0.5,
-    borderColor: colors.borderLight,
-  },
-  fieldContainer: {
-    marginBottom: "4%",
-  },
-  questButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 10,
-    marginTop: 20,
-    borderTopWidth: 0.5,
-    borderColor: colors.borderLight,
-    marginHorizontal: 10,
-    paddingVertical: 20,
-  },
-  dropdownContainer: {
-    position: "relative",
-    marginBottom: 40, 
-  },
-  section: {
-    zIndex: 1,
-    backgroundColor: colors.bgTertiary,
-    padding: 10,
-    borderRadius: 8,
-    height: 60,
-    justifyContent: "center",
-  },
-  sectionTitleContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    
-  },
-  checkpointRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    
-  },
-  // BUTTONS ==================================
-  repeatButton: {
-    width: 53,
-    height: 53,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.button3,
-    borderRadius: 100,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  deleteButton: {
-    width: 53,
-    height: 53,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.cancel,
-    borderRadius: 100,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  completeButton: {
-    height: 53,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.bgSecondary,
-    borderRadius: 100,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-    paddingVertical: "3%",
-    paddingHorizontal: 20,
-  },
-  editButton: {
-    width: 53,
-    height: 53,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.bgSecondary,
-    borderRadius: 100,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  closeButton: {
-    width: 53,
-    height: 53,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.bgSecondary,
-    borderRadius: 100,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  // TEXT & ICONS =============================
-  pageTitleText: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 30,
-    color: colors.text,
-  },
-  titleText: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 36,
-    color: colors.text,
-  },
-  descriptionText: {
-    // fontFamily: "Metamorphous_400Regular",
-    // fontSize: 22,
-    fontFamily: "Alegreya_400Regular",
-    fontSize: 24,
-    color: colors.text,
-  },
-  fieldText: {
-    // fontFamily: "Metamorphous_400Regular",
-    // fontSize: 20,
-    fontFamily: "Alegreya_500Medium",
-    fontSize: 22,
-    color: colors.text,
-  },
-  contentText: {
-    fontFamily: "Alegreya_400Regular",
-    // fontSize: 24,
-  },
-  buttonText: {
-    fontFamily: "Metamorphous_400Regular",
-    color: colors.textDark,
-    fontSize: 20,
-  },
-  icons: {
-    // fontFamily: "MaterialIcons_400Regular",
-    fontFamily: "MaterialIconsRound_400Regular",
-    fontSize: 30,
-    color: colors.text,
-  },
-  sectionTitle: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 24,
-    color: colors.text,
-  },
-});
 
 export default QuestViewModal;

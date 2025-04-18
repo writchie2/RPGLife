@@ -14,6 +14,8 @@ import { UserProvider } from "../../contexts/UserContext";
 import Colors from "@/constants/colors";
 import { useColorScheme } from "@/components/useColorScheme";
 
+import { ThemeContext } from "@/contexts/ThemeContext";
+
 export default function MainLayout() {
   const colorScheme = useColorScheme();
 

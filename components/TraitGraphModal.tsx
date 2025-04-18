@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Text, StyleSheet, View, SafeAreaView } from "react-native";
-import colors from "@/constants/colors";
+// import colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 
 import { useEffect } from "react";
 import { useUserData } from "@/contexts/UserContext";
@@ -8,6 +9,30 @@ import { RadarChart } from "@salmonco/react-native-radar-chart";
 import calcEXP from "@/utils/calcEXP";
 
 const TraitGraph = () => {
+  const colors = useTheme(); // used for themes, replaces colors import
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: 10,
+      position: "relative",
+      top: -70,
+      marginBottom: -70,
+      borderRadius: 8,
+      width: "100%",
+      paddingTop: 70,
+      // backgroundColor: colors.bgSecondary,
+      backgroundColor: colors.bgDropdown,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 5,
+      elevation: 3,
+    },
+  });
+
   // GET USER TRAIT DATA
   const userData = useUserData();
   const [levelSTR, setLevelSTR] = useState(0);
@@ -105,27 +130,5 @@ const TraitGraph = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 10,
-    position: "relative",
-    top: -70,
-    marginBottom: -70,
-    borderRadius: 8,
-    width: "100%",
-    paddingTop: 70,
-    // backgroundColor: colors.bgSecondary,
-    backgroundColor: colors.bgDropdown,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-});
 
 export default TraitGraph;
