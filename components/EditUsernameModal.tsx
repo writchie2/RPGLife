@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Text, View, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, TextInput, Keyboard } from 'react-native';
 import colors from "@/constants/colors";
 import { useUserData } from '@/contexts/UserContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface EditUsernameModalProps {
     visible: boolean;
@@ -12,63 +13,8 @@ const EditUsernameModal: React.FC<EditUsernameModalProps> = ({
   visible,
   onClose,
 }) => {
-const { userData, editUsername} = useUserData();
-const [username, setUsername] = useState("");
 
-const saveHandler = () => {
-    if (username.trim() === "") {
-        alert("Username cannot be blank!")
-        return;
-    } else if (username.trim() === userData?.username) {
-        // The username is the same, don't need to query database
-        setUsername("");
-        onClose();
-    }
-    else{
-        editUsername(username);
-        setUsername("");
-        onClose();
-    }
-}
-  return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-    >
-        <TouchableWithoutFeedback onPress={() => {setUsername(""); onClose()}}>
-            <View style={styles.overlay}>
-                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                    <View style={styles.modalContainer}>
-                    
-                        
-                        <View style={styles.titleContainer}>
-                            <Text style={styles.titleText}>Change Username</Text>
-                        </View>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Username"
-                            placeholderTextColor={colors.textPlaceholder}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            value={username}
-                            onChangeText={setUsername}
-                        />
-                    
-                        <View style={styles.closeButtonContainer}>
-                            <TouchableOpacity onPress={saveHandler} style={styles.closeButton}>
-                            <Text style={styles.icons}>save</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>   
-                </TouchableWithoutFeedback>
-                
-            </View>
-        </TouchableWithoutFeedback>
-    </Modal>
-  );
-};
+const colors = useTheme(); // used for themes, replaces colors import
 const styles = StyleSheet.create({
     overlay: {
       flex: 1,
@@ -148,4 +94,63 @@ const styles = StyleSheet.create({
         color: colors.text,
     },
   });
+
+const { userData, editUsername} = useUserData();
+const [username, setUsername] = useState("");
+
+const saveHandler = () => {
+    if (username.trim() === "") {
+        alert("Username cannot be blank!")
+        return;
+    } else if (username.trim() === userData?.username) {
+        // The username is the same, don't need to query database
+        setUsername("");
+        onClose();
+    }
+    else{
+        editUsername(username);
+        setUsername("");
+        onClose();
+    }
+}
+  return (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={visible}
+      onRequestClose={onClose}
+    >
+        <TouchableWithoutFeedback onPress={() => {setUsername(""); onClose()}}>
+            <View style={styles.overlay}>
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <View style={styles.modalContainer}>
+                    
+                        
+                        <View style={styles.titleContainer}>
+                            <Text style={styles.titleText}>Change Username</Text>
+                        </View>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Username"
+                            placeholderTextColor={colors.textPlaceholder}
+                            autoCapitalize="none"
+                            autoCorrect={false}
+                            value={username}
+                            onChangeText={setUsername}
+                        />
+                    
+                        <View style={styles.closeButtonContainer}>
+                            <TouchableOpacity onPress={saveHandler} style={styles.closeButton}>
+                            <Text style={styles.icons}>save</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>   
+                </TouchableWithoutFeedback>
+                
+            </View>
+        </TouchableWithoutFeedback>
+    </Modal>
+  );
+};
+
 export default EditUsernameModal;

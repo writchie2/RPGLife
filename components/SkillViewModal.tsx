@@ -11,7 +11,7 @@ import {
   Alert,
 } from "react-native";
 import calcEXP from "@/utils/calcEXP";
-import colors from "@/constants/colors";
+// import colors from "@/constants/colors";
 import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 
 import { useEffect } from "react";
@@ -36,6 +36,243 @@ const SkillViewModal: React.FC<SkillViewModalProps> = ({
   onClose,
   id,
 }) => {
+
+    const colors = useTheme(); // used for themes, replaces colors import
+    const styles = StyleSheet.create({
+        overlay: {
+          flex: 1,
+          backgroundColor: colors.bgPrimary,
+          justifyContent: "flex-end",
+          alignItems: "center",
+        },
+    
+        // CONTAINERS ===============================
+        scrollContainer: {
+            paddingTop: 20,
+            alignItems: "center",
+            justifyContent: "flex-start",
+        },
+        modalContainer: {
+            flex: 1,
+            width: "90%",
+            backgroundColor: colors.bgPrimary,
+            borderRadius: 10,
+            //padding: 20,
+            justifyContent: "space-between",
+        },
+        scrollLine: {
+            // marginHorizontal: 15,
+            borderBottomWidth: 1,
+            borderColor: colors.borderLight,
+          },
+        skillContainer: {
+            width: "100%",
+            marginHorizontal: 20,
+            marginBottom: 10, // needed so if scrolling required doesnt cut off shadow
+            borderRadius: 10,
+            backgroundColor: colors.bgDropdown,
+            // Shadow effect
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 5,
+            elevation: 3,
+            
+          },
+        skillDetailsContainer: {
+            flexGrow: 1,
+            marginHorizontal: 10,
+        },
+        pageTitle: {
+            width: "100%",
+            alignItems: "center",
+            paddingTop: 60,
+            paddingBottom: 20,
+        },
+        titleContainer: {
+            backgroundColor: colors.bgTertiary,
+            //width: "100%",
+            //justifyContent: "center",
+            alignItems: "center",
+            padding: 18,
+            borderRadius:10,
+            //marginBottom:"2%"
+        },
+        descriptionContainer: {
+            marginVertical: 20,
+            paddingVertical: 10,
+            borderTopWidth: 0.5,
+            borderColor: colors.borderLight,
+            
+        },
+        fieldContainer: {
+            marginBottom: "4%",
+        },
+        closeButtonContainer: {
+            alignItems: "center",
+            padding: 20,
+        },
+        skillButtonsContainer: {
+            flexDirection: "row",
+            justifyContent: "center",
+            gap: 10,
+            marginTop: 20,
+            borderTopWidth: 0.5,
+            borderColor: colors.borderLight,
+            marginHorizontal: 10,
+            paddingVertical: 20,
+          },
+        
+        //EXP--------------------------
+        expRow: {
+            flexDirection: 'row',  
+            alignItems: 'center',  
+            width:"100%",
+            justifyContent: 'space-between',
+            paddingTop: 20
+        },
+        expRowLeft: {
+          justifyContent: "center",
+          alignItems: "center",
+          flex: 0.2,
+          backgroundColor: colors.bgQuaternary,
+          width: "90%",
+          marginLeft: 10,
+          aspectRatio: 1,
+          borderRadius: 40,
+          borderWidth: 3,
+          borderColor: colors.borderInput,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.2,
+          shadowRadius: 3,
+        },
+        expRowRight: {
+          justifyContent: "center",
+          flex: 1,
+          flexDirection: "row",
+        },
+        expBarContainer: {
+          alignItems: "flex-end",
+          width: "90%",
+        },
+        levelText: {
+          fontFamily: "Alegreya_500Medium",
+          fontSize: 50,
+          color: colors.textDark,
+          lineHeight: 60,
+        },
+        expBar: {
+          marginTop: 5,
+          height: 12,
+          backgroundColor: colors.bgPrimary,
+          borderWidth: 1,
+          borderColor: colors.borderInput,
+          borderRadius: 99,
+          justifyContent: "center",
+          overflow: "hidden",
+          width: "100%",
+        },
+        expTrait: {
+          fontFamily: "Alegreya_500Medium",
+          marginTop: 2,
+          fontSize: 14,
+          color: colors.textLight,
+        },
+        //BUTTONS--------------------------
+        
+        editButton: {
+            width: 53,
+            height: 53,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: colors.bgSecondary,
+            borderRadius: 100,
+            shadowColor: colors.shadow,
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.5,
+            shadowRadius: 4,
+            elevation: 5,
+        },
+        closeButton: {
+            width: 53,
+            height: 53,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: colors.bgSecondary,
+            borderRadius: 100,
+            shadowColor: colors.shadow,
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.5,
+            shadowRadius: 4,
+            elevation: 5,
+        },
+        archiveButton: {
+            height: 53,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: colors.bgSecondary,
+            borderRadius: 100,
+            shadowColor: colors.shadow,
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.5,
+            shadowRadius: 4,
+            elevation: 5,
+            paddingVertical: "3%",
+            paddingHorizontal: 20,
+        },
+        deleteButton: {
+            width: 53,
+            height: 53,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: colors.cancel,
+            borderRadius: 100,
+            shadowColor: colors.shadow,
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.5,
+            shadowRadius: 4,
+            elevation: 5,
+        },
+        // TEXT & ICONS =============================
+        icons: {
+            fontFamily: "MaterialIconsRound_400Regular",
+            fontSize: 30,
+            color: colors.text,
+          },
+        buttonText: {
+            fontFamily: "Metamorphous_400Regular",
+            color: colors.textDark, 
+            fontSize: 20,
+        },
+        contentText: {
+            fontFamily: "Alegreya_400Regular",
+            // fontSize: 24,
+            },
+        pageTitleText: {
+            fontFamily: "Metamorphous_400Regular",
+            fontSize: 30,
+            color: colors.text,
+        },
+            
+        titleText: {
+            fontFamily: "Metamorphous_400Regular",
+            fontSize: 36,
+            color: colors.text,
+        },
+        
+        descriptionText: {
+            fontFamily: "Alegreya_400Regular",
+            fontSize: 24,
+            color: colors.text,
+        },
+        
+        fieldText: {
+            fontFamily: "Alegreya_500Medium",
+            fontSize: 22,
+            color: colors.text,
+        },
+      });
     
     const { userData, archiveSkill, activateSkill, deleteSkill } = useUserData();
     
@@ -256,241 +493,7 @@ const SkillViewModal: React.FC<SkillViewModalProps> = ({
     );
 };
 
-  const styles = StyleSheet.create({
-    overlay: {
-      flex: 1,
-      backgroundColor: colors.bgPrimary,
-      justifyContent: "flex-end",
-      alignItems: "center",
-    },
-
-    // CONTAINERS ===============================
-    scrollContainer: {
-        paddingTop: 20,
-        alignItems: "center",
-        justifyContent: "flex-start",
-    },
-    modalContainer: {
-        flex: 1,
-        width: "90%",
-        backgroundColor: colors.bgPrimary,
-        borderRadius: 10,
-        //padding: 20,
-        justifyContent: "space-between",
-    },
-    scrollLine: {
-        // marginHorizontal: 15,
-        borderBottomWidth: 1,
-        borderColor: colors.borderLight,
-      },
-    skillContainer: {
-        width: "100%",
-        marginHorizontal: 20,
-        marginBottom: 10, // needed so if scrolling required doesnt cut off shadow
-        borderRadius: 10,
-        backgroundColor: colors.bgDropdown,
-        // Shadow effect
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 5,
-        elevation: 3,
-        
-      },
-    skillDetailsContainer: {
-        flexGrow: 1,
-        marginHorizontal: 10,
-    },
-    pageTitle: {
-        width: "100%",
-        alignItems: "center",
-        paddingTop: 60,
-        paddingBottom: 20,
-    },
-    titleContainer: {
-        backgroundColor: colors.bgTertiary,
-        //width: "100%",
-        //justifyContent: "center",
-        alignItems: "center",
-        padding: 18,
-        borderRadius:10,
-        //marginBottom:"2%"
-    },
-    descriptionContainer: {
-        marginVertical: 20,
-        paddingVertical: 10,
-        borderTopWidth: 0.5,
-        borderColor: colors.borderLight,
-        
-    },
-    fieldContainer: {
-        marginBottom: "4%",
-    },
-    closeButtonContainer: {
-        alignItems: "center",
-        padding: 20,
-    },
-    skillButtonsContainer: {
-        flexDirection: "row",
-        justifyContent: "center",
-        gap: 10,
-        marginTop: 20,
-        borderTopWidth: 0.5,
-        borderColor: colors.borderLight,
-        marginHorizontal: 10,
-        paddingVertical: 20,
-      },
-    
-    //EXP--------------------------
-    expRow: {
-        flexDirection: 'row',  
-        alignItems: 'center',  
-        width:"100%",
-        justifyContent: 'space-between',
-        paddingTop: 20
-    },
-    expRowLeft: {
-      justifyContent: "center",
-      alignItems: "center",
-      flex: 0.2,
-      backgroundColor: colors.bgQuaternary,
-      width: "90%",
-      marginLeft: 10,
-      aspectRatio: 1,
-      borderRadius: 40,
-      borderWidth: 3,
-      borderColor: colors.borderInput,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 3,
-    },
-    expRowRight: {
-      justifyContent: "center",
-      flex: 1,
-      flexDirection: "row",
-    },
-    expBarContainer: {
-      alignItems: "flex-end",
-      width: "90%",
-    },
-    levelText: {
-      fontFamily: "Alegreya_500Medium",
-      fontSize: 50,
-      color: colors.textDark,
-      lineHeight: 60,
-    },
-    expBar: {
-      marginTop: 5,
-      height: 12,
-      backgroundColor: colors.bgPrimary,
-      borderWidth: 1,
-      borderColor: colors.borderInput,
-      borderRadius: 99,
-      justifyContent: "center",
-      overflow: "hidden",
-      width: "100%",
-    },
-    expTrait: {
-      fontFamily: "Alegreya_500Medium",
-      marginTop: 2,
-      fontSize: 14,
-      color: colors.textLight,
-    },
-    //BUTTONS--------------------------
-    
-    editButton: {
-        width: 53,
-        height: 53,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: colors.bgSecondary,
-        borderRadius: 100,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    closeButton: {
-        width: 53,
-        height: 53,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: colors.bgSecondary,
-        borderRadius: 100,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    archiveButton: {
-        height: 53,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: colors.bgSecondary,
-        borderRadius: 100,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
-        paddingVertical: "3%",
-        paddingHorizontal: 20,
-    },
-    deleteButton: {
-        width: 53,
-        height: 53,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: colors.cancel,
-        borderRadius: 100,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    // TEXT & ICONS =============================
-    icons: {
-        fontFamily: "MaterialIconsRound_400Regular",
-        fontSize: 30,
-        color: colors.text,
-      },
-    buttonText: {
-        fontFamily: "Metamorphous_400Regular",
-        color: colors.textDark, 
-        fontSize: 20,
-    },
-    contentText: {
-        fontFamily: "Alegreya_400Regular",
-        // fontSize: 24,
-        },
-    pageTitleText: {
-        fontFamily: "Metamorphous_400Regular",
-        fontSize: 30,
-        color: colors.text,
-    },
-        
-    titleText: {
-        fontFamily: "Metamorphous_400Regular",
-        fontSize: 36,
-        color: colors.text,
-    },
-    
-    descriptionText: {
-        fontFamily: "Alegreya_400Regular",
-        fontSize: 24,
-        color: colors.text,
-    },
-    
-    fieldText: {
-        fontFamily: "Alegreya_500Medium",
-        fontSize: 22,
-        color: colors.text,
-    },
-  });
+  
 
   
 export default SkillViewModal;
