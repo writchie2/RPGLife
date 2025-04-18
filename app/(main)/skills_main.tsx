@@ -39,12 +39,78 @@ import { BackHandler, Alert } from "react-native";
 //import { saveUserData, getUserData } from '../../utils/storageUtils';
 import { UserData, Skill, Checkpoint } from "../../utils/types";
 
-import colors from "@/constants/colors";
+// import colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 import UserHeader from "@/components/UserHeader";
 import CreateSkillModal from "@/components/CreateSkillModal";
 
 // TODO Implement Skills Page functionality
 export default function SkillsPage() {
+  const colors = useTheme(); // used for themes, replaces colors import
+
+  //styling, similar to home page:
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.bgPrimary,
+      // padding: 20,
+      paddingVertical: 20,
+    },
+    headerContainer: {
+      paddingHorizontal: 20,
+      marginBottom: 20,
+    },
+    scrollLine: {
+      marginHorizontal: 15,
+      borderBottomWidth: 1,
+      borderColor: colors.borderLight,
+    },
+    scrollContainer: {
+      paddingTop: 20,
+      paddingHorizontal: 20,
+    },
+    dropdownContainer: {
+      position: "relative",
+      // marginBottom: 20,
+      marginBottom: 40,
+    },
+    sectionTitleContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+    sectionTitle: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 24,
+      color: colors.text,
+    },
+    section: {
+      zIndex: 1,
+      backgroundColor: colors.bgTertiary,
+      padding: 10,
+      borderRadius: 8,
+      height: 60,
+      justifyContent: "center",
+    },
+    addButton: {
+      position: "absolute",
+      bottom: 20,
+      right: 20,
+      backgroundColor: colors.bgTertiary,
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    addButtonText: {
+      // fontSize: 24,
+      // fontWeight: "bold",
+      fontSize: 36,
+      lineHeight: 44,
+      color: colors.text,
+    },
+  });
+
   const user = auth.currentUser;
   const userData = useUserData();
 
@@ -139,66 +205,3 @@ export default function SkillsPage() {
     </View>
   );
 }
-
-//styling, similar to home page:
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bgPrimary,
-    // padding: 20,
-    paddingVertical: 20,
-  },
-  headerContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  scrollLine: {
-    marginHorizontal: 15,
-    borderBottomWidth: 1,
-    borderColor: colors.borderLight,
-  },
-  scrollContainer: {
-    paddingTop: 20,
-    paddingHorizontal: 20,
-  },
-  dropdownContainer: {
-    position: "relative",
-    // marginBottom: 20,
-    marginBottom: 40,
-  },
-  sectionTitleContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  sectionTitle: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 24,
-    color: colors.text,
-  },
-  section: {
-    zIndex: 1,
-    backgroundColor: colors.bgTertiary,
-    padding: 10,
-    borderRadius: 8,
-    height: 60,
-    justifyContent: "center",
-  },
-  addButton: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    backgroundColor: colors.bgTertiary,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  addButtonText: {
-    // fontSize: 24,
-    // fontWeight: "bold",
-    fontSize: 36,
-    lineHeight: 44,
-    color: colors.text,
-  },
-});

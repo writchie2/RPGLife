@@ -11,7 +11,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { BackHandler } from "react-native";
 import { ProgressBar } from "react-native-paper";
 
-import colors from "@/constants/colors";
+// import colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 import UserHeader from "@/components/UserHeader";
 
 import TraitGraph from "@/components/TraitGraphModal";
@@ -35,6 +36,80 @@ enum ViewMode {
 // };
 
 export default function CharacterScreen() {
+  const colors = useTheme(); // used for themes, replaces colors import
+
+  // Styles
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.bgPrimary,
+      // paddingVertical: 20,
+      paddingBottom: 20, // -TEST-
+    },
+    headerContainer: {
+      paddingHorizontal: 20,
+      marginBottom: 20,
+    },
+    scrollLine: {
+      marginHorizontal: 15,
+      borderBottomWidth: 1,
+      borderColor: colors.borderLight,
+    },
+    scrollContainer: {
+      paddingTop: 20,
+      paddingHorizontal: 20,
+    },
+    traitsContainer: {
+      position: "relative",
+      flex: 1,
+      // marginTop: 20,
+      marginBottom: 30,
+      // backgroundColor: "orange", // -TEST-
+    },
+    titleContainer: {
+      zIndex: 1,
+      backgroundColor: colors.bgTertiary,
+      padding: 10,
+      borderRadius: 8,
+      height: 60,
+      justifyContent: "center",
+    },
+    title: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 26,
+      color: colors.text,
+    },
+    infoContainer: {
+      flex: 1,
+      position: "relative",
+      top: -60,
+      marginBottom: -60,
+      zIndex: 0,
+      borderRadius: 8,
+      width: "100%",
+      paddingTop: 70,
+    },
+    navContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 20,
+      marginHorizontal: 20,
+    },
+    navButton: {
+      flex: 1,
+      padding: 10,
+      backgroundColor: colors.bgTertiary,
+      borderRadius: 10,
+      alignItems: "center",
+      marginHorizontal: 5,
+    },
+    navText: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 18,
+      color: colors.text,
+    },
+  });
+
   // const [characterTraits, setCharacterTraits] = useState<CharacterTrait[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.LEVELS); // Default view
 
@@ -103,75 +178,3 @@ export default function CharacterScreen() {
     </SafeAreaView>
   );
 }
-
-// Styles
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bgPrimary,
-    // paddingVertical: 20,
-    paddingBottom: 20, // -TEST-
-  },
-  headerContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  scrollLine: {
-    marginHorizontal: 15,
-    borderBottomWidth: 1,
-    borderColor: colors.borderLight,
-  },
-  scrollContainer: {
-    paddingTop: 20,
-    paddingHorizontal: 20,
-  },
-  traitsContainer: {
-    position: "relative",
-    flex: 1,
-    // marginTop: 20,
-    marginBottom: 30,
-    // backgroundColor: "orange", // -TEST-
-  },
-  titleContainer: {
-    zIndex: 1,
-    backgroundColor: colors.bgTertiary,
-    padding: 10,
-    borderRadius: 8,
-    height: 60,
-    justifyContent: "center",
-  },
-  title: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 26,
-    color: colors.text,
-  },
-  infoContainer: {
-    flex: 1,
-    position: "relative",
-    top: -60,
-    marginBottom: -60,
-    zIndex: 0,
-    borderRadius: 8,
-    width: "100%",
-    paddingTop: 70,
-  },
-  navContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
-    marginHorizontal: 20,
-  },
-  navButton: {
-    flex: 1,
-    padding: 10,
-    backgroundColor: colors.bgTertiary,
-    borderRadius: 10,
-    alignItems: "center",
-    marginHorizontal: 5,
-  },
-  navText: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 18,
-    color: colors.text,
-  },
-});

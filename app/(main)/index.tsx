@@ -41,7 +41,8 @@ import CreateQuestModal from "@/components/CreateQuestModal";
 import NavigationModal from "../../components/NavigationModal";
 import { useUserData } from "@/contexts/UserContext";
 
-import colors from "@/constants/colors";
+// import colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 import UserHeader from "@/components/UserHeader";
 import { useFonts } from "expo-font";
 import { Metamorphous_400Regular } from "@expo-google-fonts/metamorphous";
@@ -56,8 +57,121 @@ import { MaterialIcons_400Regular } from "expo-google-fonts-material-icons/400Re
 import WelcomeModal from "@/components/WelcomeModal";
 import ReturnModal from "@/components/ReturnModal";
 
-
 export default function HomePage() {
+  const colors = useTheme(); // used for themes, replaces colors import
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.bgPrimary,
+      // padding: 20,
+      paddingVertical: 20,
+    },
+    headerContainer: {
+      paddingHorizontal: 20,
+      marginBottom: 20,
+    },
+    scrollLine: {
+      marginHorizontal: 15,
+      borderBottomWidth: 1,
+      borderColor: colors.borderLight,
+    },
+    scrollContainer: {
+      paddingTop: 20,
+      paddingHorizontal: 20,
+    },
+    dropdownContainer: {
+      position: "relative",
+      // marginBottom: 20,
+      marginBottom: 40, // need to increase to compensate for scrollContainer Top Padding, also looks better?
+    },
+    section: {
+      zIndex: 1,
+      backgroundColor: colors.bgTertiary,
+      padding: 10,
+      borderRadius: 8,
+      height: 60,
+      justifyContent: "center",
+    },
+    sectionTitleContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+    sectionTitle: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 24,
+      color: colors.text,
+    },
+    addButton: {
+      position: "absolute",
+      bottom: 20,
+      right: 20,
+      // backgroundColor: colors.bgTertiary,
+      backgroundColor: colors.bgSecondary,
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    logoutButton: {
+      position: "absolute",
+      bottom: 20,
+      left: 20,
+      backgroundColor: colors.bgTertiary,
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    addButtonText: {
+      // fontSize: 24,
+      // fontWeight: "bold",
+      fontSize: 36,
+      lineHeight: 44,
+      color: colors.text,
+    },
+    loading: {
+      backgroundColor: colors.bgPrimary,
+      height: "100%",
+    },
+    modalOverlay: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    modalContent: {
+      position: "absolute",
+      bottom: 0,
+      height: "30%",
+      width: "100%",
+      backgroundColor: colors.bgSecondary,
+      padding: 20,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    modalButton: {
+      width: "70%",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.bgPrimary,
+      borderRadius: 100,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 5,
+      height: 50,
+      margin: "5%",
+    },
+    modalButtonText: {
+      fontFamily: "Metamorphous_400Regular",
+      color: colors.textDark,
+      fontSize: 20,
+    },
+  });
+
   const [fontsLoaded] = useFonts({
     Metamorphous_400Regular,
     Alegreya_400Regular,
@@ -88,7 +202,7 @@ export default function HomePage() {
 
   // Firebase implementation moved to "@/contexts/UserContext"
   useEffect(() => {
-    if(!auth.currentUser){
+    if (!auth.currentUser) {
       router.replace("/(login)");
       return;
     }
@@ -98,8 +212,10 @@ export default function HomePage() {
       const lastLogin = userData?.lastLogin;
       if (userData.firstLoginComplete === null) {
         setWelcomeModalVisible(true);
-        
-      } else if (now.getTime() - (lastLogin?.getTime() || now.getTime()) >= 24 * 60 * 60 * 1000) {
+      } else if (
+        now.getTime() - (lastLogin?.getTime() || now.getTime()) >=
+        24 * 60 * 60 * 1000
+      ) {
         setReturnModalVisible(true);
       }
     }
@@ -143,10 +259,7 @@ export default function HomePage() {
                 </View>
               </TouchableOpacity>
               {skillListVisible && (
-                <SkillsList
-                  skills={userData?.skills || []}
-                  mode="active"
-                />
+                <SkillsList skills={userData?.skills || []} mode="active" />
               )}
             </View>
             {/* Quests Section */}
@@ -165,10 +278,7 @@ export default function HomePage() {
                 </View>
               </TouchableOpacity>
               {questListVisible && (
-                <QuestsList
-                  quests={userData?.quests || []}
-                  mode="active"
-                />
+                <QuestsList quests={userData?.quests || []} mode="active" />
               )}
             </View>
           </View>
@@ -246,115 +356,3 @@ export default function HomePage() {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bgPrimary,
-    // padding: 20,
-    paddingVertical: 20,
-  },
-  headerContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  scrollLine: {
-    marginHorizontal: 15,
-    borderBottomWidth: 1,
-    borderColor: colors.borderLight,
-  },
-  scrollContainer: {
-    paddingTop: 20,
-    paddingHorizontal: 20,
-  },
-  dropdownContainer: {
-    position: "relative",
-    // marginBottom: 20,
-    marginBottom: 40, // need to increase to compensate for scrollContainer Top Padding, also looks better?
-  },
-  section: {
-    zIndex: 1,
-    backgroundColor: colors.bgTertiary,
-    padding: 10,
-    borderRadius: 8,
-    height: 60,
-    justifyContent: "center",
-  },
-  sectionTitleContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  sectionTitle: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 24,
-    color: colors.text,
-  },
-  addButton: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    // backgroundColor: colors.bgTertiary,
-    backgroundColor: colors.bgSecondary,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  logoutButton: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    backgroundColor: colors.bgTertiary,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  addButtonText: {
-    // fontSize: 24,
-    // fontWeight: "bold",
-    fontSize: 36,
-    lineHeight: 44,
-    color: colors.text,
-  },
-  loading: {
-    backgroundColor: colors.bgPrimary,
-    height: "100%",
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    position: "absolute",
-    bottom: 0,
-    height: "30%",
-    width: "100%",
-    backgroundColor: colors.bgSecondary,
-    padding: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  modalButton: {
-    width: "70%",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.bgPrimary,
-    borderRadius: 100,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-    height: 50,
-    margin: "5%",
-  },
-  modalButtonText: {
-    fontFamily: "Metamorphous_400Regular",
-    color: colors.textDark,
-    fontSize: 20,
-  },
-});
