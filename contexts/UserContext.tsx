@@ -92,6 +92,7 @@ interface UserContextType {
   firstLogin: () => void;
   alterOverallEXP: (alterAmount: number) => void;
   deteriorateSkill: (deteriorateAmmount: number, id: string) => void;
+  editUsername: (name: string) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -1006,6 +1007,20 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
 
+  const editUsername = async (name: string) => {
+    if (!userData) return;
+    try {
+      if (auth.currentUser) {
+        const userDoc = doc(db, "users", auth.currentUser.uid);
+        await updateDoc(userDoc, {
+          username: name,
+        });
+      }
+    } catch (error) {
+      console.error("Error editing username:", error);
+    }
+  };
+
   // Function deletes all skill, quests, and resets all exp to 0
   const resetAccount = async () => {
     if (!auth.currentUser || !userData) return;
@@ -1262,6 +1277,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         firstLogin,
         alterOverallEXP,
         deteriorateSkill,
+        editUsername,
       }}
     >
       {children}

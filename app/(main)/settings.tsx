@@ -39,7 +39,10 @@ import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces
 
 import AvatarList from "@/components/AvatarList"; // allow selecting avatars from settings
 import TitlesList from "@/components/TitlesList"; // allow selecting character titles from settings
+
+import EditUsernameModal from "@/components/EditUsernameModal";
 import ThemeList from "@/components/ThemeList"; // allow selecting app themes from settings
+
 
 export default function Settings() {
   const colors = useTheme(); // used for themes, replaces colors import
@@ -72,6 +75,23 @@ export default function Settings() {
     },
     settingsContainer: {
       alignItems: "center",
+    },
+    splitRowContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    section: {
+      backgroundColor: colors.bgTertiary,
+      padding: 10,
+      borderRadius: 8,
+      height: 50,
+    },
+    sectionTitle: {
+      width: "100%",
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 24,
+      color: colors.text,
     },
     logo: {
       height: 200,
@@ -130,23 +150,19 @@ export default function Settings() {
       color: colors.textDark, // match title color, slightly darker due to being on darker bg
       fontSize: 20, // Slightly larger for emphasis
     },
+    icon: {
+      fontFamily: "MaterialIconsRound_400Regular",
+      fontSize: 50,
+      color: colors.text,
+      position: "absolute",
+      right: 0,
+    },
   });
 
   const { resetAccount } = useUserData();
+  const [editUsernameVisible, setEditUsernameVisible] = useState(false);
 
-  useEffect(() => {
-    const backAction = () => {
-      router.replace("/(main)"); // Navigate back to home
-      return true; // Prevent default behavior
-    };
 
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => backHandler.remove(); // Cleanup
-  }, []);
 
   const resetHandler = () => {
     Alert.alert(
@@ -181,6 +197,17 @@ export default function Settings() {
           <TitlesList />
           <ThemeList />
           <TouchableOpacity
+            onPress={() => setEditUsernameVisible(true)}
+            style={styles.section}
+          >
+            <View style={styles.splitRowContainer}>
+              <Text style={styles.sectionTitle}>Change Username</Text>
+              <Text style={styles.icon}>
+                person
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
             style={styles.button}
             onPress={() => resetHandler()}
           >
@@ -188,6 +215,14 @@ export default function Settings() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <EditUsernameModal
+        visible={editUsernameVisible}
+        onClose={() => {
+          setEditUsernameVisible(false);
+        }}
+        >
+
+      </EditUsernameModal>
     </View>
   );
 }

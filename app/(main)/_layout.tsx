@@ -22,26 +22,46 @@ export default function MainLayout() {
   return (
     <UserProvider>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <ThemeContext>
-          <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="settings" options={{ headerShown: false }} />
-            <Stack.Screen name="quests_main" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="create_quest"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="skills_main" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="character_main"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="achievements_main"
-              options={{ headerShown: false }}
-            />
-          </Stack>
-        </ThemeContext>
+        <Stack>
+          <Stack.Screen 
+            name="index" 
+            options={{ 
+              headerShown: false,
+              gestureEnabled: false, 
+              }} />
+          <Stack.Screen 
+            name="settings" 
+            options={{ 
+              headerShown: false,
+              gestureEnabled: false, 
+              }} />
+          <Stack.Screen 
+            name="quests_main" 
+            options={{ 
+              headerShown: false,
+              gestureEnabled: false, 
+              }} />
+          <Stack.Screen 
+            name="skills_main" 
+            options={{ 
+              headerShown: false,
+              gestureEnabled: false, 
+              }} />
+          <Stack.Screen
+            name="character_main"
+            options={{ 
+              headerShown: false,
+              gestureEnabled: false, 
+            }}
+          />
+          <Stack.Screen
+            name="achievements_main"
+            options={{ 
+              headerShown: false,
+              gestureEnabled: false,
+            }}
+          />
+        </Stack>
       </ThemeProvider>
     </UserProvider>
   );

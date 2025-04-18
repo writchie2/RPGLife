@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,10 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import { router } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { BackHandler } from "react-native";
-import { ProgressBar } from "react-native-paper";
 
 // import colors from "@/constants/colors";
 import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
@@ -18,6 +14,7 @@ import UserHeader from "@/components/UserHeader";
 import TraitGraph from "@/components/TraitGraphModal";
 import CharacterTraitLevels from "@/components/CharacterTraitLevels";
 import CharacterTraitDesc from "@/components/CharacterTraitDesc";
+import { usePreventRemove } from "@react-navigation/native";
 
 // Define the available views
 enum ViewMode {
@@ -37,97 +34,13 @@ enum ViewMode {
 
 export default function CharacterScreen() {
   const colors = useTheme(); // used for themes, replaces colors import
-
-  // Styles
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.bgPrimary,
-      // paddingVertical: 20,
-      paddingBottom: 20, // -TEST-
-    },
-    headerContainer: {
-      paddingHorizontal: 20,
-      marginBottom: 20,
-    },
-    scrollLine: {
-      marginHorizontal: 15,
-      borderBottomWidth: 1,
-      borderColor: colors.borderLight,
-    },
-    scrollContainer: {
-      paddingTop: 20,
-      paddingHorizontal: 20,
-    },
-    traitsContainer: {
-      position: "relative",
-      flex: 1,
-      // marginTop: 20,
-      marginBottom: 30,
-      // backgroundColor: "orange", // -TEST-
-    },
-    titleContainer: {
-      zIndex: 1,
-      backgroundColor: colors.bgTertiary,
-      padding: 10,
-      borderRadius: 8,
-      height: 60,
-      justifyContent: "center",
-    },
-    title: {
-      fontFamily: "Metamorphous_400Regular",
-      fontSize: 26,
-      color: colors.text,
-    },
-    infoContainer: {
-      flex: 1,
-      position: "relative",
-      top: -60,
-      marginBottom: -60,
-      zIndex: 0,
-      borderRadius: 8,
-      width: "100%",
-      paddingTop: 70,
-    },
-    navContainer: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      marginTop: 20,
-      marginHorizontal: 20,
-    },
-    navButton: {
-      flex: 1,
-      padding: 10,
-      backgroundColor: colors.bgTertiary,
-      borderRadius: 10,
-      alignItems: "center",
-      marginHorizontal: 5,
-    },
-    navText: {
-      fontFamily: "Metamorphous_400Regular",
-      fontSize: 18,
-      color: colors.text,
-    },
-  });
-
   // const [characterTraits, setCharacterTraits] = useState<CharacterTrait[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.LEVELS); // Default view
 
-  useEffect(() => {
-    const backAction = () => {
-      router.replace("/(main)"); // Navigate back to home
-      return true; // Prevent default behavior
-    };
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => backHandler.remove();
-  }, []);
+  
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.headerContainer}>
         <UserHeader />
       </View>
@@ -175,6 +88,78 @@ export default function CharacterScreen() {
           <Text style={styles.navText}>Desc.</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
+  const colors = useTheme(); // used for themes, replaces colors import
+
+// Styles
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.bgPrimary,
+    paddingVertical: 20,
+  },
+  headerContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  scrollLine: {
+    marginHorizontal: 15,
+    borderBottomWidth: 1,
+    borderColor: colors.borderLight,
+  },
+  scrollContainer: {
+    paddingTop: 20,
+    paddingHorizontal: 20,
+  },
+  traitsContainer: {
+    position: "relative",
+    flex: 1,
+    // marginTop: 20,
+    marginBottom: 30,
+    // backgroundColor: "orange", // -TEST-
+  },
+  titleContainer: {
+    zIndex: 1,
+    backgroundColor: colors.bgTertiary,
+    padding: 10,
+    borderRadius: 8,
+    height: 60,
+    justifyContent: "center",
+  },
+  title: {
+    fontFamily: "Metamorphous_400Regular",
+    fontSize: 26,
+    color: colors.text,
+  },
+  infoContainer: {
+    flex: 1,
+    position: "relative",
+    top: -60,
+    marginBottom: -60,
+    zIndex: 0,
+    borderRadius: 8,
+    width: "100%",
+    paddingTop: 70,
+  },
+  navContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+    marginHorizontal: 20,
+  },
+  navButton: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: colors.bgTertiary,
+    borderRadius: 10,
+    alignItems: "center",
+    marginHorizontal: 5,
+  },
+  navText: {
+    fontFamily: "Metamorphous_400Regular",
+    fontSize: 18,
+    color: colors.text,
+  },
+});

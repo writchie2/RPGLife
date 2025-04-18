@@ -112,18 +112,6 @@ export default function QuestMainPage() {
   const [pastQuestListVisible, setPastQuestListVisible] = useState(false);
   const [questModalVisible, setQuestModalVisible] = useState(false);
 
-  useEffect(() => {
-    const backAction = () => {
-      router.replace("/(main)"); // Navigate back to home
-      return true; // Prevent default behavior
-    };
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => backHandler.remove();
-  }, []);
 
   return (
     <View style={styles.container}>
