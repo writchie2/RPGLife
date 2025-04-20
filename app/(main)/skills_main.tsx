@@ -183,7 +183,7 @@ export default function SkillsPage() {
               <View style={styles.sectionTitleContainer}>
                 <Text style={styles.sectionTitle}>Archived Skills</Text>
                 <Text style={styles.sectionTitleIcon}>
-                  {skillsListVisible ? "arrow_drop_down" : "arrow_right"}
+                  {pastSkillsListVisible ? "arrow_drop_down" : "arrow_right"}
                 </Text>
               </View>
             </TouchableOpacity>
