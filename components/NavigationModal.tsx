@@ -97,9 +97,10 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
       shadowRadius: 4,
       elevation: 5,
     },
-    closeButtonText: {
+    closeButtonIcon: {
+      fontFamily: "MaterialIconsRound_400Regular",
       color: colors.textDark,
-      fontSize: 28,
+      fontSize: 32,
     },
     signoutButton: {
       width: "42%",
@@ -144,7 +145,11 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
             <View style={styles.modalContainer}>
               <Image
                 style={styles.logo}
-                source={require("../assets/images/RPGiconLine-sm.png")}
+                source={
+                  colors.bgPrimary === "#f1f3de"
+                    ? require("../assets/images/RPGiconLine-sm.png")
+                    : require("../assets/images/RPGiconLine-v2.png")
+                }
               />
 
               <View style={styles.buttonContainer}>
@@ -229,7 +234,7 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
 
               {/* Close Button */}
               <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                <Text style={styles.closeButtonText}>X</Text>
+                <Text style={styles.closeButtonIcon}>close</Text>
               </TouchableOpacity>
 
               {/* Signout Button */}
