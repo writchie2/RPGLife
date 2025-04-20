@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Platform,
 } from "react-native";
 
 // import colors from "@/constants/colors";
@@ -43,7 +44,19 @@ export default function CharacterScreen() {
     },
     headerContainer: {
       paddingHorizontal: 20,
-      marginVertical: 20,
+      // marginVertical: 20,
+      ...Platform.select({
+        ios: {
+          marginVertical: 20,
+        },
+        android: {
+          marginBottom: 20,
+        },
+        default: {
+          marginTop: 10,
+          marginBottom: 20,
+        },
+      }),
     },
     scrollLine: {
       marginHorizontal: 15,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, ScrollView, Text } from "react-native";
+import { View, StyleSheet, ScrollView, Text, Platform } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BackHandler } from "react-native";
@@ -24,10 +24,23 @@ export default function AchievementsPage() {
     container: {
       flex: 1,
       backgroundColor: colors.bgPrimary,
+      paddingVertical: 20,
     },
     headerContainer: {
       paddingHorizontal: 20,
-      marginVertical: 20,
+      // marginVertical: 20,
+      ...Platform.select({
+        ios: {
+          marginVertical: 20,
+        },
+        android: {
+          marginBottom: 20,
+        },
+        default: {
+          marginTop: 10,
+          marginBottom: 20,
+        },
+      }),
     },
     pageTitle: {
       fontFamily: "Metamorphous_400Regular",

@@ -20,6 +20,7 @@ import {
   Image,
   Alert,
   ScrollView,
+  Platform,
 } from "react-native";
 import {
   getAuth,
@@ -50,10 +51,23 @@ export default function Settings() {
     container: {
       flex: 1,
       backgroundColor: colors.bgPrimary,
+      paddingVertical: 20,
     },
     headerContainer: {
       paddingHorizontal: 20,
-      marginVertical: 20,
+      // marginVertical: 20,
+      ...Platform.select({
+        ios: {
+          marginVertical: 20,
+        },
+        android: {
+          marginBottom: 20,
+        },
+        default: {
+          marginTop: 10,
+          marginBottom: 20,
+        },
+      }),
     },
     pageTitle: {
       fontFamily: "Metamorphous_400Regular",
