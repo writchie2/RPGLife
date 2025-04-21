@@ -438,6 +438,7 @@ const EditSkillModal: React.FC<EditSkillModalProps> = ({
                           containerStyle={{ backgroundColor: colors.bgPrimary }}
                           itemTextStyle={{
                             fontFamily: "Metamorphous_400Regular",
+                            color: colors.textInput
                           }}
                           selectedTextStyle={styles.selectedTextStyle}
                           inputSearchStyle={styles.inputSearchStyle}
@@ -479,6 +480,7 @@ const EditSkillModal: React.FC<EditSkillModalProps> = ({
                           containerStyle={{ backgroundColor: colors.bgPrimary }}
                           itemTextStyle={{
                             fontFamily: "Metamorphous_400Regular",
+                            color: colors.textInput
                           }}
                           inputSearchStyle={styles.inputSearchStyle}
                           iconStyle={styles.iconStyle}

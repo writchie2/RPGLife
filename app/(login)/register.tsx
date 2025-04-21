@@ -121,6 +121,7 @@ export default function RegisterScreen() {
             staminaEXP: 0,
             intelligenceEXP: 0,
             charismaEXP: 0,
+            testerMode: false,
           });
           try {
             const verStatus = sendEmailVerification(curUser);

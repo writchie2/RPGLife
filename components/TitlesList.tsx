@@ -438,7 +438,10 @@ const TitlesList = () => {
 
   // FLATLIST DISPLAY TITLES
   const renderCharTitleItem = ({ item }: { item: charTitle }) => {
-    const isUnlocked = item.progress >= item.unlockLevel;
+    let isUnlocked = item.progress >= item.unlockLevel;
+    if(userData.userData?.testerMode){
+      isUnlocked = true;
+    }
     return (
       <TouchableOpacity
         onPress={() =>

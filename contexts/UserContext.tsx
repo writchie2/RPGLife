@@ -93,6 +93,7 @@ interface UserContextType {
   alterOverallEXP: (alterAmount: number) => void;
   deteriorateSkill: (deteriorateAmmount: number, id: string) => void;
   editUsername: (name: string) => void;
+  toggleTesterMode: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -1059,6 +1060,21 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
 
+  const toggleTesterMode = async () => {
+    if (!auth.currentUser || !userData) return;
+    
+    try {
+      if (auth.currentUser) {
+        const userDoc = doc(db, "users", auth.currentUser.uid);
+        await updateDoc(userDoc, {
+          testerMode: (!userData.testerMode),
+        });
+      }
+    } catch (error) {
+      console.error("Error changing tester mode:", error);
+    }
+  };
+
   const firstLogin = async () => {
     if (!auth.currentUser || !userData) return;
     const userDocRef = doc(db, "users", auth.currentUser.uid);
@@ -1113,6 +1129,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           theme: data.theme,
           quests: prev?.quests || [],
           skills: prev?.skills || [],
+          testerMode: data.testerMode ?? false,
         }));
       } else {
         console.error("User document does not exist.");
@@ -1278,6 +1295,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         alterOverallEXP,
         deteriorateSkill,
         editUsername,
+        toggleTesterMode
       }}
     >
       {children}

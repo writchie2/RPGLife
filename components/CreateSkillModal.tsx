@@ -391,6 +391,7 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
                           containerStyle={{ backgroundColor: colors.bgPrimary }}
                           itemTextStyle={{
                             fontFamily: "Metamorphous_400Regular",
+                            color: colors.textInput
                           }}
                           selectedTextStyle={styles.selectedTextStyle}
                           inputSearchStyle={styles.inputSearchStyle}
@@ -432,6 +433,7 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
                           containerStyle={{ backgroundColor: colors.bgPrimary }}
                           itemTextStyle={{
                             fontFamily: "Metamorphous_400Regular",
+                            color: colors.textInput
                           }}
                           inputSearchStyle={styles.inputSearchStyle}
                           iconStyle={styles.iconStyle}

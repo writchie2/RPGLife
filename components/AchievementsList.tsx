@@ -176,7 +176,7 @@ const AchievementsList = () => {
         },
         {
           title: "Reach lv.10",
-          reward: "Adventurer Title",
+          reward: "Adventurer Title & Adventurer Theme",
           level: 10,
           progress: levelOverall,
         },
@@ -188,7 +188,7 @@ const AchievementsList = () => {
         },
         {
           title: "Reach lv.20",
-          reward: "Heroic Title",
+          reward: "Heroic Title & Heroic Theme",
           level: 20,
           progress: levelOverall,
         },
@@ -200,7 +200,7 @@ const AchievementsList = () => {
         },
         {
           title: "Reach lv.30",
-          reward: "Lord Title",
+          reward: "Lord Title & Lord Theme",
           level: 30,
           progress: levelOverall,
         },
@@ -212,7 +212,7 @@ const AchievementsList = () => {
         },
         {
           title: "Reach lv.40",
-          reward: "Overlord Title",
+          reward: "Overlord Title & Overlord Theme",
           level: 40,
           progress: levelOverall,
         },
@@ -224,7 +224,7 @@ const AchievementsList = () => {
         },
         {
           title: "Reach lv.50",
-          reward: "Demigod Title",
+          reward: "Demigod Title & Demigod Theme",
           level: 50,
           progress: levelOverall,
         },

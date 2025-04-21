@@ -291,7 +291,10 @@ const UserHeader: React.FC<UserHeaderProps> = ({}) => {
   // Render item for the Avatar selector list
   // Will render an avatar choice as locked or unlocked based on user levels
   const renderAvatarItem = ({ item }: { item: Avatar }) => {
-    const isUnlocked = item.progress >= item.unlockLevel;
+    let isUnlocked = item.progress >= item.unlockLevel;
+    if(userData.userData?.testerMode){
+      isUnlocked = true;
+    }
     return (
       <TouchableOpacity
         onPress={() =>
