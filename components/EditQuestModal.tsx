@@ -545,6 +545,7 @@ const EditQuestModal: React.FC<EditQuestModalProps> = ({
                           containerStyle={{ backgroundColor: colors.bgPrimary }}
                           itemTextStyle={{
                             fontFamily: "Metamorphous_400Regular",
+                            color: colors.textInput
                           }}
                           iconStyle={styles.iconStyle}
                           data={[{ label: "None", value: null }, ...skills]}
@@ -584,6 +585,7 @@ const EditQuestModal: React.FC<EditQuestModalProps> = ({
                           containerStyle={{ backgroundColor: colors.bgPrimary }}
                           itemTextStyle={{
                             fontFamily: "Metamorphous_400Regular",
+                            color: colors.textInput
                           }}
                           iconStyle={styles.iconStyle}
                           data={[{ label: "None", value: null }, ...skills]}

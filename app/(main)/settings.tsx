@@ -43,6 +43,7 @@ import TitlesList from "@/components/TitlesList"; // allow selecting character t
 
 import EditUsernameModal from "@/components/EditUsernameModal";
 import ThemeList from "@/components/ThemeList"; // allow selecting app themes from settings
+import EditPasswordModal from "@/components/EditPasswordModal";
 
 export default function Settings() {
   const colors = useTheme(); // used for themes, replaces colors import
@@ -99,6 +100,7 @@ export default function Settings() {
       padding: 10,
       borderRadius: 8,
       height: 50,
+      marginBottom: 20,
     },
     sectionTitle: {
       width: "100%",
@@ -148,9 +150,9 @@ export default function Settings() {
       width: "56%",
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: colors.bgSecondary,
+      backgroundColor: colors.cancel,
       borderRadius: 100, // full rounded corners
-      marginTop: 25,
+      marginTop: 100,
       padding: 18,
       shadowColor: colors.shadow, // Shadow color to match the button for a cohesive look
       shadowOffset: { width: 0, height: 3 },
@@ -172,8 +174,9 @@ export default function Settings() {
     },
   });
 
-  const { resetAccount } = useUserData();
+  const { resetAccount, userData, toggleTesterMode } = useUserData();
   const [editUsernameVisible, setEditUsernameVisible] = useState(false);
+  const [editPasswordVisible, setEditPasswordVisible] = useState(false);
 
   const resetHandler = () => {
     Alert.alert(
@@ -216,6 +219,42 @@ export default function Settings() {
               <Text style={styles.icon}>person</Text>
             </View>
           </TouchableOpacity>
+          
+          <TouchableOpacity
+            onPress={() => setEditPasswordVisible(true)}
+            style={styles.section}
+          >
+            <View style={styles.splitRowContainer}>
+              <Text style={styles.sectionTitle}>Change Password</Text>
+              <Text style={styles.icon}>password</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => {
+              toggleTesterMode();
+            }}
+            style={styles.section}
+          >
+            <View style={styles.splitRowContainer}>
+              <Text style={styles.sectionTitle}>Tester Mode</Text>
+              <Text style={styles.icon}>{userData?.testerMode ? "check_circle" : "check_circle_outline"}</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => {
+              auth.signOut();
+              
+            }}
+            style={styles.section}
+          >
+            <View style={styles.splitRowContainer}>
+              <Text style={styles.sectionTitle}>Logout</Text>
+              <Text style={styles.icon}>logout</Text>
+            </View>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.button}
             onPress={() => resetHandler()}
@@ -230,6 +269,12 @@ export default function Settings() {
           setEditUsernameVisible(false);
         }}
       ></EditUsernameModal>
+      <EditPasswordModal
+        visible={editPasswordVisible}
+        onClose={() => {
+          setEditPasswordVisible(false);
+        }}
+      ></EditPasswordModal>
     </View>
   );
 }

@@ -146,7 +146,7 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
               <Image
                 style={styles.logo}
                 source={
-                  colors.bgPrimary === "#f1f3de"
+                  (colors.mode === "light") 
                     ? require("../assets/images/RPGiconLine-sm.png")
                     : require("../assets/images/RPGiconLine-v2.png")
                 }
@@ -220,7 +220,7 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
 
                 {/* Settings Button */}
                 <TouchableOpacity
-                  style={[styles.navButton, { borderTopWidth: 0 }]}
+                  style={[styles.navButton, { borderTopWidth: 0, marginBottom: 40 }]}
                   onPress={() => {
                     router.push("/(main)/settings");
                     setTimeout(() => {
@@ -237,7 +237,7 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
                 <Text style={styles.closeButtonIcon}>close</Text>
               </TouchableOpacity>
 
-              {/* Signout Button */}
+              {/* Signout Button 
               <TouchableOpacity
                 style={styles.signoutButton}
                 onPress={() => {
@@ -247,7 +247,7 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
                 }}
               >
                 <Text style={styles.signoutButtonText}>Sign Out</Text>
-              </TouchableOpacity>
+              </TouchableOpacity>*/}
             </View>
           </TouchableWithoutFeedback>
         </View>

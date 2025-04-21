@@ -48,6 +48,7 @@ export interface UserData {
   theme: string; // store selected theme
   quests?: Quest[]; // Optional quests list (can be empty)
   skills?: Skill[]; // Optional skills list (can be empty)
+  testerMode: boolean;
 }
 
 // Define a checkpoint structure

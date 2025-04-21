@@ -341,7 +341,10 @@ const AvatarList = () => {
 
   // FLATLIST DISPLAY AVATARS
   const renderAvatarItem = ({ item }: { item: Avatar }) => {
-    const isUnlocked = item.progress >= item.unlockLevel;
+    let isUnlocked = item.progress >= item.unlockLevel;
+    if(userData.userData?.testerMode){
+      isUnlocked = true;
+    }
     return (
       <TouchableOpacity
         onPress={() =>
