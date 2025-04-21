@@ -1,21 +1,18 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
+  Pressable,
   ScrollView,
+  TouchableOpacity,
   Platform,
 } from "react-native";
-
-// import colors from "@/constants/colors";
-import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
+import { useTheme } from "@/contexts/ThemeContext";
 import UserHeader from "@/components/UserHeader";
-
 import TraitGraph from "@/components/TraitGraphModal";
 import CharacterTraitLevels from "@/components/CharacterTraitLevels";
 import CharacterTraitDesc from "@/components/CharacterTraitDesc";
-import { usePreventRemove } from "@react-navigation/native";
 
 // Define the available views
 enum ViewMode {
@@ -24,18 +21,10 @@ enum ViewMode {
   DESCRIPTION = "DESCRIPTION",
 }
 
-// Define the structure for character traits
-// type CharacterTrait = {
-//   name: string;
-//   level: number;
-//   currentExp: number;
-//   requiredExp: number;
-//   description: string;
-// };
-
 export default function CharacterScreen() {
-  const colors = useTheme(); // used for themes, replaces colors import
-  // Styles
+  const colors = useTheme();
+  const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.LEVELS);
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -44,23 +33,17 @@ export default function CharacterScreen() {
     },
     headerContainer: {
       paddingHorizontal: 20,
-      // marginVertical: 20,
       ...Platform.select({
-        ios: {
-          marginVertical: 20,
-        },
-        android: {
-          marginBottom: 20,
-        },
-        default: {
-          marginTop: 10,
-          marginBottom: 20,
-        },
+        ios: { marginVertical: 20 },
+        android: { marginBottom: 20 },
+        default: { marginTop: 10, marginBottom: 20 },
       }),
     },
     scrollLine: {
       marginHorizontal: 15,
+      padding: 5,
       borderBottomWidth: 1,
+      borderTopWidth: 1,
       borderColor: colors.borderLight,
     },
     scrollContainer: {
@@ -70,9 +53,7 @@ export default function CharacterScreen() {
     traitsContainer: {
       position: "relative",
       flex: 1,
-      // marginTop: 20,
       marginBottom: 30,
-      // backgroundColor: "orange", // -TEST-
     },
     titleContainer: {
       zIndex: 1,
@@ -84,8 +65,9 @@ export default function CharacterScreen() {
     },
     title: {
       fontFamily: "Metamorphous_400Regular",
-      fontSize: 26,
+      fontSize: 28,
       color: colors.text,
+      textAlign: "center",
     },
     infoContainer: {
       flex: 1,
@@ -118,16 +100,15 @@ export default function CharacterScreen() {
     },
   });
 
-  // const [characterTraits, setCharacterTraits] = useState<CharacterTrait[]>([]);
-  const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.LEVELS); // Default view
-
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <UserHeader />
       </View>
 
-      <View style={styles.scrollLine}></View>
+      <View style={styles.scrollLine}>
+        <Text style={styles.title}>Character</Text>
+      </View>
 
       <ScrollView
         style={styles.scrollContainer}
@@ -139,17 +120,13 @@ export default function CharacterScreen() {
           </View>
 
           <View style={styles.infoContainer}>
-            {/* Conditional Rendering Based on View Mode */}
             {viewMode === ViewMode.LEVELS && <CharacterTraitLevels />}
-
             {viewMode === ViewMode.GRAPH && <TraitGraph />}
-
             {viewMode === ViewMode.DESCRIPTION && <CharacterTraitDesc />}
           </View>
         </View>
       </ScrollView>
 
-      {/* Bottom Navigation */}
       <View style={styles.navContainer}>
         <TouchableOpacity
           style={styles.navButton}
