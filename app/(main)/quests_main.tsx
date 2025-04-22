@@ -1,130 +1,166 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
-  Button,
   StyleSheet,
   Pressable,
-  ScrollViewBase,
-  TouchableOpacity,
-  FlatList,
   ScrollView,
+  TouchableOpacity,
+  Platform,
 } from "react-native";
-import { router } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { auth } from "../../FirebaseConfig";
-import {
-  collection,
-  addDoc,
-  getDoc,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  doc,
-  query,
-  where,
-} from "firebase/firestore";
-import { db } from "../../FirebaseConfig";
-import { getAuth } from "firebase/auth";
-import QuestsList from "../../components/QuestsList";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useUserData } from "@/contexts/UserContext";
-import { BackHandler, Alert } from "react-native";
+import UserHeader from "@/components/UserHeader";
+import QuestsList from "@/components/QuestsList";
 import CreateQuestModal from "@/components/CreateQuestModal";
 
-//import { fetchUserData } from '../../utils/firestoreUtils';
-//import { saveUserData, getUserData } from '../../utils/storageUtils';
-import { UserData, Quest, Skill, Checkpoint } from "../../utils/types";
-
-import colors from "@/constants/colors";
-import UserHeader from "@/components/UserHeader";
-
-// TODO Implement Quest Page functionality
 export default function QuestMainPage() {
-  const user = auth.currentUser;
+  const colors = useTheme();
   const userData = useUserData();
 
   const [questListVisible, setQuestListVisible] = useState(false);
   const [pastQuestListVisible, setPastQuestListVisible] = useState(false);
   const [questModalVisible, setQuestModalVisible] = useState(false);
 
-  useEffect(() => {
-    const backAction = () => {
-      router.replace("/(main)"); // Navigate back to home
-      return true; // Prevent default behavior
-    };
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => backHandler.remove();
-  }, []);
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.bgPrimary,
+      paddingVertical: 20,
+    },
+    headerContainer: {
+      paddingHorizontal: 20,
+      ...Platform.select({
+        ios: {
+          marginVertical: 20,
+        },
+        android: {
+          marginBottom: 20,
+        },
+        default: {
+          marginTop: 10,
+          marginBottom: 20,
+        },
+      }),
+    },
+    pageTitle: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 28,
+      color: colors.text,
+      textAlign: "center",
+    },
+    scrollLine: {
+      marginHorizontal: 15,
+      padding: 5,
+      borderBottomWidth: 1,
+      borderTopWidth: 1,
+      borderColor: colors.borderLight,
+    },
+    scrollContainer: {
+      paddingTop: 20,
+      paddingHorizontal: 20,
+    },
+    dropdownContainer: {
+      marginBottom: 40,
+    },
+    section: {
+      zIndex: 1,
+      backgroundColor: colors.bgTertiary,
+      padding: 10,
+      borderRadius: 8,
+      height: 60,
+      justifyContent: "center",
+    },
+    sectionTitleContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    sectionTitle: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 24,
+      color: colors.text,
+    },
+    sectionTitleIcon: {
+      fontFamily: "MaterialIconsRound_400Regular",
+      fontSize: 50,
+      color: colors.text,
+    },
+    addButton: {
+      position: "absolute",
+      bottom: 20,
+      right: 20,
+      backgroundColor: colors.bgTertiary,
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    addButtonText: {
+      fontSize: 36,
+      lineHeight: 44,
+      color: colors.text,
+    },
+  });
 
   return (
     <View style={styles.container}>
-      {/* User section similar to home page user section */}
       <View style={styles.headerContainer}>
-        <UserHeader></UserHeader>
+        <UserHeader />
       </View>
 
-      <View style={styles.scrollLine}></View>
-      <ScrollView style={styles.scrollContainer}>
-        <View>
-          {/* Active Quests Section */}
-          <View style={styles.dropdownContainer}>
-            <TouchableOpacity
-              style={styles.section}
-              onPress={() => setQuestListVisible(!questListVisible)}
-            >
-              <View style={styles.sectionTitleContainer}>
-                <Text style={styles.sectionTitle}>
-                  {questListVisible ? "Active Quests" : "Active Quests"}
-                </Text>
-                <Text style={styles.sectionTitle}>
-                  {questListVisible ? "▲" : "▼"}
-                </Text>
-              </View>
-            </TouchableOpacity>
-            {questListVisible && (
-              <QuestsList
-                quests={userData.userData?.quests || []}
-                mode="active"
-              />
-            )}
-          </View>
+      <View style={styles.scrollLine}>
+        <Text style={styles.pageTitle}>Quests</Text>
+      </View>
 
-          {/* Completed Quests Section */}
-          <View style={styles.dropdownContainer}>
-            <TouchableOpacity
-              style={styles.section}
-              onPress={() => setPastQuestListVisible(!pastQuestListVisible)}
-            >
-              <View style={styles.sectionTitleContainer}>
-                <Text style={styles.sectionTitle}>
-                  {pastQuestListVisible ? "Completed" : "Completed"}
-                </Text>
-                <Text style={styles.sectionTitle}>
-                  {pastQuestListVisible ? "▲" : "▼"}
-                </Text>
-              </View>
-            </TouchableOpacity>
-            {pastQuestListVisible && (
-              <QuestsList
-                quests={userData.userData?.quests || []}
-                mode="inactive"
-              />
-            )}
-          </View>
+      <ScrollView style={styles.scrollContainer}>
+        <View style={styles.dropdownContainer}>
+          <TouchableOpacity
+            style={styles.section}
+            onPress={() => setQuestListVisible(!questListVisible)}
+          >
+            <View style={styles.sectionTitleContainer}>
+              <Text style={styles.sectionTitle}>Active Quests</Text>
+              <Text style={styles.sectionTitleIcon}>
+                {questListVisible ? "arrow_drop_down" : "arrow_right"}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          {questListVisible && (
+            <QuestsList
+              quests={userData.userData?.quests || []}
+              mode="active"
+            />
+          )}
+        </View>
+
+        <View style={styles.dropdownContainer}>
+          <TouchableOpacity
+            style={styles.section}
+            onPress={() => setPastQuestListVisible(!pastQuestListVisible)}
+          >
+            <View style={styles.sectionTitleContainer}>
+              <Text style={styles.sectionTitle}>Archived Quests</Text>
+              <Text style={styles.sectionTitleIcon}>
+                {pastQuestListVisible ? "arrow_drop_down" : "arrow_right"}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          {pastQuestListVisible && (
+            <QuestsList
+              quests={userData.userData?.quests || []}
+              mode="inactive"
+            />
+          )}
         </View>
       </ScrollView>
 
-      {/* Quest Creation Modal */}
       <CreateQuestModal
         visible={questModalVisible}
         onClose={() => setQuestModalVisible(false)}
       />
 
-      {/* Add Button */}
       <Pressable
         style={styles.addButton}
         onPress={() => setQuestModalVisible(true)}
@@ -134,65 +170,3 @@ export default function QuestMainPage() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bgPrimary,
-    // padding: 20,
-    paddingVertical: 20,
-  },
-  headerContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  scrollLine: {
-    marginHorizontal: 15,
-    borderBottomWidth: 1,
-    borderColor: colors.borderLight,
-  },
-  scrollContainer: {
-    paddingTop: 20,
-    paddingHorizontal: 20,
-  },
-  sectionTitleContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontFamily: "Metamorphous_400Regular",
-    color: colors.text,
-  },
-  dropdownContainer: {
-    position: "relative",
-    // marginBottom: 20,
-    marginBottom: 40,
-  },
-  section: {
-    zIndex: 1,
-    backgroundColor: colors.bgTertiary,
-    padding: 10,
-    borderRadius: 8,
-    height: 60,
-    justifyContent: "center",
-  },
-  addButton: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    backgroundColor: colors.bgTertiary,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  addButtonText: {
-    // fontSize: 24,
-    // fontWeight: "bold",
-    fontSize: 36,
-    lineHeight: 44,
-    color: colors.text,
-  },
-});

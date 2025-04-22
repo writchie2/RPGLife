@@ -14,23 +14,60 @@ import { UserProvider } from "../../contexts/UserContext";
 import Colors from "@/constants/colors";
 import { useColorScheme } from "@/components/useColorScheme";
 
+import { ThemeContext } from "@/contexts/ThemeContext";
+
 export default function MainLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <UserProvider>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="settings" options={{ headerShown: false }} />
-          <Stack.Screen name="quests_main" options={{ headerShown: false }} />
-          <Stack.Screen name="create_quest" options={{ headerShown: false }} />
-          <Stack.Screen name="skills_main" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="character_main"
-            options={{ headerShown: false }}
-          />
-        </Stack>
+        <ThemeContext>
+          <Stack>
+            <Stack.Screen
+              name="index"
+              options={{
+                headerShown: false,
+                gestureEnabled: false,
+              }}
+            />
+            <Stack.Screen
+              name="settings"
+              options={{
+                headerShown: false,
+                gestureEnabled: false,
+              }}
+            />
+            <Stack.Screen
+              name="quests_main"
+              options={{
+                headerShown: false,
+                gestureEnabled: false,
+              }}
+            />
+            <Stack.Screen
+              name="skills_main"
+              options={{
+                headerShown: false,
+                gestureEnabled: false,
+              }}
+            />
+            <Stack.Screen
+              name="character_main"
+              options={{
+                headerShown: false,
+                gestureEnabled: false,
+              }}
+            />
+            <Stack.Screen
+              name="achievements_main"
+              options={{
+                headerShown: false,
+                gestureEnabled: false,
+              }}
+            />
+          </Stack>
+        </ThemeContext>
       </ThemeProvider>
     </UserProvider>
   );

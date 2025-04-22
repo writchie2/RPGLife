@@ -38,6 +38,7 @@ import colors from "@/constants/colors";
 import { useFonts } from "expo-font";
 import { Metamorphous_400Regular } from "@expo-google-fonts/metamorphous";
 import { Alegreya_400Regular } from "@expo-google-fonts/alegreya";
+import { toMidnight } from "@/utils/toMidnight";
 
 export default function RegisterScreen() {
   // load fonts
@@ -111,7 +112,7 @@ export default function RegisterScreen() {
           await setDoc(doc(db, "users", curUser.uid), {
             username: userName,
             email: email,
-            birthday: date,
+            birthday: toMidnight(date),
             exp: 0,
             iconIdex: 0,
             strengthEXP: 0,
@@ -120,6 +121,7 @@ export default function RegisterScreen() {
             staminaEXP: 0,
             intelligenceEXP: 0,
             charismaEXP: 0,
+            testerMode: false,
           });
           try {
             const verStatus = sendEmailVerification(curUser);
