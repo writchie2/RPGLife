@@ -120,7 +120,8 @@ const QuestsList: React.FC<QuestsListProps> = ({
         }}
         onLevelUp={() => {
           setQuestRewardVisible(false);
-          setQuestID("");
+          //setQuestID("");
+          setRewardID("");
           setLevelUpModalVisible(true);
           console.log("quest triggered level up")
         }}
