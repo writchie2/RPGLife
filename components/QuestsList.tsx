@@ -13,8 +13,11 @@ import { Quest } from "../utils/types";
 import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 import QuestViewModal from "./QuestViewModal";
 import QuestRewardModal from "./QuestRewardModal";
+
+import LevelUpModal from "./LevelUpModal";
 import { useUserData } from "@/contexts/UserContext";
 import { toMidnight } from "@/utils/toMidnight";
+
 
 interface QuestsListProps {
   quests: Quest[];
@@ -124,6 +127,8 @@ const QuestsList: React.FC<QuestsListProps> = ({
   const [questID, setQuestID] = useState("");
   const [rewardID, setRewardID] = useState("");
   const [questRewardVisible, setQuestRewardVisible] = useState(false);
+
+  const [levelUpModalVisible, setLevelUpModalVisible] = useState(false);
   const { userData } = useUserData();
 
   const calcExpLoss = (quest: Quest): number => {
@@ -148,6 +153,7 @@ const QuestsList: React.FC<QuestsListProps> = ({
 
     return totalOverdueDays * 100;
   };
+
 
   const renderItem = ({ item }: { item: Quest }) => {
     // const time = new Timestamp(item.dueDate.getSeconds(), item.dueDate.getMilliseconds())
@@ -257,7 +263,21 @@ const QuestsList: React.FC<QuestsListProps> = ({
           setRewardID("");
           setQuestRewardVisible(false);
         }}
+        onLevelUp={() => {
+          setQuestRewardVisible(false);
+          setQuestID("");
+          setLevelUpModalVisible(true);
+          console.log("quest triggered level up")
+        }}
       ></QuestRewardModal>
+      <LevelUpModal
+        visible={levelUpModalVisible}
+        onClose={() => {
+          setLevelUpModalVisible(false)
+        }}
+      ></LevelUpModal>
+
+
     </View>
   );
 };

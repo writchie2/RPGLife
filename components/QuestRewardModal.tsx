@@ -21,7 +21,6 @@ import {
 } from "react-native";
 import { auth } from "../FirebaseConfig";
 import DatePickerComponent from "../components/DatePickerComponent";
-
 import { Dropdown } from "react-native-element-dropdown";
 // import colors from "@/constants/colors";
 import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
@@ -42,6 +41,7 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
   const colors = useTheme(); // used for themes, replaces colors import
 
   const styles = StyleSheet.create({
+
     overlay: {
       flex: 1,
       backgroundColor: colors.bgPrimary,
@@ -341,37 +341,85 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
       borderBottomWidth: 1,
       borderColor: colors.borderLight,
     },
+    icons: {
+        // fontFamily: "MaterialIcons_400Regular",
+        fontFamily: "MaterialIconsRound_400Regular",
+        fontSize: 30,
+        color: colors.text,
+    },
+    closeButton: {
+        width: 53,
+        height: 53,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: colors.bgSecondary,
+        borderRadius: 100,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.5,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+});
+
   });
 
   if (!auth.currentUser) {
-    return;
-  }
-  const { userData } = useUserData();
-  const quest = userData?.quests?.find((quest) => quest.id === id);
-
-  const [completionReward, setCompletionReward] = useState("");
-
-  useEffect(() => {
-    if (quest) {
-      // add quest title bozo
-      setCompletionReward(quest.reward);
+        return;
     }
-  }, [quest]);
 
-  return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-    >
-      <View style={styles.overlay}>
-        <TouchableWithoutFeedback onPress={onClose}>
-          {/* Title */}
-          <View style={styles.titleContainer}>
+    const userData = useUserData();
+    const {completeQuest} = useUserData();
+    const quest = userData.userData?.quests?.find(quest => quest.id === id);
+
+    const [completionReward, setCompletionReward] = useState("");
+
+    const questReward = async () => {
+        if ((userData && quest) && auth.currentUser) {
+            
+            const neededEXP = calcEXP(userData.userData?.exp || 0).neededEXP;
+            const progressEXP = calcEXP(userData.userData?.exp || 0).progressEXP
+            console.log("calc neededEXP: ", neededEXP)
+            console.log("calc progressEXP: ", progressEXP)
+            console.log(quest.difficulty);
+            completeQuest(quest.id);
+
+           // Calculating level states for before and after was a bust
+           // Only way to get the level up modal to appear momentarily is by taking the difference
+           // between needed and progress EXP.
+            if (quest.difficulty === "Hard" && (neededEXP - progressEXP) <= 450) {
+                onLevelUp();
+            } else if (quest.difficulty === "Normal" && (neededEXP - progressEXP) <= 300) {
+                onLevelUp();
+            } else if (quest.difficulty === "Easy" && (neededEXP - progressEXP) <= 150) {
+                onLevelUp();
+            } else {
+                onClose();
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (quest) {
+            // add quest title bozo
+            setCompletionReward(quest.reward);
+        } }, [quest]);
+
+    return (
+        <Modal
+        animationType="slide"
+        transparent={true}
+        visible={visible}
+        onRequestClose={questReward}
+        >
+        
+        <View style={styles.overlay}>
+        <TouchableWithoutFeedback onPress={questReward}> 
+            {/* Title */}
+            <View style={styles.titleContainer}>
             <Text style={styles.title}>Quest Complete!</Text>
-          </View>
-        </TouchableWithoutFeedback>
+            </View>
+        </TouchableWithoutFeedback>            
 
         <View style={styles.modalContainer}>
           <View style={styles.scrollLine}></View>
@@ -391,17 +439,33 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
                   <View style={styles.fieldContainer}>
                     <Text style={styles.fieldText}>
                       Reward:{" "}
-                      <Text style={styles.contentText}>{completionReward}</Text>
+                      <Text style={styles.contentText}>
+                        {completionReward}
+                      </Text>
                     </Text>
                   </View>
                 </View>
+
               </View>
             </TouchableWithoutFeedback>
           </ScrollView>
+
+          <View style={styles.closeButtonContainer}>
+            <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => {
+                    questReward();
+                }}
+            >
+            <Text style={styles.icons}>close</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </Modal>
-  );
-};
+             
+        </View>
+        </Modal>
+    )
+}
+
 
 export default QuestRewardModal;

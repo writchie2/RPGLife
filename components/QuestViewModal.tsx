@@ -19,6 +19,8 @@ import EditQuestModal from "./EditQuestModal";
 import QuestRewardModal from "./QuestRewardModal";
 import { Checkpoint } from "@/utils/types";
 import CheckPointsList from "./CheckpointsList";
+import calcEXP from "@/utils/calcEXP";
+import LevelUpModal from "./LevelUpModal";
 
 interface QuestViewModalProps {
   visible: boolean;
@@ -270,6 +272,14 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
   const quest = userData?.quests?.find((quest) => quest.id === id);
   const [questEditVisible, setQuestEditVisible] = useState(false);
   const [checkpointListVisible, setCheckpointListVisible] = useState(false);
+  const [levelUpModalVisible, setLevelUpModalVisible] = useState(false);
+  
+  //const [level, setLevel] = useState(0);
+  const [neededEXP, setNeededEXP] = useState(1000);
+  const [progressEXP, setProgressEXP] = useState(0);
+
+  calcEXP(userData?.exp || 0)
+
 
   const deleteHandler = () => {
     if (userData && quest) {
@@ -317,21 +327,7 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
           Alert.alert("Confirm Complete", quest.name, [
             {
               text: "Confirm",
-              onPress: () => {
-                completeQuest(quest.id);
-                let message = [];
-                message.push("You completed:\n" + quest.name + "\n");
-                if (quest.difficulty === "Easy") {
-                  message.push("You gained 150 XP!\n");
-                } else if (quest.difficulty === "Normal") {
-                  message.push("You gained 300 XP!\n");
-                } else {
-                  message.push("You gained 450 XP!\n");
-                }
-                message.push("We'll make the graphic look cooler later!");
-                // Alert.alert("Quest Complete!", message.join(""));
-                //setQuestID(quest.id);
-                //setQuestRewardVisible(true);
+              onPress:() => {
                 onReward();
               },
             },
@@ -345,27 +341,11 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
       // Quest is repeatable, no checkpoints to check
       else {
         // Completing will set a quest to inactive, where repeating will keep it active. Confirmation message explains the difference to user
-        Alert.alert(
-          "Confirm Complete",
-          "This quest is repeatable. Did you want to repeat it?\nCompleting it will make it no longer active.",
-          [
-            {
-              text: "Confirm",
-              onPress: () => {
-                completeQuest(quest.id);
-                let message = [];
-                message.push("You completed:\n" + quest.name + "\n");
-                if (quest.difficulty === "Easy") {
-                  message.push("You gained 150 XP!\n");
-                } else if (quest.difficulty === "Normal") {
-                  message.push("You gained 300 XP!\n");
-                } else {
-                  message.push("You gained 450 XP!\n");
-                }
-                message.push("We'll make the graphic look cooler later!");
-                // Alert.alert("Quest Complete!", message.join(""));
-                onReward();
-              },
+        Alert.alert("Confirm Complete", "This quest is repeatable. Did you want to repeat it?\nCompleting it will make it no longer active.", [
+          {
+            text: "Confirm",
+            onPress: () => {
+              onReward();
             },
             {
               text: "Cancel",
@@ -527,16 +507,17 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
                   >
                     <Text style={styles.icons}>delete</Text>
                   </TouchableOpacity>
-                  {quest?.active && (
-                    <TouchableOpacity
-                      style={styles.completeButton}
-                      onPress={() => {
-                        completeHandler();
-                      }}
-                    >
-                      <Text style={styles.buttonText}>Complete Quest</Text>
-                    </TouchableOpacity>
-                  )}
+
+                  {quest?.active &&
+                  <TouchableOpacity
+                    style={styles.completeButton}
+                    onPress={() => {
+                      completeHandler(); 
+                    }}
+                  >
+                    <Text style={styles.buttonText}>Complete Quest</Text>
+                  </TouchableOpacity>}
+           
 
                   {quest?.active && (
                     <TouchableOpacity
