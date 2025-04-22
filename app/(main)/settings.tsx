@@ -19,6 +19,8 @@ import {
   View,
   Image,
   Alert,
+  ScrollView,
+  Platform,
 } from "react-native";
 import {
   getAuth,
@@ -33,75 +35,78 @@ import { useEffect } from "react";
 import { BackHandler } from "react-native";
 import { useUserData } from "@/contexts/UserContext";
 
-import colors from "@/constants/colors";
+// import colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
+
+import AvatarList from "@/components/AvatarList"; // allow selecting avatars from settings
+import TitlesList from "@/components/TitlesList"; // allow selecting character titles from settings
+
+import EditUsernameModal from "@/components/EditUsernameModal";
+import ThemeList from "@/components/ThemeList"; // allow selecting app themes from settings
+import EditPasswordModal from "@/components/EditPasswordModal";
 
 export default function Settings() {
-  const {resetAccount} = useUserData();
-    
-  useEffect(() => {
-    const backAction = () => {
-      router.replace("/(main)"); // Navigate back to home
-      return true; // Prevent default behavior
-    };
+  const colors = useTheme(); // used for themes, replaces colors import
 
-    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
-
-    return () => backHandler.remove(); // Cleanup
-  }, []);
-    
-  const resetHandler = () => {
-    Alert.alert(
-      "Confirm Reset",
-      "This will reset you experience, and delete your skills and quests",
-      [
-          {
-              text: "Confirm",
-              onPress: () => {
-                resetAccount();       
-              },
-          },
-          {
-              text: "Cancel",
-              onPress: () => {
-              },
-          },
-      ]);
-  }
-
-  return ( 
-    <View style={styles.headerContainer}>
-      <UserHeader></UserHeader>
-      <View style={styles.container}>
-          <Text style={styles.title}>Settings</Text>
-          <Image
-          style={styles.logo}
-          source={require("../../assets/images/RPGiconShield.png")}
-          />
-          <TouchableOpacity style={styles.button} onPress={() => resetHandler()}>
-          <Text style={styles.buttonText}>Reset Account</Text>
-          </TouchableOpacity>
-      </View>
-    </View>
-  );
-}
-  
   const styles = StyleSheet.create({
-    headerContainer:{
-        flex: 1,
-        backgroundColor: colors.bgPrimary,
-        //alignItems: "center",
-        padding: 20,
-    },
     container: {
-        flex: 1,
-        alignItems: "center",
-        backgroundColor: colors.bgPrimary,
+      flex: 1,
+      backgroundColor: colors.bgPrimary,
+      paddingVertical: 20,
     },
-    title: {
+    headerContainer: {
+      paddingHorizontal: 20,
+      // marginVertical: 20,
+      ...Platform.select({
+        ios: {
+          marginVertical: 20,
+        },
+        android: {
+          marginBottom: 20,
+        },
+        default: {
+          marginTop: 10,
+          marginBottom: 20,
+        },
+      }),
+    },
+    pageTitle: {
       fontFamily: "Metamorphous_400Regular",
-      fontSize: 36,
+      fontSize: 28,
       color: colors.text,
-      marginBottom: 15, // Increased space for a more airy, open feel
+      textAlign: "center",
+    },
+    scrollLine: {
+      marginHorizontal: 15,
+      padding: 5,
+      borderBottomWidth: 1,
+      borderTopWidth: 1,
+      borderColor: colors.borderLight,
+    },
+    scrollContainer: {
+      paddingTop: 20,
+      paddingHorizontal: 20,
+    },
+    settingsContainer: {
+      alignItems: "center",
+    },
+    splitRowContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    section: {
+      backgroundColor: colors.bgTertiary,
+      padding: 10,
+      borderRadius: 8,
+      height: 50,
+      marginBottom: 20,
+    },
+    sectionTitle: {
+      width: "100%",
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 24,
+      color: colors.text,
     },
     logo: {
       height: 200,
@@ -145,9 +150,9 @@ export default function Settings() {
       width: "56%",
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: colors.bgSecondary,
+      backgroundColor: colors.cancel,
       borderRadius: 100, // full rounded corners
-      marginTop: 25,
+      marginTop: 100,
       padding: 18,
       shadowColor: colors.shadow, // Shadow color to match the button for a cohesive look
       shadowOffset: { width: 0, height: 3 },
@@ -160,4 +165,116 @@ export default function Settings() {
       color: colors.textDark, // match title color, slightly darker due to being on darker bg
       fontSize: 20, // Slightly larger for emphasis
     },
+    icon: {
+      fontFamily: "MaterialIconsRound_400Regular",
+      fontSize: 50,
+      color: colors.text,
+      position: "absolute",
+      right: 0,
+    },
   });
+
+  const { resetAccount, userData, toggleTesterMode } = useUserData();
+  const [editUsernameVisible, setEditUsernameVisible] = useState(false);
+  const [editPasswordVisible, setEditPasswordVisible] = useState(false);
+
+  const resetHandler = () => {
+    Alert.alert(
+      "Confirm Reset",
+      "This will reset you experience, and delete your skills and quests",
+      [
+        {
+          text: "Confirm",
+          onPress: () => {
+            resetAccount();
+          },
+        },
+        {
+          text: "Cancel",
+          onPress: () => {},
+        },
+      ]
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.headerContainer}>
+        <UserHeader></UserHeader>
+      </View>
+      <View style={styles.scrollLine}>
+        <Text style={styles.pageTitle}>Settings</Text>
+      </View>
+      <ScrollView style={styles.scrollContainer}>
+        <View style={styles.settingsContainer}>
+          <AvatarList />
+          <TitlesList />
+          <ThemeList />
+          <TouchableOpacity
+            onPress={() => setEditUsernameVisible(true)}
+            style={styles.section}
+          >
+            <View style={styles.splitRowContainer}>
+              <Text style={styles.sectionTitle}>Change Username</Text>
+              <Text style={styles.icon}>person</Text>
+            </View>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            onPress={() => setEditPasswordVisible(true)}
+            style={styles.section}
+          >
+            <View style={styles.splitRowContainer}>
+              <Text style={styles.sectionTitle}>Change Password</Text>
+              <Text style={styles.icon}>password</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => {
+              toggleTesterMode();
+            }}
+            style={styles.section}
+          >
+            <View style={styles.splitRowContainer}>
+              <Text style={styles.sectionTitle}>Tester Mode</Text>
+              <Text style={styles.icon}>{userData?.testerMode ? "check_circle" : "check_circle_outline"}</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => {
+              auth.signOut();
+              
+            }}
+            style={styles.section}
+          >
+            <View style={styles.splitRowContainer}>
+              <Text style={styles.sectionTitle}>Logout</Text>
+              <Text style={styles.icon}>logout</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => resetHandler()}
+          >
+            <Text style={styles.buttonText}>Reset Account</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+      <EditUsernameModal
+        visible={editUsernameVisible}
+        onClose={() => {
+          setEditUsernameVisible(false);
+        }}
+      ></EditUsernameModal>
+      <EditPasswordModal
+        visible={editPasswordVisible}
+        onClose={() => {
+          setEditPasswordVisible(false);
+        }}
+      ></EditPasswordModal>
+    </View>
+  );
+}

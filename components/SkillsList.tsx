@@ -11,9 +11,11 @@ import {
 } from "react-native";
 
 import { Skill } from "../utils/types";
-import colors from "@/constants/colors";
+// import colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 import calcEXP from "@/utils/calcEXP";
 import SkillViewModal from "./SkillViewModal";
+import { useUserData } from "@/contexts/UserContext";
 
 interface SkillsListProps {
   skills: Skill[];
@@ -24,8 +26,113 @@ const SkillsList: React.FC<SkillsListProps> = ({
   skills, // Array of skills from UserData interface
   mode, // "active", "inactive", or "all"
 }) => {
+  const colors = useTheme(); // used for themes, replaces colors import
+
+  const styles = StyleSheet.create({
+    list: {
+      position: "relative",
+      top: -60,
+      marginBottom: -60,
+      zIndex: 0,
+      borderRadius: 8,
+      width: "100%",
+      paddingTop: 50,
+      // backgroundColor: colors.bgSecondary,
+      backgroundColor: colors.bgDropdown,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 5,
+      elevation: 3,
+    },
+    listContainer: {
+      padding: 16,
+      paddingBottom: 12,
+    },
+    skillDetailsContainer: {
+      // borderLeftWidth: 0.5,
+      // paddingLeft: 6,
+      // marginLeft: 2.5,
+      // borderColor: colors.borderLight,
+      // borderBottomWidth: 1,
+      // paddingBottom: 6,
+      // marginLeft: 2,
+    },
+    skillDetailsContainer2: {
+      borderLeftWidth: 0.5,
+      paddingLeft: 6,
+      marginLeft: 2.5,
+      marginTop: 4,
+      borderColor: colors.borderLight,
+      // borderBottomWidth: 1,
+      // paddingLeft: 5,
+      // paddingBottom: 6,
+      // paddingTop: 2,
+    },
+    skillItem: {
+      // padding: 10,
+      // marginBottom: 12,
+      paddingVertical: 10,
+      paddingHorizontal: 6,
+      marginBottom: 10,
+      backgroundColor: "transparent",
+      // borderBottomWidth: 1,
+      borderBottomWidth: 0.5,
+      borderColor: colors.borderLight,
+    },
+    splitRowContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+    skillName: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 20,
+      color: colors.text,
+    },
+    skillDescription: {
+      // fontFamily: "Alegreya_400Regular",
+      fontFamily: "Alegreya_500Medium",
+      // marginTop: 5,
+      marginTop: 4,
+      fontSize: 16,
+      color: colors.textLight,
+    },
+    skillTrait: {
+      // fontFamily: "Alegreya_400Regular",
+      fontFamily: "Alegreya_500Medium",
+      // marginTop: 5,
+      marginTop: 2,
+      fontSize: 14,
+      color: colors.textLight,
+    },
+    expBar: {
+      marginTop: 5,
+      height: 14,
+      backgroundColor: colors.bgPrimary,
+      borderWidth: 2,
+      borderColor: colors.borderInput,
+      borderRadius: 99,
+      justifyContent: "center",
+    },
+    // expProgressBar: {
+    //   height: "100%",
+    //   // width: "50%",
+    //   // width: `${(progressEXP / neededEXP) * 100}%`,
+    //   backgroundColor: colors.text,
+    //   borderRadius: 99,
+    // },
+    expTrait: {
+      // fontFamily: "Alegreya_400Regular",
+      fontFamily: "Alegreya_500Medium",
+      marginTop: 2,
+      fontSize: 14,
+      color: colors.textLight,
+    },
+  });
+
   const [skillModalVisible, setSkillModalVisible] = useState(false);
   const [skillID, setSkillID] = useState("");
+  const { userData } = useUserData();
   //Item that will be rendered for each skill
   //TO DO: styling
   //TO DO: change press action to route to quest page
@@ -38,7 +145,12 @@ const SkillsList: React.FC<SkillsListProps> = ({
       }}
     >
       {/* <View style={styles.splitRowContainer}> */}
-      <Text style={styles.skillName}>{item.name}</Text>
+      <Text style={styles.skillName}>
+        {item.name}{" "}
+        {mode === "deteriorate"
+          ? "  -" + calcDeteriorateNeeded(item) * 500 + " exp"
+          : ""}
+      </Text>
       {/* </View> */}
       <View style={styles.skillDetailsContainer}>
         <Text style={styles.skillDescription}>
@@ -83,7 +195,44 @@ const SkillsList: React.FC<SkillsListProps> = ({
     chosenSkills = chosenSkills.filter((skill) => skill.active);
   } else if (mode === "inactive") {
     chosenSkills = chosenSkills.filter((skill) => !skill.active);
+  } else if (mode === "deteriorate") {
+    chosenSkills = chosenSkills.filter((skill) => {
+      const { archiveDate, deteriorateCount } = skill;
+
+      if (!archiveDate || !userData?.lastLogin) return false;
+
+      const lastDeteriorateDate = new Date(archiveDate); // Create a fresh date object to avoid mutation
+      lastDeteriorateDate.setDate(
+        lastDeteriorateDate.getDate() + 7 * (deteriorateCount || 0)
+      );
+
+      const daysSinceLastDeteriorate = Math.floor(
+        (userData.lastLogin.getTime() - lastDeteriorateDate.getTime()) /
+          (1000 * 60 * 60 * 24)
+      );
+
+      return daysSinceLastDeteriorate >= 7;
+    });
   }
+
+  const calcDeteriorateNeeded = (skill: Skill): number => {
+    const { archiveDate, deteriorateCount } = skill;
+    if (!archiveDate || !userData?.lastLogin) return 0;
+
+    const lastDeteriorateDate = new Date(archiveDate);
+    lastDeteriorateDate.setDate(
+      lastDeteriorateDate.getDate() + 7 * (deteriorateCount || 0)
+    );
+
+    const daysSinceLastDeteriorate = Math.floor(
+      (userData.lastLogin.getTime() - lastDeteriorateDate.getTime()) /
+        (1000 * 60 * 60 * 24)
+    );
+
+    const deteriorateNeeded = Math.floor(daysSinceLastDeteriorate / 7);
+
+    return deteriorateNeeded > 0 ? deteriorateNeeded : 0;
+  };
 
   //If no skills are chosen, output text.
   if (chosenSkills.length == 0) {
@@ -95,7 +244,15 @@ const SkillsList: React.FC<SkillsListProps> = ({
   }
 
   return (
-    <View style={styles.list}>
+    <View
+      style={[
+        styles.list,
+        {
+          backgroundColor:
+            mode === "deteriorate" ? colors.cancel : colors.bgDropdown,
+        },
+      ]}
+    >
       <FlatList
         data={chosenSkills}
         keyExtractor={(item) => item.id}
@@ -114,107 +271,5 @@ const SkillsList: React.FC<SkillsListProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  list: {
-    position: "relative",
-    top: -60,
-    marginBottom: -60,
-    zIndex: 0,
-    borderRadius: 8,
-    width: "100%",
-    paddingTop: 50,
-    // backgroundColor: colors.bgSecondary,
-    backgroundColor: colors.bgDropdown,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  listContainer: {
-    padding: 16,
-    paddingBottom: 12,
-  },
-  skillDetailsContainer: {
-    // borderLeftWidth: 0.5,
-    // paddingLeft: 6,
-    // marginLeft: 2.5,
-    // borderColor: colors.borderLight,
-    // borderBottomWidth: 1,
-    // paddingBottom: 6,
-    // marginLeft: 2,
-  },
-  skillDetailsContainer2: {
-    borderLeftWidth: 0.5,
-    paddingLeft: 6,
-    marginLeft: 2.5,
-    marginTop: 4,
-    borderColor: colors.borderLight,
-    // borderBottomWidth: 1,
-    // paddingLeft: 5,
-    // paddingBottom: 6,
-    // paddingTop: 2,
-  },
-  skillItem: {
-    // padding: 10,
-    // marginBottom: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 6,
-    marginBottom: 10,
-    backgroundColor: "transparent",
-    // borderBottomWidth: 1,
-    borderBottomWidth: 0.5,
-    borderColor: colors.borderLight,
-  },
-  splitRowContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  skillName: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 20,
-    color: colors.text,
-  },
-  skillDescription: {
-    // fontFamily: "Alegreya_400Regular",
-    fontFamily: "Alegreya_500Medium",
-    // marginTop: 5,
-    marginTop: 4,
-    fontSize: 16,
-    color: colors.textLight,
-  },
-  skillTrait: {
-    // fontFamily: "Alegreya_400Regular",
-    fontFamily: "Alegreya_500Medium",
-    // marginTop: 5,
-    marginTop: 2,
-    fontSize: 14,
-    color: colors.textLight,
-  },
-  expBar: {
-    marginTop: 5,
-    height: 14,
-    backgroundColor: colors.bgPrimary,
-    borderWidth: 2,
-    borderColor: colors.borderInput,
-    borderRadius: 99,
-    justifyContent: "center",
-  },
-  // expProgressBar: {
-  //   height: "100%",
-  //   // width: "50%",
-  //   // width: `${(progressEXP / neededEXP) * 100}%`,
-  //   backgroundColor: colors.text,
-  //   borderRadius: 99,
-  // },
-  expTrait: {
-    // fontFamily: "Alegreya_400Regular",
-    fontFamily: "Alegreya_500Medium",
-    marginTop: 2,
-    fontSize: 14,
-    color: colors.textLight,
-  },
-});
 
 export default SkillsList;

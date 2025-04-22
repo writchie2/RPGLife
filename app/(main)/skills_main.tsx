@@ -1,8 +1,3 @@
-/*
-simple skeleton of the skills page
-that shows active skills and archived skills
-*/
-
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -14,6 +9,7 @@ import {
   TouchableOpacity,
   FlatList,
   ScrollView,
+  Platform,
 } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -39,26 +35,107 @@ import { BackHandler, Alert } from "react-native";
 //import { saveUserData, getUserData } from '../../utils/storageUtils';
 import { UserData, Skill, Checkpoint } from "../../utils/types";
 
-import colors from "@/constants/colors";
+// import colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 import UserHeader from "@/components/UserHeader";
 import CreateSkillModal from "@/components/CreateSkillModal";
 
-// TODO Implement Skills Page functionality
 export default function SkillsPage() {
+  const colors = useTheme(); // used for themes, replaces colors import
+
+  //styling, similar to home page:
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.bgPrimary,
+      // padding: 20,
+      paddingVertical: 20,
+    },
+    headerContainer: {
+      paddingHorizontal: 20,
+      // marginVertical: 20,
+      ...Platform.select({
+        ios: {
+          marginVertical: 20,
+        },
+        android: {
+          marginBottom: 20,
+        },
+        default: {
+          marginTop: 10,
+          marginBottom: 20,
+        },
+      }),
+    },
+    pageTitle: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 28,
+      color: colors.text,
+      textAlign: "center",
+    },
+    scrollLine: {
+      marginHorizontal: 15,
+      padding: 5,
+      borderBottomWidth: 1,
+      borderTopWidth: 1,
+      borderColor: colors.borderLight,
+    },
+    scrollContainer: {
+      paddingTop: 20,
+      paddingHorizontal: 20,
+    },
+    dropdownContainer: {
+      position: "relative",
+      // marginBottom: 20,
+      marginBottom: 40,
+    },
+    sectionTitleContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    sectionTitle: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 24,
+      color: colors.text,
+    },
+    sectionTitleIcon: {
+      fontFamily: "MaterialIconsRound_400Regular",
+      fontSize: 50,
+      color: colors.text,
+      position: "absolute",
+      right: 0,
+    },
+    section: {
+      zIndex: 1,
+      backgroundColor: colors.bgTertiary,
+      padding: 10,
+      borderRadius: 8,
+      height: 60,
+      justifyContent: "center",
+    },
+    addButton: {
+      position: "absolute",
+      bottom: 20,
+      right: 20,
+      backgroundColor: colors.bgTertiary,
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    addButtonText: {
+      // fontSize: 24,
+      // fontWeight: "bold",
+      fontSize: 36,
+      lineHeight: 44,
+      color: colors.text,
+    },
+  });
+
   const user = auth.currentUser;
   const userData = useUserData();
-
-  useEffect(() => {
-    const backAction = () => {
-      router.replace("/(main)"); // Navigate back to home
-      return true; // Prevent default behavior
-    };
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-    return () => backHandler.remove();
-  }, []);
 
   const [skillsListVisible, setSkillsListVisible] = useState(false);
   const [pastSkillsListVisible, setPastSkillsListVisible] = useState(false);
@@ -71,7 +148,9 @@ export default function SkillsPage() {
         <UserHeader></UserHeader>
       </View>
 
-      <View style={styles.scrollLine}></View>
+      <View style={styles.scrollLine}>
+        <Text style={styles.pageTitle}>Skills</Text>
+      </View>
       <ScrollView style={styles.scrollContainer}>
         <View>
           {/*section for skill lists*/}
@@ -81,11 +160,9 @@ export default function SkillsPage() {
               onPress={() => setSkillsListVisible(!skillsListVisible)}
             >
               <View style={styles.sectionTitleContainer}>
-                <Text style={styles.sectionTitle}>
-                  {skillsListVisible ? "Active Skills" : "Active Skills"}
-                </Text>
-                <Text style={styles.sectionTitle}>
-                  {skillsListVisible ? "▲" : "▼"}
+                <Text style={styles.sectionTitle}>Active Skills</Text>
+                <Text style={styles.sectionTitleIcon}>
+                  {skillsListVisible ? "arrow_drop_down" : "arrow_right"}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -104,13 +181,9 @@ export default function SkillsPage() {
               onPress={() => setPastSkillsListVisible(!pastSkillsListVisible)}
             >
               <View style={styles.sectionTitleContainer}>
-                <Text style={styles.sectionTitle}>
-                  {pastSkillsListVisible
-                    ? "Archived Skills"
-                    : "Archived Skills"}
-                </Text>
-                <Text style={styles.sectionTitle}>
-                  {pastSkillsListVisible ? "▲" : "▼"}
+                <Text style={styles.sectionTitle}>Archived Skills</Text>
+                <Text style={styles.sectionTitleIcon}>
+                  {pastSkillsListVisible ? "arrow_drop_down" : "arrow_right"}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -139,66 +212,3 @@ export default function SkillsPage() {
     </View>
   );
 }
-
-//styling, similar to home page:
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bgPrimary,
-    // padding: 20,
-    paddingVertical: 20,
-  },
-  headerContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  scrollLine: {
-    marginHorizontal: 15,
-    borderBottomWidth: 1,
-    borderColor: colors.borderLight,
-  },
-  scrollContainer: {
-    paddingTop: 20,
-    paddingHorizontal: 20,
-  },
-  dropdownContainer: {
-    position: "relative",
-    // marginBottom: 20,
-    marginBottom: 40,
-  },
-  sectionTitleContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  sectionTitle: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 24,
-    color: colors.text,
-  },
-  section: {
-    zIndex: 1,
-    backgroundColor: colors.bgTertiary,
-    padding: 10,
-    borderRadius: 8,
-    height: 60,
-    justifyContent: "center",
-  },
-  addButton: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    backgroundColor: colors.bgTertiary,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  addButtonText: {
-    // fontSize: 24,
-    // fontWeight: "bold",
-    fontSize: 36,
-    lineHeight: 44,
-    color: colors.text,
-  },
-});

@@ -9,7 +9,8 @@ import {
   Image,
   Platform,
 } from "react-native";
-import colors from "@/constants/colors";
+// import colors from "@/constants/colors";
+import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 import { router } from "expo-router";
 import { auth } from "../FirebaseConfig";
 import { useState } from "react";
@@ -24,6 +25,112 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
   visible,
   onClose,
 }) => {
+  const colors = useTheme(); // used for themes, replaces colors import
+
+  const styles = StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    modalContainer: {
+      // width: "90%",
+      // height: "80%",
+      ...Platform.select({
+        ios: {
+          width: "100%",
+          height: "94%",
+          marginTop: "12%",
+        },
+        android: {
+          width: "100%",
+          height: "100%",
+        },
+        default: {
+          width: "100%",
+          height: "95%",
+          marginTop: "10%",
+        },
+      }),
+      backgroundColor: colors.bgPrimary,
+      padding: 20,
+      alignItems: "center",
+      flexDirection: "column",
+    },
+    buttonContainer: {
+      flex: 1,
+      width: "100%",
+      backgroundColor: colors.bgPrimary,
+      alignItems: "center",
+      flexDirection: "column",
+    },
+    navButton: {
+      flexGrow: 1,
+      padding: "3%",
+      marginTop: 0,
+      backgroundColor: colors.bgPrimary,
+      width: "100%",
+      alignItems: "center",
+      justifyContent: "center",
+      borderColor: colors.text,
+      borderBottomWidth: 1,
+    },
+    navButtonText: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 36,
+      color: colors.text,
+    },
+    closeButton: {
+      position: "absolute",
+      top: 10,
+      right: 10,
+      backgroundColor: colors.bgSecondary,
+      width: 40,
+      height: 40,
+      borderRadius: 99,
+      justifyContent: "center",
+      alignItems: "center",
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    closeButtonIcon: {
+      fontFamily: "MaterialIconsRound_400Regular",
+      color: colors.textDark,
+      fontSize: 32,
+    },
+    signoutButton: {
+      width: "42%",
+      marginTop: "15%",
+      padding: 6,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.bgSecondary,
+      borderRadius: 100,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    signoutButtonText: {
+      fontFamily: "Metamorphous_400Regular",
+      color: colors.textDark,
+      fontSize: 20,
+    },
+    logo: {
+      height: 150,
+      resizeMode: "contain",
+      width: "100%",
+      marginTop: 4,
+      marginBottom: 10,
+      flexDirection: "column",
+    },
+  });
+
   return (
     <Modal
       animationType="slide"
@@ -38,96 +145,99 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
             <View style={styles.modalContainer}>
               <Image
                 style={styles.logo}
-                source={require("../assets/images/RPGiconLine-sm.png")}
+                source={
+                  (colors.mode === "light") 
+                    ? require("../assets/images/RPGiconLine-sm.png")
+                    : require("../assets/images/RPGiconLine-v2.png")
+                }
               />
-        
+
               <View style={styles.buttonContainer}>
                 {/* Home Button */}
                 <TouchableOpacity
-                    style={[styles.navButton, { borderTopWidth: 1 }]}
-                    onPress={() => {
+                  style={[styles.navButton, { borderTopWidth: 1 }]}
+                  onPress={() => {
                     router.push("/(main)");
                     setTimeout(() => {
-                        onClose();
+                      onClose();
                     }, 100);
-                    }}
+                  }}
                 >
-                    <Text style={styles.navButtonText}>Home</Text>
+                  <Text style={styles.navButtonText}>Home</Text>
                 </TouchableOpacity>
 
                 {/* Character Button */}
                 <TouchableOpacity
-                    style={styles.navButton}
-                    onPress={() => {
+                  style={styles.navButton}
+                  onPress={() => {
                     router.push("/(main)/character_main");
                     setTimeout(() => {
-                        onClose();
+                      onClose();
                     }, 100);
-                    }}
+                  }}
                 >
-                    <Text style={styles.navButtonText}>Character</Text>
+                  <Text style={styles.navButtonText}>Character</Text>
                 </TouchableOpacity>
 
                 {/* Skills Button */}
                 <TouchableOpacity
-                    style={styles.navButton}
-                    onPress={() => {
+                  style={styles.navButton}
+                  onPress={() => {
                     router.push("/(main)/skills_main");
                     setTimeout(() => {
-                        onClose();
+                      onClose();
                     }, 100);
-                    }}
+                  }}
                 >
-                    <Text style={styles.navButtonText}>Skills</Text>
+                  <Text style={styles.navButtonText}>Skills</Text>
                 </TouchableOpacity>
 
                 {/* Quests Button */}
                 <TouchableOpacity
-                    style={styles.navButton}
-                    onPress={() => {
+                  style={styles.navButton}
+                  onPress={() => {
                     router.push("/(main)/quests_main");
                     setTimeout(() => {
-                        onClose();
+                      onClose();
                     }, 100);
-                    }}
+                  }}
                 >
-                    <Text style={styles.navButtonText}>Quests</Text>
+                  <Text style={styles.navButtonText}>Quests</Text>
                 </TouchableOpacity>
 
                 {/* Achievements Button */}
                 <TouchableOpacity
-                    style={styles.navButton}
-                    onPress={() => {
+                  style={styles.navButton}
+                  onPress={() => {
                     router.push("/(main)/achievements_main");
                     setTimeout(() => {
-                        onClose();
+                      onClose();
                     }, 100);
-                    }}
+                  }}
                 >
-                    <Text style={styles.navButtonText}>Achievements</Text>
+                  <Text style={styles.navButtonText}>Achievements</Text>
                 </TouchableOpacity>
 
                 {/* Settings Button */}
                 <TouchableOpacity
-                    style={[styles.navButton, { borderTopWidth: 0 }]}
-                    onPress={() => {
+                  style={[styles.navButton, { borderTopWidth: 0, marginBottom: 40 }]}
+                  onPress={() => {
                     router.push("/(main)/settings");
                     setTimeout(() => {
-                        onClose();
+                      onClose();
                     }, 100);
-                    }}
+                  }}
                 >
-                    <Text style={styles.navButtonText}>Settings</Text>
+                  <Text style={styles.navButtonText}>Settings</Text>
                 </TouchableOpacity>
-              
               </View>
-              
+
               {/* Close Button */}
               <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                <Text style={styles.closeButtonText}>X</Text>
+                <Text style={styles.closeButtonIcon}>close</Text>
               </TouchableOpacity>
 
-              {/* Signout Button */}
+              {/* Signout Button 
               <TouchableOpacity
                 style={styles.signoutButton}
                 onPress={() => {
@@ -137,7 +247,7 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
                 }}
               >
                 <Text style={styles.signoutButtonText}>Sign Out</Text>
-              </TouchableOpacity>
+              </TouchableOpacity>*/}
             </View>
           </TouchableWithoutFeedback>
         </View>
@@ -145,108 +255,5 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: {
-    // width: "90%",
-    // height: "80%",
-    ...Platform.select({
-      ios: {
-        width: "100%",
-        height: "94%",
-        marginTop: "12%",
-      },
-      android: {
-        width: "100%",
-        height: "100%",
-      },
-      default: {
-        width: "100%",
-        height: "95%",
-        marginTop: "10%",
-      },
-    }),
-    backgroundColor: colors.bgPrimary,
-    padding: 20,
-    alignItems: "center",
-    flexDirection: "column",
-  },
-  buttonContainer: {
-    flex: 1,
-    width: "100%",
-   backgroundColor: colors.bgPrimary,
-   alignItems: "center",
-   flexDirection: "column",
- },
-  navButton: {
-    flexGrow: 1,
-    padding: "3%",
-    marginTop: 0,
-    backgroundColor: colors.bgPrimary,
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-    borderColor: colors.text,
-    borderBottomWidth: 1,
-  },
-  navButtonText: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 36,
-    color: colors.text,
-  },
-  closeButton: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    backgroundColor: colors.bgSecondary,
-    width: 40,
-    height: 40,
-    borderRadius: 99,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  closeButtonText: {
-    color: colors.textDark,
-    fontSize: 28,
-  },
-  signoutButton: {
-    width: "42%",
-    marginTop: "15%",
-    padding: 6,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.bgSecondary,
-    borderRadius: 100,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  signoutButtonText: {
-    fontFamily: "Metamorphous_400Regular",
-    color: colors.textDark,
-    fontSize: 20,
-  },
-  logo: {
-    height: 150,
-    resizeMode: "contain",
-    width: "100%",
-    marginTop: 4,
-    marginBottom: 10,
-    flexDirection: "column",
-  },
-});
 
 export default NavigationModal;
