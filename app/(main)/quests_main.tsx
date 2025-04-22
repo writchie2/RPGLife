@@ -143,7 +143,7 @@ export default function QuestMainPage() {
             onPress={() => setPastQuestListVisible(!pastQuestListVisible)}
           >
             <View style={styles.sectionTitleContainer}>
-              <Text style={styles.sectionTitle}>Archived Quests</Text>
+              <Text style={styles.sectionTitle}>Completed Quests</Text>
               <Text style={styles.sectionTitleIcon}>
                 {pastQuestListVisible ? "arrow_drop_down" : "arrow_right"}
               </Text>
