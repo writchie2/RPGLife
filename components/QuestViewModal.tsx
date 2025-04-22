@@ -343,10 +343,12 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
         // Completing will set a quest to inactive, where repeating will keep it active. Confirmation message explains the difference to user
         Alert.alert("Confirm Complete", "This quest is repeatable. Did you want to repeat it?\nCompleting it will make it no longer active.", [
           {
+          
             text: "Confirm",
             onPress: () => {
               onReward();
             },
+          },
             {
               text: "Cancel",
               onPress: () => {},

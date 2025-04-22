@@ -25,18 +25,21 @@ import { Dropdown } from "react-native-element-dropdown";
 // import colors from "@/constants/colors";
 import { useTheme } from "@/contexts/ThemeContext"; // used for themes, replaces colors import
 import { useUserData } from "@/contexts/UserContext";
+import calcEXP from "@/utils/calcEXP";
 
 interface QuestRewardModalProps {
   visible: boolean;
   onModalHide?: () => void;
   onClose: () => void;
   id: string;
+  onLevelUp: () => void
 }
 
 const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
   visible,
   onClose,
   id,
+  onLevelUp
 }) => {
   const colors = useTheme(); // used for themes, replaces colors import
 
@@ -362,7 +365,7 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
     },
 });
 
-  });
+ 
 
   if (!auth.currentUser) {
         return;
