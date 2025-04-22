@@ -109,14 +109,6 @@ const QuestsList: React.FC<QuestsListProps> = ({
           setQuestRewardVisible(true);
           console.log("reward triggered trigger")
         }}
-
-        // MIGHT NEED TO DELETE THIS SECTION AND FIX QUESTVIEWMODAL >:(
-        onLevelUp={() => {
-          setQuestsModalVisible(false);
-          setQuestID("");
-          setLevelUpModalVisible(true);
-          console.log("quest triggered level up")
-        }}
       ></QuestViewModal>
 
       <QuestRewardModal

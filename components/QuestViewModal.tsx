@@ -28,7 +28,6 @@ interface QuestViewModalProps {
   onModalHide?: () => void;
   onClose: () => void;
   onReward: () => void;
-  onLevelUp: () => void;
   id: string;
   
 }
@@ -43,7 +42,6 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
   visible,
   onClose,
   onReward,
-  onLevelUp,
   id,
   
 }) => {
@@ -160,11 +158,6 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
     }
   };
 
-  const levelUpHandler = () => {
-    if (progressEXP >= neededEXP) {
-      onLevelUp();
-    }
-  }
   
   return (
     <Modal

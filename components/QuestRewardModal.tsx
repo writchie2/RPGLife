@@ -36,24 +36,27 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
     const userData = useUserData();
     const {completeQuest} = useUserData();
     const quest = userData.userData?.quests?.find(quest => quest.id === id);
-    const [levelBefore, setLevelBefore] = useState(0)
-    const [levelAfter, setLevelAfter] = useState(0)
 
     const [completionReward, setCompletionReward] = useState("");
 
     const questReward = async () => {
         if ((userData && quest) && auth.currentUser) {
+            
             const neededEXP = calcEXP(userData.userData?.exp || 0).neededEXP;
             const progressEXP = calcEXP(userData.userData?.exp || 0).progressEXP
-            console.log("calc level before is: ", neededEXP)
-            console.log("calc level after is: ", progressEXP)
+            console.log("calc neededEXP: ", neededEXP)
+            console.log("calc progressEXP: ", progressEXP)
+            console.log(quest.difficulty);
             completeQuest(quest.id);
 
            // Calculating level states for before and after was a bust
            // Only way to get the level up modal to appear momentarily is by taking the difference
            // between needed and progress EXP.
-           // TODO: Set up different cases for quest difficulties and different progress amounts :)
-            if ((neededEXP - progressEXP) < 150) {
+            if (quest.difficulty === "Hard" && (neededEXP - progressEXP) <= 450) {
+                onLevelUp();
+            } else if (quest.difficulty === "Normal" && (neededEXP - progressEXP) <= 300) {
+                onLevelUp();
+            } else if (quest.difficulty === "Easy" && (neededEXP - progressEXP) <= 150) {
                 onLevelUp();
             } else {
                 onClose();
@@ -65,15 +68,7 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
         if (quest) {
             // add quest title bozo
             setCompletionReward(quest.reward);
-        }
-
-        /*
-        const levelBefore = calcEXP(
-            userData.userData?.exp || 0
-          );
-          setLevelBefore(levelBefore);
-        */
-          }, [quest]);
+        } }, [quest]);
 
     return (
         <Modal
