@@ -121,6 +121,8 @@ export default function HomePage() {
       fontFamily: "MaterialIconsRound_400Regular",
       fontSize: 50,
       color: colors.text,
+      position: "absolute",
+      right: 0,
     },
     addButton: {
       position: "absolute",
@@ -143,7 +145,7 @@ export default function HomePage() {
       justifyContent: "center",
       alignItems: "center",
       backgroundColor: colors.bgPrimary,
-    },    
+    },
     modalOverlay: {
       flex: 1,
       justifyContent: "center",

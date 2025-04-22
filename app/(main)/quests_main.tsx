@@ -85,6 +85,8 @@ export default function QuestMainPage() {
       fontFamily: "MaterialIconsRound_400Regular",
       fontSize: 50,
       color: colors.text,
+      position: "absolute",
+      right: 0,
     },
     addButton: {
       position: "absolute",

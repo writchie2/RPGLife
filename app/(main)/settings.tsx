@@ -167,7 +167,7 @@ export default function Settings() {
     },
     icon: {
       fontFamily: "MaterialIconsRound_400Regular",
-      fontSize: 50,
+      fontSize: 40,
       color: colors.text,
       position: "absolute",
       right: 0,
@@ -219,7 +219,7 @@ export default function Settings() {
               <Text style={styles.icon}>person</Text>
             </View>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             onPress={() => setEditPasswordVisible(true)}
             style={styles.section}
@@ -238,14 +238,15 @@ export default function Settings() {
           >
             <View style={styles.splitRowContainer}>
               <Text style={styles.sectionTitle}>Tester Mode</Text>
-              <Text style={styles.icon}>{userData?.testerMode ? "check_circle" : "check_circle_outline"}</Text>
+              <Text style={styles.icon}>
+                {userData?.testerMode ? "check_circle" : "check_circle_outline"}
+              </Text>
             </View>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => {
               auth.signOut();
-              
             }}
             style={styles.section}
           >
