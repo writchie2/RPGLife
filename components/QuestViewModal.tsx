@@ -26,6 +26,7 @@ interface QuestViewModalProps {
   visible: boolean;
   onModalHide?: () => void;
   onClose: () => void;
+  onRepeat: () => void;
   onReward: () => void;
   id: string;
 }
@@ -41,6 +42,7 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
   onClose,
   onReward,
   id,
+  onRepeat,
 }) => {
   const colors = useTheme(); // used for themes, replaces colors import
 
@@ -365,6 +367,8 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
         {
           text: "Confirm",
           onPress: () => {
+            onRepeat();
+            /*
             repeatQuest(quest.id);
             let message = [];
             message.push("You completed:\n" + quest.name + "\n");
@@ -377,6 +381,7 @@ const QuestViewModal: React.FC<QuestViewModalProps> = ({
             }
             message.push("We'll make the graphic look cooler later!");
             Alert.alert("Quest Repeated!", message.join(""));
+            */
           },
         },
         {

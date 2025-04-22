@@ -125,6 +125,7 @@ const QuestsList: React.FC<QuestsListProps> = ({
 
   const [questsModalVisible, setQuestsModalVisible] = useState(false);
   const [questID, setQuestID] = useState("");
+  const [needComplete, setNeedComplete] = useState(false);
   const [rewardID, setRewardID] = useState("");
   const [questRewardVisible, setQuestRewardVisible] = useState(false);
 
@@ -245,28 +246,40 @@ const QuestsList: React.FC<QuestsListProps> = ({
         onClose={() => {
           setQuestsModalVisible(false);
           setQuestID("");
+          setNeedComplete(false);
           //console.log("closing quest view")
         }}
         onReward={() => {
           setQuestsModalVisible(false);
           setRewardID(questID);
+          setNeedComplete(true);
           setQuestID("");
           setQuestRewardVisible(true);
           //console.log("reward triggered trigger")
+        }}
+        onRepeat={() => {
+          setQuestsModalVisible(false);
+          setRewardID(questID);
+          setNeedComplete(false);
+          setQuestID("");
+          setQuestRewardVisible(true);
         }}
       ></QuestViewModal>
 
       <QuestRewardModal
         visible={questRewardVisible}
         id={rewardID}
+        complete={needComplete}
         onClose={() => {
           setRewardID("");
           setQuestRewardVisible(false);
+          setNeedComplete(false);
         }}
         onLevelUp={() => {
           setQuestRewardVisible(false);
           setQuestID("");
           setLevelUpModalVisible(true);
+          setNeedComplete(false);
           console.log("quest triggered level up")
         }}
       ></QuestRewardModal>
