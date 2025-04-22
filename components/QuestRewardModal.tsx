@@ -33,13 +33,15 @@ interface QuestRewardModalProps {
   onClose: () => void;
   id: string;
   onLevelUp: () => void
+  complete: boolean
 }
 
 const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
   visible,
   onClose,
   id,
-  onLevelUp
+  onLevelUp,
+  complete
 }) => {
   const colors = useTheme(); // used for themes, replaces colors import
 
@@ -372,7 +374,7 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
     }
 
     const userData = useUserData();
-    const {completeQuest} = useUserData();
+    const {completeQuest, repeatQuest} = useUserData();
     const quest = userData.userData?.quests?.find(quest => quest.id === id);
 
     const [completionReward, setCompletionReward] = useState("");
@@ -385,7 +387,13 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
             console.log("calc neededEXP: ", neededEXP)
             console.log("calc progressEXP: ", progressEXP)
             console.log(quest.difficulty);
-            completeQuest(quest.id);
+            if(complete){
+              repeatQuest(quest.id);
+            }
+            else{
+              completeQuest(quest.id);
+            }
+            
 
            // Calculating level states for before and after was a bust
            // Only way to get the level up modal to appear momentarily is by taking the difference
@@ -420,7 +428,7 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
         <TouchableWithoutFeedback onPress={questReward}> 
             {/* Title */}
             <View style={styles.titleContainer}>
-            <Text style={styles.title}>Quest Complete!</Text>
+            <Text style={styles.title}>Quest {complete? "Complete!" : "Repeated!"}</Text>
             </View>
         </TouchableWithoutFeedback>            
 
