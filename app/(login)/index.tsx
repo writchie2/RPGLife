@@ -12,11 +12,18 @@ import {
   StyleSheet,
 } from "react-native";
 import { useFonts } from "expo-font";
+
+// TEXT FONTS
 import { Metamorphous_400Regular } from "@expo-google-fonts/metamorphous";
 import {
   Alegreya_400Regular,
   Alegreya_500Medium,
 } from "@expo-google-fonts/alegreya";
+
+// ICON FONTS - look at fonts.google.com/icons for list/name of icons available
+import { MaterialIconsRound_400Regular } from "expo-google-fonts-material-icons-round/400Regular";
+import { MaterialIcons_400Regular } from "expo-google-fonts-material-icons/400Regular";
+
 import { useRouter } from "expo-router";
 import { auth } from "@/FirebaseConfig";
 
@@ -27,6 +34,8 @@ export default function LoginScreen() {
     Metamorphous_400Regular,
     Alegreya_400Regular,
     Alegreya_500Medium,
+    MaterialIconsRound_400Regular,
+    MaterialIcons_400Regular,
   });
   const router = useRouter();
 
