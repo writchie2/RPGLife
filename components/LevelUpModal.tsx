@@ -9,9 +9,9 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
+  Platform,
 } from "react-native";
 import colors from "@/constants/colors";
-
 
 import { useEffect } from "react";
 import { useUserData } from "@/contexts/UserContext";
@@ -19,16 +19,14 @@ import { useTheme } from "@/contexts/ThemeContext";
 import calcEXP from "@/utils/calcEXP";
 import { achievementList } from "@/utils/AchievementList";
 
-
 interface LevelUpModalProps {
   visible: boolean;
   onModalHide?: () => void;
   onClose: () => void;
-  leveledUp: string[] 
+  leveledUp: string[];
 }
 
 const traits = ["Strength", "Vitality", "Agility", "Intelligence", "Charisma"];
-
 
 const LevelUpModal: React.FC<LevelUpModalProps> = ({
   visible,
@@ -49,27 +47,41 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
       justifyContent: "flex-start",
     },
     modalContainer: {
-      flex: 0.92,
+      // Platform used changes size of modal
+      // iOS gets more space at top
+      ...Platform.select({
+        ios: {
+          flex: 0.92,
+        },
+        android: {
+          flex: 0.95,
+        },
+        default: {
+          flex: 0.92,
+        },
+      }),
       width: "100%",
       backgroundColor: colors.bgPrimary,
       borderRadius: 10,
-      padding: 20,
+      // padding: 20,
       justifyContent: "space-between",
     },
     titleContainer: {
-      backgroundColor: colors.bgPrimary,
+      // backgroundColor: colors.bgPrimary,
       width: "100%",
       justifyContent: "center",
       alignItems: "center",
-      borderRadius: 10,
-      marginBottom: "2%",
+      // borderRadius: 10,
+      // marginBottom: "2%",
+      marginBottom: 20,
     },
     contentTitleContainer: {
       backgroundColor: colors.bgSecondary,
       width: "100%",
       justifyContent: "center",
       alignItems: "center",
-      padding: "3%",
+      // padding: "3%",
+      padding: "4%",
       borderRadius: 10,
       marginBottom: "2%",
     },
@@ -102,8 +114,10 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
     },
 
     contentText: {
-      fontFamily: "Alegreya_400Regular",
-      fontSize: 30,
+      // fontFamily: "Alegreya_400Regular",
+      // fontSize: 30,
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 26,
       color: colors.text,
     },
     levelUpText: {
@@ -111,31 +125,32 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
       fontSize: 24,
       color: colors.text,
       textAlign: "center",
-      paddingHorizontal: "10%"
+      paddingHorizontal: "10%",
     },
     rewardMessageText: {
       fontFamily: "Alegreya_400Regular",
       fontSize: 20,
       color: colors.text,
-      textAlign: "center"
+      textAlign: "center",
     },
     rewardText: {
       fontFamily: "Alegreya_400Regular",
       fontSize: 28,
       color: colors.text,
-      textAlign: "center"
+      textAlign: "center",
     },
     // CONTAINERS ===============================
-    
+
     closeButtonContainer: {
       alignItems: "center",
       padding: 20,
     },
     contentContainer: {
       // flex: 1,
-      width: "100%",
+      width: "90%",
       marginHorizontal: 20,
-      marginVertical: 15, // needed so if scrolling required doesnt cut off shadow
+      marginTop: 20,
+      marginBottom: 10, // needed so if scrolling required doesnt cut off shadow
       borderRadius: 10,
       backgroundColor: colors.bgDropdown,
       // Shadow effect
@@ -145,9 +160,8 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
       shadowRadius: 5,
       elevation: 3,
       paddingBottom: 20,
-      
     },
-    
+
     titleText: {
       fontFamily: "Metamorphous_400Regular",
       fontSize: 36,
@@ -159,32 +173,32 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
       borderColor: colors.borderLight,
     },
     icons: {
-        // fontFamily: "MaterialIcons_400Regular",
-        fontFamily: "MaterialIconsRound_400Regular",
-        fontSize: 30,
-        color: colors.text,
+      // fontFamily: "MaterialIcons_400Regular",
+      fontFamily: "MaterialIconsRound_400Regular",
+      fontSize: 30,
+      color: colors.text,
     },
     closeButton: {
-        width: 53,
-        height: 53,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: colors.bgSecondary,
-        borderRadius: 100,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
+      width: 53,
+      height: 53,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.bgSecondary,
+      borderRadius: 100,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 5,
     },
-});
+  });
 
-  const { userData} = useUserData();
+  const { userData } = useUserData();
   const traitLevels = leveledUp.filter((item) => traits.includes(item));
   const skillLevels = leveledUp.filter(
     (item) => !traits.includes(item) && item !== "Character"
   );
-  const characterLeveled = leveledUp.includes("Character"); 
+  const characterLeveled = leveledUp.includes("Character");
 
   /*
   const traitLevels = ["Strength", "Charisma"]
@@ -198,29 +212,33 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
     const currentLevel = calcEXP(userData?.exp || 0).level;
 
     // Find the "Character" category
-    const characterAchievements = achievementList.find(
-      (cat) => cat.catagory === "Character"
-    )?.achievements || [];
-  
+    const characterAchievements =
+      achievementList.find((cat) => cat.catagory === "Character")
+        ?.achievements || [];
+
     // Find the reward for the *exact* level the user just reached
     const rewardAtLevel = characterAchievements.find(
       (achievement) => achievement.level === currentLevel
     );
-    
+
     return (
       <View style={styles.contentContainer}>
         <View style={styles.contentTitleContainer}>
           <Text style={styles.contentText}>Character Level Up!</Text>
         </View>
-        <Text style={styles.levelUpText}>Your overall level increased to {calcEXP(userData?.exp || 0).level}!</Text>
-        
+        <Text style={styles.levelUpText}>
+          Your overall level increased to {calcEXP(userData?.exp || 0).level}!
+        </Text>
+
         {rewardAtLevel && (
           <View>
-            <Text style={styles.rewardMessageText}>- Reward{rewardAtLevel?.reward2 ? "s" : ""} Unlocked -</Text>
+            <Text style={styles.rewardMessageText}>
+              - Reward{rewardAtLevel?.reward2 ? "s" : ""} Unlocked -
+            </Text>
             <Text style={styles.rewardText}>{rewardAtLevel.reward}</Text>
             {rewardAtLevel?.reward2 && (
-                <Text style={styles.rewardText}>{rewardAtLevel.reward2}</Text>
-              )}
+              <Text style={styles.rewardText}>{rewardAtLevel.reward2}</Text>
+            )}
           </View>
         )}
       </View>
@@ -229,12 +247,12 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
 
   const renderSkillLevels = () => {
     if (skillLevels.length === 0 || !userData?.skills) return null;
-  
+
     return skillLevels.map((skillName, index) => {
       // Look up the skill's current level from userData
       const skillData = userData.skills?.find((s) => s.name === skillName);
-      const level = calcEXP(skillData?.exp || 0).level
-  
+      const level = calcEXP(skillData?.exp || 0).level;
+
       return (
         <View key={skillName} style={styles.contentContainer}>
           <View style={styles.contentTitleContainer}>
@@ -250,10 +268,10 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
 
   const renderTraitLevels = () => {
     if (traitLevels.length === 0) return null;
-  
+
     return traitLevels.map((traitName, index) => {
       // Look up the trait's current level from userData
-      
+
       let level = 0;
       switch (traitName) {
         case "Strength":
@@ -279,12 +297,12 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
       const category = achievementList.find(
         (cat) => cat.catagory === traitName
       );
-  
+
       // Try to find the reward at the current level (if any)
       const rewardAtLevel = category?.achievements.find(
         (achievement) => achievement.level === level
       );
-      
+
       return (
         <View key={traitName} style={styles.contentContainer}>
           <View style={styles.contentTitleContainer}>
@@ -314,14 +332,13 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
       visible={visible}
       onRequestClose={onClose}
     >
-      
       <View style={styles.overlay}>
-        <TouchableWithoutFeedback onPress={onClose}> 
-            {/* Title */}
-            <View style={styles.titleContainer}>
+        <TouchableWithoutFeedback onPress={onClose}>
+          {/* Title */}
+          <View style={styles.titleContainer}>
             <Text style={styles.title}> - Level Up! - </Text>
-            </View>
-        </TouchableWithoutFeedback>            
+          </View>
+        </TouchableWithoutFeedback>
 
         <View style={styles.modalContainer}>
           <View style={styles.scrollLine}></View>
@@ -334,25 +351,22 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
             {renderCharacterLevel()}
             {renderSkillLevels()}
             {renderTraitLevels()}
-             
           </ScrollView>
 
           <View style={styles.closeButtonContainer}>
             <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => {
-                    onClose();
-                }}
+              style={styles.closeButton}
+              onPress={() => {
+                onClose();
+              }}
             >
               <Text style={styles.icons}>close</Text>
             </TouchableOpacity>
           </View>
-        </View>    
+        </View>
       </View>
     </Modal>
   );
 };
-
-
 
 export default LevelUpModal;
