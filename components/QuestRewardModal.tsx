@@ -32,7 +32,7 @@ interface QuestRewardModalProps {
   onModalHide?: () => void;
   onClose: () => void;
   id: string;
-  onLevelUp: () => void
+  onLevelUp: (traits: string[]) => void
   complete: boolean
 }
 
@@ -382,28 +382,20 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
     const questReward = async () => {
         if ((userData && quest) && auth.currentUser) {
             
-            const neededEXP = calcEXP(userData.userData?.exp || 0).neededEXP;
-            const progressEXP = calcEXP(userData.userData?.exp || 0).progressEXP
-            console.log("calc neededEXP: ", neededEXP)
-            console.log("calc progressEXP: ", progressEXP)
-            console.log(quest.difficulty);
-            if(complete){
-              repeatQuest(quest.id);
+            let leveledUp: string[] = [];
+            if(!complete){
+              leveledUp = await repeatQuest(quest.id);
             }
             else{
-              completeQuest(quest.id);
+              leveledUp = await completeQuest(quest.id);
             }
-            
+            const uniqueLeveledUp = [...new Set(leveledUp)];
 
            // Calculating level states for before and after was a bust
            // Only way to get the level up modal to appear momentarily is by taking the difference
            // between needed and progress EXP.
-            if (quest.difficulty === "Hard" && (neededEXP - progressEXP) <= 450) {
-                onLevelUp();
-            } else if (quest.difficulty === "Normal" && (neededEXP - progressEXP) <= 300) {
-                onLevelUp();
-            } else if (quest.difficulty === "Easy" && (neededEXP - progressEXP) <= 150) {
-                onLevelUp();
+            if (uniqueLeveledUp.length > 0) {
+                onLevelUp(uniqueLeveledUp);
             } else {
                 onClose();
             }

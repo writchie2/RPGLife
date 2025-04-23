@@ -208,6 +208,12 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
       height: 30,
       margin: "2%",
     },
+    experienceButtonText: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 12,
+      color: colors.textDark,
+      
+    },
     endButtons: {
       justifyContent: "flex-end",
     },
@@ -268,6 +274,15 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
     let errors = [];
     if (skillName.trim() === "") {
       errors.push("Skill name cannot be blank");
+      error = true;
+    }
+    if (skillName.trim() === "Strength" || 
+      skillName.trim() === "Vitality" || 
+      skillName.trim() === "Agility" || 
+      skillName.trim() === "Stamina" || 
+      skillName.trim() === "Intelligence" || 
+      skillName.trim() === "Charisma") {
+      errors.push("Skill name cannot be the same as a trait");
       error = true;
     }
     const skillExists = userData.userData?.skills?.some(
@@ -466,7 +481,7 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
                           setExperience("novice");
                         }}
                       >
-                        <Text>Novice</Text>
+                        <Text style={styles.experienceButtonText}>Novice</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
@@ -479,7 +494,7 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
                           setExperience("adept");
                         }}
                       >
-                        <Text>Adept</Text>
+                        <Text style={styles.experienceButtonText}>Adept</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
@@ -492,7 +507,7 @@ const CreateSkillModal: React.FC<CreateSkillModalProps> = ({
                           setExperience("master");
                         }}
                       >
-                        <Text>Master</Text>
+                        <Text style={styles.experienceButtonText}>Master</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
