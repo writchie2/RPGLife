@@ -108,7 +108,7 @@ const index = () => {
         <Text style={styles.title}>Welcome!</Text>
         <Image
           style={styles.logo}
-          source={require("../../assets/images/RPGiconAlt-sm.png")}
+          source={require("../../assets/images/RPGiconAlt.webp")}
         />
         <View style={styles.form}>
           <View style={styles.inputGroup}>
