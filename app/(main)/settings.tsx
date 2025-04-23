@@ -89,6 +89,7 @@ export default function Settings() {
     },
     settingsContainer: {
       alignItems: "center",
+      paddingBottom: 40, // needed to prevent cutoff caused by scroll containers paddingTop
     },
     splitRowContainer: {
       flexDirection: "row",
@@ -146,13 +147,13 @@ export default function Settings() {
       borderWidth: 2,
       borderRadius: 6,
     },
-    button: {
+    resetButton: {
       width: "56%",
       alignItems: "center",
       justifyContent: "center",
       backgroundColor: colors.cancel,
       borderRadius: 100, // full rounded corners
-      marginTop: 100,
+      marginTop: 50,
       padding: 18,
       shadowColor: colors.shadow, // Shadow color to match the button for a cohesive look
       shadowOffset: { width: 0, height: 3 },
@@ -205,7 +206,10 @@ export default function Settings() {
       <View style={styles.scrollLine}>
         <Text style={styles.pageTitle}>Settings</Text>
       </View>
-      <ScrollView style={styles.scrollContainer}>
+      <ScrollView
+        style={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.settingsContainer}>
           <AvatarList />
           <TitlesList />
@@ -257,7 +261,7 @@ export default function Settings() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.button}
+            style={styles.resetButton}
             onPress={() => resetHandler()}
           >
             <Text style={styles.buttonText}>Reset Account</Text>
