@@ -586,7 +586,7 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
         <TouchableWithoutFeedback onPress={questReward}>
           {/* Title */}
           <View style={styles.pageTitleContainer}>
-            <Text style={styles.title}>Quest Complete!</Text>
+            <Text style={styles.title}>Quest {complete? "Complete!" : "Repeated"}</Text>
           </View>
         </TouchableWithoutFeedback>
 

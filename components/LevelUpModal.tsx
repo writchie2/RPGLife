@@ -236,7 +236,7 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
       const level = calcEXP(skillData?.exp || 0).level
   
       return (
-        <View  style={styles.contentContainer}>
+        <View key={skillName} style={styles.contentContainer}>
           <View style={styles.contentTitleContainer}>
             <Text style={styles.contentText}>Skill Level Up!</Text>
           </View>
@@ -286,7 +286,7 @@ const LevelUpModal: React.FC<LevelUpModalProps> = ({
       );
       
       return (
-        <View key={index} style={styles.contentContainer}>
+        <View key={traitName} style={styles.contentContainer}>
           <View style={styles.contentTitleContainer}>
             <Text style={styles.contentText}>Trait Level Up!</Text>
           </View>
