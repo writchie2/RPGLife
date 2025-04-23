@@ -164,7 +164,7 @@ export default function RegisterScreen() {
 
         <Image
           style={styles.logo}
-          source={require("../../assets/images/RPGiconLine-sm.png")}
+          source={require("../../assets/images/RPGiconLine.webp")}
         />
 
         <View style={styles.form}>

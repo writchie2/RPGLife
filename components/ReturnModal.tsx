@@ -35,7 +35,8 @@ const ReturnModal: React.FC<ReturnModalProps> = ({ visible, onClose }) => {
       borderRadius: 10,
       justifyContent: "space-between",
       alignItems: "center",
-      padding: 20,
+      // padding: 20,
+      paddingVertical: 20,
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.25,
@@ -44,6 +45,7 @@ const ReturnModal: React.FC<ReturnModalProps> = ({ visible, onClose }) => {
     },
     contentContainer: {
       marginTop: 20,
+      marginHorizontal: 20,
       backgroundColor: colors.bgDropdown,
       borderRadius: 10,
       shadowColor: "#000",
@@ -117,11 +119,12 @@ const ReturnModal: React.FC<ReturnModalProps> = ({ visible, onClose }) => {
     },
     titleContainer: {
       backgroundColor: colors.bgTertiary,
-      width: "100%",
+      // width: "100%",
       // justifyContent: "center",
       alignItems: "center",
       padding: 18,
       borderRadius: 10,
+      marginHorizontal: 20,
     },
   });
 

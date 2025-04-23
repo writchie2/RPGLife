@@ -50,7 +50,7 @@ export default function LoginScreen() {
       <View style={styles.container}>
         <Text style={styles.title}>RPG LIFE</Text>
         <Image
-          source={require("../../assets/images/RPGiconFull-sm.png")}
+          source={require("../../assets/images/RPGiconFull.webp")}
           style={styles.logo}
         />
         <TouchableOpacity
@@ -68,10 +68,7 @@ export default function LoginScreen() {
         {/* 
         TESTING -- CONTINUE AS GUEST -- WIP (still needs to generated a user account/id to track data just w/o login???)
         - have it prompt for a userID?... just not a password? 
-        - for now gives shortcut to homescreen so we dont have to sign in 
-        NOTE: 
-        works on emulator but in expo go app doesnt?... Does work in expo go if you login then go back and try to use it?
-        maybe need to use NavigationContainer instead of useRouter for page naviagtion? 
+        - for now gives shortcut to homescreen so we dont have to sign in
         */}
         <TouchableOpacity onPress={() => router.replace("/(main)")}>
           <Text style={styles.guestText}>Continue as guest</Text>

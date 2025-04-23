@@ -41,12 +41,10 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
   onClose,
   id,
   onLevelUp,
-  complete
 }) => {
   const colors = useTheme(); // used for themes, replaces colors import
 
   const styles = StyleSheet.create({
-
     overlay: {
       flex: 1,
       backgroundColor: colors.bgPrimary,
@@ -59,11 +57,23 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
       justifyContent: "flex-start",
     },
     modalContainer: {
-      flex: 0.92,
+      // changes size of modal
+      // iOS gets more space at top
+      ...Platform.select({
+        ios: {
+          flex: 0.92,
+        },
+        android: {
+          flex: 0.95,
+        },
+        default: {
+          flex: 0.92,
+        },
+      }),
       width: "100%",
       backgroundColor: colors.bgPrimary,
       borderRadius: 10,
-      padding: 20,
+      // paddingHorizontal: 10,
       justifyContent: "space-between",
     },
     formContainer: {
@@ -99,8 +109,18 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
       borderWidth: 2,
       borderRadius: 6,
     },
+    pageTitleContainer: {
+      // backgroundColor: colors.bgQuaternary,
+      width: "100%",
+      justifyContent: "center",
+      alignItems: "center",
+      // padding: "5%",
+      // marginBottom: "2%",
+      // borderRadius: 10,
+      marginBottom: 20,
+    },
     titleContainer: {
-      backgroundColor: colors.bgQuaternary,
+      backgroundColor: colors.bgSecondary,
       width: "100%",
       justifyContent: "center",
       alignItems: "center",
@@ -274,18 +294,22 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
       height: 20,
     },
     fieldContainer: {
-      marginBottom: "4%",
+      // marginBottom: "4%",
+      // marginVertical: 8,
+      marginTop: 5,
+      marginBottom: 10,
     },
     fieldText: {
       // fontFamily: "Metamorphous_400Regular",
       // fontSize: 20,
       fontFamily: "Alegreya_500Medium",
       fontSize: 22,
-      color: colors.text,
+      color: colors.textLight,
     },
     contentText: {
       fontFamily: "Alegreya_400Regular",
-      // fontSize: 24,
+      color: colors.textLight,
+      fontSize: 20,
     },
     // CONTAINERS ===============================
     pageTitle: {
@@ -304,8 +328,9 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
     questContainer: {
       // NOTE: parent of titleContainer, questDetailsContainer, questButtonsContainer for flex
       // flex: 1,
-      width: "85%",
+      width: "90%",
       marginHorizontal: 20,
+      marginTop: 20,
       marginBottom: 10, // needed so if scrolling required doesnt cut off shadow
       borderRadius: 10,
       backgroundColor: colors.bgDropdown,
@@ -319,6 +344,8 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
     questDetailsContainer: {
       flexGrow: 1,
       marginHorizontal: 10,
+      marginTop: 5,
+      marginBottom: 15,
     },
     descriptionContainer: {
       marginVertical: 20,
@@ -347,39 +374,179 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
       borderColor: colors.borderLight,
     },
     icons: {
-        // fontFamily: "MaterialIcons_400Regular",
-        fontFamily: "MaterialIconsRound_400Regular",
-        fontSize: 30,
-        color: colors.text,
+      // fontFamily: "MaterialIcons_400Regular",
+      fontFamily: "MaterialIconsRound_400Regular",
+      fontSize: 30,
+      color: colors.text,
     },
     closeButton: {
-        width: 53,
-        height: 53,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: colors.bgSecondary,
-        borderRadius: 100,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.5,
-        shadowRadius: 4,
-        elevation: 5,
+      width: 53,
+      height: 53,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.bgSecondary,
+      borderRadius: 100,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 5,
     },
-});
+    // EXP REWARD STYLES ==========================
+    expRewardContainer: {
+      // not used atm
+    },
+    expRewardSectionTitleContainer: {
+      flexDirection: "row",
+      gap: 10,
+      alignItems: "center",
+    },
+    line: {
+      flex: 1,
+      borderBottomWidth: 0.5,
+      borderColor: colors.borderLight,
+    },
+    expRewardSectionTitle: {
+      fontFamily: "Alegreya_500Medium",
+      fontSize: 22,
+      color: colors.textLight,
+    },
+    expRewardBorder: {
+      marginLeft: 2,
+      paddingLeft: 5,
+      borderLeftWidth: 0.5,
+      borderColor: colors.borderLight,
+    },
+    expRewardSplitRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      // alignItems: "flex-start",
+    },
+    expRewardCatagory: {
+      fontFamily: "Alegreya_500Medium",
+      fontSize: 22,
+      color: colors.textLight,
+      marginTop: 10,
+    },
+    expRewardCatagory2: {
+      fontFamily: "Alegreya_500Medium",
+      fontSize: 20,
+      color: colors.textLight,
 
- 
+      marginTop: 3,
+    },
+    expRewardText: {
+      fontFamily: "Alegreya_400Regular",
+      fontSize: 18,
+      color: colors.textLight,
+      // set maxWidth
+      // needed for long skill names
+      // forces it go to next line instead
+      // of pushing exp out of container
+      maxWidth: "70%",
+    },
+  });
 
   if (!auth.currentUser) {
-        return;
+    return;
+  }
+
+  const userData = useUserData();
+  const {completeQuest, repeatQuest} = useUserData();
+  const quest = userData.userData?.quests?.find(quest => quest.id === id);
+
+  // CALCULATE EXP REWARDS for Character, Skills, Traits
+  const expRewards = () => {
+    let exp = 0;
+    if (quest?.difficulty === "Easy") {
+      exp = 150;
+    } else if (quest?.difficulty === "Normal") {
+      exp = 300;
+    } else {
+      exp = 450;
     }
 
-    const userData = useUserData();
-    const {completeQuest, repeatQuest} = useUserData();
-    const quest = userData.userData?.quests?.find(quest => quest.id === id);
 
-    const [completionReward, setCompletionReward] = useState("");
+    const primarySkill = userData.userData?.skills?.find(
+      (skill) => skill.name === quest?.primarySkill
+    );
+    const primSkillTraitOne = primarySkill?.primaryTrait;
+    const primSkillTraitTwo = primarySkill?.secondaryTrait;
 
-    const questReward = async () => {
+    const secondarySkill = userData.userData?.skills?.find(
+      (skill) => skill.name === quest?.secondarySkill
+    );
+    const secSkillTraitOne = secondarySkill?.primaryTrait;
+    const secSkillTraitTwo = secondarySkill?.secondaryTrait;
+
+    let primarySkillXP = 0;
+    let primSkillTraitOneXP = 0;
+    let primSkillTraitTwoXP = 0;
+
+    let secondarySkillXP = 0;
+    let secSkillTraitOneXP = 0;
+    let secSkillTraitTwoXP = 0;
+
+    if (secondarySkill) {
+      // Set primary and secondary skill exp
+      primarySkillXP = Math.floor(exp * 0.75);
+      secondarySkillXP = Math.ceil(exp * 0.25);
+
+      // set primary skill trait exp
+      if (primSkillTraitTwo) {
+        primSkillTraitOneXP = Math.floor(primarySkillXP * 0.75);
+        primSkillTraitTwoXP = Math.ceil(primarySkillXP * 0.25);
+      } else {
+        primSkillTraitOneXP = primarySkillXP;
+      }
+
+      // set secondary skill trait exp
+      if (secSkillTraitTwo) {
+        secSkillTraitOneXP = Math.floor(secondarySkillXP * 0.75);
+        secSkillTraitTwoXP = Math.ceil(secondarySkillXP * 0.25);
+      } else {
+        secSkillTraitOneXP = secondarySkillXP;
+      }
+    } else {
+      // if no secondary skill, just set primary skill exp
+      primarySkillXP = exp;
+
+      // set primary skill trait exp
+      if (primSkillTraitTwo) {
+        primSkillTraitOneXP = Math.floor(primarySkillXP * 0.75);
+        primSkillTraitTwoXP = Math.ceil(primarySkillXP * 0.25);
+      } else {
+        primSkillTraitOneXP = primarySkillXP;
+      }
+    }
+
+    return {
+      charXP: exp,
+
+      primarySkill: primarySkill?.name,
+      primarySkillXP: primarySkillXP,
+
+      primSkillTraitOne: primSkillTraitOne,
+      primSkillTraitOneXP: primSkillTraitOneXP,
+
+      primSkillTraitTwo: primSkillTraitTwo,
+      primSkillTraitTwoXP: primSkillTraitTwoXP,
+
+      secondarySkill: secondarySkill?.name,
+      secondarySkillXP: secondarySkillXP,
+
+      secSkillTraitOne: secSkillTraitOne,
+      secSkillTraitOneXP: secSkillTraitOneXP,
+
+      secSkillTraitTwo: secSkillTraitTwo,
+      secSkillTraitTwoXP: secSkillTraitTwoXP,
+    };
+  };
+
+  const [completionReward, setCompletionReward] = useState("");
+
+  const questReward = async () => {
         if ((userData && quest) && auth.currentUser) {
             
             let leveledUp: string[] = [];
@@ -391,38 +558,36 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
             }
             const uniqueLeveledUp = [...new Set(leveledUp)];
 
-           // Calculating level states for before and after was a bust
-           // Only way to get the level up modal to appear momentarily is by taking the difference
-           // between needed and progress EXP.
+           // If there are unique LevelUp messages, then launch LevelUpModal
             if (uniqueLeveledUp.length > 0) {
                 onLevelUp(uniqueLeveledUp);
             } else {
                 onClose();
             }
         }
+  };
+
+  useEffect(() => {
+    if (quest) {
+      // add quest title bozo
+      setCompletionReward(quest.reward);
     }
+  }, [quest]);
 
-    useEffect(() => {
-        if (quest) {
-            // add quest title bozo
-            setCompletionReward(quest.reward);
-        } }, [quest]);
-
-    return (
-        <Modal
-        animationType="slide"
-        transparent={true}
-        visible={visible}
-        onRequestClose={questReward}
-        >
-        
-        <View style={styles.overlay}>
-        <TouchableWithoutFeedback onPress={questReward}> 
-            {/* Title */}
-            <View style={styles.titleContainer}>
-            <Text style={styles.title}>Quest {complete? "Complete!" : "Repeated!"}</Text>
-            </View>
-        </TouchableWithoutFeedback>            
+  return (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={visible}
+      onRequestClose={questReward}
+    >
+      <View style={styles.overlay}>
+        <TouchableWithoutFeedback onPress={questReward}>
+          {/* Title */}
+          <View style={styles.pageTitleContainer}>
+            <Text style={styles.title}>Quest Complete!</Text>
+          </View>
+        </TouchableWithoutFeedback>
 
         <View style={styles.modalContainer}>
           <View style={styles.scrollLine}></View>
@@ -443,32 +608,217 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
                     <Text style={styles.fieldText}>
                       Reward:{" "}
                       <Text style={styles.contentText}>
-                        {completionReward}
+                        {completionReward ? completionReward : "none"}
                       </Text>
                     </Text>
+                    {/* Different reward style */}
+                    {/* <View style={styles.expRewardSectionTitleContainer}>
+                      <View style={styles.line}></View>
+                      <Text style={styles.expRewardSectionTitle}>
+                        Quest Reward
+                      </Text>
+                      <View style={styles.line}></View>
+                    </View>
+                    <Text style={styles.contentText}>
+                      {completionReward ? completionReward : "none"}
+                    </Text> */}
+                  </View>
+                  <View style={styles.expRewardSectionTitleContainer}>
+                    <View style={styles.line}></View>
+                    <Text style={styles.expRewardSectionTitle}>
+                      Experience Gained
+                    </Text>
+                    <View style={styles.line}></View>
+                  </View>
+                  {/* TRAITS w/ Skills */}
+                  <View style={styles.expRewardContainer}>
+                    {expRewards().secondarySkill ? (
+                      // Primary and Secondary SKills
+                      <View>
+                        <Text style={styles.expRewardCatagory}>Character:</Text>
+                        <View style={styles.expRewardBorder}>
+                          <View style={styles.expRewardSplitRow}>
+                            <Text style={styles.expRewardText}>
+                              Overall level
+                            </Text>
+                            <Text style={styles.expRewardText}>
+                              + {expRewards().charXP} xp
+                            </Text>
+                          </View>
+                        </View>
+
+                        <Text style={styles.expRewardCatagory}>
+                          Primary Skill:
+                        </Text>
+                        <View style={styles.expRewardBorder}>
+                          <View style={styles.expRewardSplitRow}>
+                            <Text style={styles.expRewardText}>
+                              {expRewards().primarySkill}
+                            </Text>
+                            <Text style={styles.expRewardText}>
+                              + {expRewards().primarySkillXP} xp
+                            </Text>
+                          </View>
+
+                          <Text style={styles.expRewardCatagory2}>Traits:</Text>
+                          {expRewards().primSkillTraitTwo ? (
+                            <View style={styles.expRewardBorder}>
+                              <View style={styles.expRewardSplitRow}>
+                                <Text style={styles.expRewardText}>
+                                  {expRewards().primSkillTraitOne}
+                                </Text>
+                                <Text style={styles.expRewardText}>
+                                  + {expRewards().primSkillTraitOneXP} xp
+                                </Text>
+                              </View>
+                              <View style={styles.expRewardSplitRow}>
+                                <Text style={styles.expRewardText}>
+                                  {expRewards().primSkillTraitTwo}
+                                </Text>
+                                <Text style={styles.expRewardText}>
+                                  + {expRewards().primSkillTraitTwoXP} xp
+                                </Text>
+                              </View>
+                            </View>
+                          ) : (
+                            <View style={styles.expRewardBorder}>
+                              <View style={styles.expRewardSplitRow}>
+                                <Text style={styles.expRewardText}>
+                                  {expRewards().primSkillTraitOne}
+                                </Text>
+                                <Text style={styles.expRewardText}>
+                                  + {expRewards().primSkillTraitOneXP} xp
+                                </Text>
+                              </View>
+                            </View>
+                          )}
+                        </View>
+
+                        <Text style={styles.expRewardCatagory}>
+                          Secondary Skill:
+                        </Text>
+                        <View style={styles.expRewardBorder}>
+                          <View style={styles.expRewardSplitRow}>
+                            <Text style={styles.expRewardText}>
+                              {expRewards().secondarySkill}
+                            </Text>
+                            <Text style={styles.expRewardText}>
+                              + {expRewards().secondarySkillXP} xp
+                            </Text>
+                          </View>
+
+                          <Text style={styles.expRewardCatagory2}>Traits:</Text>
+                          {expRewards().secSkillTraitTwo ? (
+                            <View style={styles.expRewardBorder}>
+                              <View style={styles.expRewardSplitRow}>
+                                <Text style={styles.expRewardText}>
+                                  {expRewards().secSkillTraitOne}
+                                </Text>
+                                <Text style={styles.expRewardText}>
+                                  + {expRewards().secSkillTraitOneXP} xp
+                                </Text>
+                              </View>
+                              <View style={styles.expRewardSplitRow}>
+                                <Text style={styles.expRewardText}>
+                                  {expRewards().secSkillTraitTwo}
+                                </Text>
+                                <Text style={styles.expRewardText}>
+                                  + {expRewards().secSkillTraitTwoXP} xp
+                                </Text>
+                              </View>
+                            </View>
+                          ) : (
+                            <View style={styles.expRewardBorder}>
+                              <View style={styles.expRewardSplitRow}>
+                                <Text style={styles.expRewardText}>
+                                  {expRewards().secSkillTraitOne}
+                                </Text>
+                                <Text style={styles.expRewardText}>
+                                  + {expRewards().secSkillTraitOneXP} xp
+                                </Text>
+                              </View>
+                            </View>
+                          )}
+                        </View>
+                      </View>
+                    ) : (
+                      // Only Primary Skill
+                      <View>
+                        <Text style={styles.expRewardCatagory}>Character:</Text>
+                        <View style={styles.expRewardBorder}>
+                          <Text style={styles.expRewardText}>
+                            + {expRewards().charXP} xp
+                          </Text>
+                        </View>
+
+                        <Text style={styles.expRewardCatagory}>
+                          Primary Skill:
+                        </Text>
+                        <View style={styles.expRewardBorder}>
+                          <View style={styles.expRewardSplitRow}>
+                            <Text style={styles.expRewardText}>
+                              {expRewards().primarySkill}
+                            </Text>
+                            <Text style={styles.expRewardText}>
+                              + {expRewards().primarySkillXP} xp
+                            </Text>
+                          </View>
+
+                          <Text style={styles.expRewardCatagory2}>Traits:</Text>
+                          {expRewards().primSkillTraitTwo ? (
+                            <View style={styles.expRewardBorder}>
+                              <View style={styles.expRewardSplitRow}>
+                                <Text style={styles.expRewardText}>
+                                  {expRewards().primSkillTraitOne}
+                                </Text>
+                                <Text style={styles.expRewardText}>
+                                  + {expRewards().primSkillTraitOneXP} xp
+                                </Text>
+                              </View>
+                              <View style={styles.expRewardSplitRow}>
+                                <Text style={styles.expRewardText}>
+                                  {expRewards().primSkillTraitTwo}
+                                </Text>
+                                <Text style={styles.expRewardText}>
+                                  + {expRewards().primSkillTraitTwoXP} xp
+                                </Text>
+                              </View>
+                            </View>
+                          ) : (
+                            <View style={styles.expRewardBorder}>
+                              <View style={styles.expRewardSplitRow}>
+                                <Text style={styles.expRewardText}>
+                                  {expRewards().primSkillTraitOne}
+                                </Text>
+                                <Text style={styles.expRewardText}>
+                                  + {expRewards().primSkillTraitOneXP} xp
+                                </Text>
+                              </View>
+                            </View>
+                          )}
+                        </View>
+                      </View>
+                    )}
                   </View>
                 </View>
-
               </View>
             </TouchableWithoutFeedback>
           </ScrollView>
 
           <View style={styles.closeButtonContainer}>
             <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => {
-                    questReward();
-                }}
+              style={styles.closeButton}
+              onPress={() => {
+                questReward();
+              }}
             >
-            <Text style={styles.icons}>close</Text>
+              <Text style={styles.icons}>close</Text>
             </TouchableOpacity>
           </View>
         </View>
-             
-        </View>
-        </Modal>
-    )
-}
-
+      </View>
+    </Modal>
+  );
+};
 
 export default QuestRewardModal;
