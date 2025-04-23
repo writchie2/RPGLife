@@ -15,276 +15,344 @@ import colors from "@/constants/colors";
 
 import { useEffect } from "react";
 import { useUserData } from "@/contexts/UserContext";
+import { useTheme } from "@/contexts/ThemeContext";
+import calcEXP from "@/utils/calcEXP";
+import { achievementList } from "@/utils/AchievementList";
 
 
 interface LevelUpModalProps {
   visible: boolean;
   onModalHide?: () => void;
-  onClose: () => void; 
+  onClose: () => void;
+  leveledUp: string[] 
 }
+
+const traits = ["Strength", "Vitality", "Agility", "Intelligence", "Charisma"];
 
 
 const LevelUpModal: React.FC<LevelUpModalProps> = ({
   visible,
   onClose,
-  
+  leveledUp,
 }) => {
+  const colors = useTheme(); // used for themes, replaces colors import
+  const styles = StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: colors.bgPrimary,
+      justifyContent: "flex-end",
+      alignItems: "center",
+    },
+    scrollContainer: {
+      flexGrow: 1,
+      alignItems: "center",
+      justifyContent: "flex-start",
+    },
+    modalContainer: {
+      flex: 0.92,
+      width: "100%",
+      backgroundColor: colors.bgPrimary,
+      borderRadius: 10,
+      padding: 20,
+      justifyContent: "space-between",
+    },
+    titleContainer: {
+      backgroundColor: colors.bgPrimary,
+      width: "100%",
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: 10,
+      marginBottom: "2%",
+    },
+    contentTitleContainer: {
+      backgroundColor: colors.bgSecondary,
+      width: "100%",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "3%",
+      borderRadius: 10,
+      marginBottom: "2%",
+    },
+    title: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 36,
+      color: colors.text,
+    },
+    rowGroup: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginTop: "1%",
+      width: "100%",
+      justifyContent: "space-between",
+    },
+    rowLeft: {
+      justifyContent: "flex-start",
+      flex: 1,
+    },
+    rowRight: {
+      justifyContent: "flex-end",
+      flex: 1,
+      flexDirection: "row",
+    },
+    rowLabel: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 18,
+      color: colors.text,
+      marginRight: 10,
+    },
+
+    contentText: {
+      fontFamily: "Alegreya_400Regular",
+      fontSize: 30,
+      color: colors.text,
+    },
+    levelUpText: {
+      fontFamily: "Alegreya_400Regular",
+      fontSize: 24,
+      color: colors.text,
+      textAlign: "center",
+      paddingHorizontal: "10%"
+    },
+    rewardMessageText: {
+      fontFamily: "Alegreya_400Regular",
+      fontSize: 20,
+      color: colors.text,
+      textAlign: "center"
+    },
+    rewardText: {
+      fontFamily: "Alegreya_400Regular",
+      fontSize: 28,
+      color: colors.text,
+      textAlign: "center"
+    },
+    // CONTAINERS ===============================
+    
+    closeButtonContainer: {
+      alignItems: "center",
+      padding: 20,
+    },
+    contentContainer: {
+      // flex: 1,
+      width: "100%",
+      marginHorizontal: 20,
+      marginVertical: 15, // needed so if scrolling required doesnt cut off shadow
+      borderRadius: 10,
+      backgroundColor: colors.bgDropdown,
+      // Shadow effect
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 5,
+      elevation: 3,
+      paddingBottom: 20,
+      
+    },
+    
+    titleText: {
+      fontFamily: "Metamorphous_400Regular",
+      fontSize: 36,
+      color: colors.text,
+    },
+    scrollLine: {
+      // marginHorizontal: 15,
+      borderBottomWidth: 1,
+      borderColor: colors.borderLight,
+    },
+    icons: {
+        // fontFamily: "MaterialIcons_400Regular",
+        fontFamily: "MaterialIconsRound_400Regular",
+        fontSize: 30,
+        color: colors.text,
+    },
+    closeButton: {
+        width: 53,
+        height: 53,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: colors.bgSecondary,
+        borderRadius: 100,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.5,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+});
+
+  const { userData} = useUserData();
+  const traitLevels = leveledUp.filter((item) => traits.includes(item));
+  const skillLevels = leveledUp.filter(
+    (item) => !traits.includes(item) && item !== "Character"
+  );
+  const characterLeveled = leveledUp.includes("Character"); 
+
+  /*
+  const traitLevels = ["Strength", "Charisma"]
+  const skillLevels = ["Strength/Charisma"];
+  const characterLeveled = true;
+  */
+
+  const renderCharacterLevel = () => {
+    if (!characterLeveled) return null;
+
+    const currentLevel = calcEXP(userData?.exp || 0).level;
+
+    // Find the "Character" category
+    const characterAchievements = achievementList.find(
+      (cat) => cat.catagory === "Character"
+    )?.achievements || [];
   
+    // Find the reward for the *exact* level the user just reached
+    const rewardAtLevel = characterAchievements.find(
+      (achievement) => achievement.level === currentLevel
+    );
+    
+    return (
+      <View style={styles.contentContainer}>
+        <View style={styles.contentTitleContainer}>
+          <Text style={styles.contentText}>Character Level Up!</Text>
+        </View>
+        <Text style={styles.levelUpText}>Your overall level increased to {calcEXP(userData?.exp || 0).level}!</Text>
+        
+        {rewardAtLevel && (
+          <View>
+            <Text style={styles.rewardMessageText}>- Reward{rewardAtLevel?.reward2 ? "s" : ""} Unlocked -</Text>
+            <Text style={styles.rewardText}>{rewardAtLevel.reward}</Text>
+            {rewardAtLevel?.reward2 && (
+                <Text style={styles.rewardText}>{rewardAtLevel.reward2}</Text>
+              )}
+          </View>
+        )}
+      </View>
+    );
+  };
+
+  const renderSkillLevels = () => {
+    if (skillLevels.length === 0 || !userData?.skills) return null;
+  
+    return skillLevels.map((skillName, index) => {
+      // Look up the skill's current level from userData
+      const skillData = userData.skills?.find((s) => s.name === skillName);
+      const level = calcEXP(skillData?.exp || 0).level
+  
+      return (
+        <View  style={styles.contentContainer}>
+          <View style={styles.contentTitleContainer}>
+            <Text style={styles.contentText}>Skill Level Up!</Text>
+          </View>
+          <Text style={styles.levelUpText}>
+            {skillName} level increased to {level}!
+          </Text>
+        </View>
+      );
+    });
+  };
+
+  const renderTraitLevels = () => {
+    if (traitLevels.length === 0) return null;
+  
+    return traitLevels.map((traitName, index) => {
+      // Look up the trait's current level from userData
+      
+      let level = 0;
+      switch (traitName) {
+        case "Strength":
+          level = calcEXP(userData?.strengthEXP || 0).level || 0;
+          break;
+        case "Vitality":
+          level = calcEXP(userData?.vitalityEXP || 0).level || 0;
+          break;
+        case "Agility":
+          level = calcEXP(userData?.agilityEXP || 0).level || 0;
+          break;
+        case "Stamina":
+          level = calcEXP(userData?.staminaEXP || 0).level || 0;
+          break;
+        case "Intelligence":
+          level = calcEXP(userData?.intelligenceEXP || 0).level || 0;
+          break;
+        case "Charisma":
+          level = calcEXP(userData?.charismaEXP || 0).level || 0;
+          break;
+      }
+
+      const category = achievementList.find(
+        (cat) => cat.catagory === traitName
+      );
+  
+      // Try to find the reward at the current level (if any)
+      const rewardAtLevel = category?.achievements.find(
+        (achievement) => achievement.level === level
+      );
+      
+      return (
+        <View key={index} style={styles.contentContainer}>
+          <View style={styles.contentTitleContainer}>
+            <Text style={styles.contentText}>Trait Level Up!</Text>
+          </View>
+          <Text style={styles.levelUpText}>
+            {traitName} level increased to {level}!
+          </Text>
+          {rewardAtLevel && (
+            <View>
+              <Text style={styles.rewardMessageText}>- Reward Unlocked -</Text>
+              <Text style={styles.rewardText}>{rewardAtLevel.reward}</Text>
+              {rewardAtLevel?.reward2 && (
+                <Text style={styles.rewardText}>{rewardAtLevel.reward2}</Text>
+              )}
+            </View>
+          )}
+        </View>
+      );
+    });
+  };
+
   return (
     <Modal
-      animationType="none"
+      animationType="fade"
       transparent={true}
       visible={visible}
       onRequestClose={onClose}
     >
-      {/* TouchableWithoutFeedback to detect taps outside the modal. Also somewhat simulates slide to cancel for iOS. */}
+      
       <View style={styles.overlay}>
-        <TouchableWithoutFeedback onPress={onClose}>
-          <View style={styles.pageTitle}>
-            <Text style={styles.pageTitleText}>- Level Up! -</Text>
-          </View>
-        </TouchableWithoutFeedback>
-        
+        <TouchableWithoutFeedback onPress={onClose}> 
+            {/* Title */}
+            <View style={styles.titleContainer}>
+            <Text style={styles.title}> - Level Up! - </Text>
+            </View>
+        </TouchableWithoutFeedback>            
+
         <View style={styles.modalContainer}>
-        {/* Styling ripped from QuestReward modal. TODO: update fields to make sense and look nice :^) */}
-        <View style={styles.questDetailsContainer}>
-          <View style={styles.fieldContainer}>
-            <Text style={styles.fieldText}>
-              Unlocks:{" "}
-            <Text style={styles.contentText}></Text>
-            </Text>
+          <View style={styles.scrollLine}></View>
+          {/* ScrollView makes the form scrollable if it does not fit fully on a small screen */}
+          <ScrollView
+            contentContainerStyle={styles.scrollContainer}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            {renderCharacterLevel()}
+            {renderSkillLevels()}
+            {renderTraitLevels()}
+             
+          </ScrollView>
+
+          <View style={styles.closeButtonContainer}>
+            <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => {
+                    onClose();
+                }}
+            >
+              <Text style={styles.icons}>close</Text>
+            </TouchableOpacity>
           </View>
-        </View>
-        </View>
-        
+        </View>    
       </View>
     </Modal>
   );
 };
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: colors.bgPrimary,
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  dropdownContainer: {
-    position: "relative",
-    // marginBottom: 20,
-    marginBottom: 40, // need to increase to compensate for scrollContainer Top Padding, also looks better?
-  },
-  section: {
-    zIndex: 1,
-    backgroundColor: colors.bgTertiary,
-    padding: 10,
-    borderRadius: 8,
-    height: 60,
-    justifyContent: "center",
-  },
-  sectionTitleContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    
-  },
-  checkpointRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    
-  },
-  sectionTitle: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 24,
-    color: colors.text,
-  },
-  // CONTAINERS ===============================
-  pageTitle: {
-    width: "100%",
-    alignItems: "center",
-    paddingTop: 50,
-    paddingBottom: 20,
-    // backgroundColor: colors.bgTertiary,
-    // borderBottomWidth: 1,
-    // borderColor: colors.borderLight,
-  },
-  modalContainer: {
-    // NOTE: parent of scrollContainer & closeButtonContainer for flex
-    flex: 1,
-    width: "100%",
-    backgroundColor: colors.bgPrimary,
-    borderRadius: 10,
-    justifyContent: "space-between",
-  },
-  scrollLine: {
-    // marginHorizontal: 15,
-    borderBottomWidth: 1,
-    borderColor: colors.borderLight,
-  },
-  scrollContainer: {
-    // flex: 1,
-    // flexShrink: 1,
-    paddingTop: 20,
-    alignItems: "center",
-    justifyContent: "flex-start",
-    //width: "90%"
-  },
-  closeButtonContainer: {
-    alignItems: "center",
-    padding: 20,
-  },
-  questContainer: {
-    // NOTE: parent of titleContainer, questDetailsContainer, questButtonsContainer for flex
-    // flex: 1,
-    width: "85%",
-    marginHorizontal: 20,
-    marginBottom: 10, // needed so if scrolling required doesnt cut off shadow
-    borderRadius: 10,
-    backgroundColor: colors.bgDropdown,
-    // Shadow effect
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  titleContainer: {
-    backgroundColor: colors.bgTertiary,
-    // width: "100%",
-    // justifyContent: "center",
-    alignItems: "center",
-    padding: 18,
-    borderRadius: 10,
-  },
-  questDetailsContainer: {
-    flexGrow: 1,
-    marginHorizontal: 10,
-  },
-  descriptionContainer: {
-    marginVertical: 20,
-    paddingBottom: 10,
-    borderBottomWidth: 0.5,
-    borderColor: colors.borderLight,
-  },
-  fieldContainer: {
-    marginBottom: "4%",
-  },
-  questButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 10,
-    marginTop: 20,
-    borderTopWidth: 0.5,
-    borderColor: colors.borderLight,
-    marginHorizontal: 10,
-    paddingVertical: 20,
-  },
-  // BUTTONS ==================================
-  repeatButton: {
-    width: 53,
-    height: 53,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.button3,
-    borderRadius: 100,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  deleteButton: {
-    width: 53,
-    height: 53,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.cancel,
-    borderRadius: 100,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  completeButton: {
-    height: 53,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.bgSecondary,
-    borderRadius: 100,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-    paddingVertical: "3%",
-    paddingHorizontal: 20,
-  },
-  editButton: {
-    width: 53,
-    height: 53,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.bgSecondary,
-    borderRadius: 100,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  closeButton: {
-    width: 53,
-    height: 53,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.bgSecondary,
-    borderRadius: 100,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  // TEXT & ICONS =============================
-  pageTitleText: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 30,
-    color: colors.text,
-  },
-  titleText: {
-    fontFamily: "Metamorphous_400Regular",
-    fontSize: 36,
-    color: colors.text,
-  },
-  descriptionText: {
-    // fontFamily: "Metamorphous_400Regular",
-    // fontSize: 22,
-    fontFamily: "Alegreya_400Regular",
-    fontSize: 24,
-    color: colors.text,
-  },
-  fieldText: {
-    // fontFamily: "Metamorphous_400Regular",
-    // fontSize: 20,
-    fontFamily: "Alegreya_500Medium",
-    fontSize: 22,
-    color: colors.text,
-  },
-  contentText: {
-    fontFamily: "Alegreya_400Regular",
-    // fontSize: 24,
-  },
-  buttonText: {
-    fontFamily: "Metamorphous_400Regular",
-    color: colors.textDark,
-    fontSize: 20,
-  },
-  icons: {
-    // fontFamily: "MaterialIcons_400Regular",
-    fontFamily: "MaterialIconsRound_400Regular",
-    fontSize: 30,
-    color: colors.text,
-  },
-});
+
 
 export default LevelUpModal;

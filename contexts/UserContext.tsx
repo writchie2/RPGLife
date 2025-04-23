@@ -27,6 +27,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../FirebaseConfig";
 import { toMidnight } from "@/utils/toMidnight";
+import calcEXP from "@/utils/calcEXP";
 
 interface UserContextType {
   userData: UserData | null;
@@ -54,8 +55,8 @@ interface UserContextType {
   activateSkill: (id: string) => void;
   deleteQuest: (id: string) => void;
   deleteSkill: (id: string) => void;
-  completeQuest: (id: string) => void;
-  repeatQuest: (id: string) => void;
+  completeQuest: (id: string) => Promise<string[]>;
+  repeatQuest: (id: string) => Promise<string[]>;
   resetAccount: () => void;
   editSkillName: (id: string, newName: string) => void;
   editSkillDescription: (id: string, newDescription: string) => void;
@@ -131,13 +132,22 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         if (newTotal < 0) {
           newTotal = 0;
         }
+        const {level, neededEXP, progressEXP} = calcEXP(userData.strengthEXP);
 
         await updateDoc(userDoc, {
           strengthEXP: newTotal,
         });
+
+        if(neededEXP-progressEXP < alterAmount && alterAmount > 0) {
+          return true;
+        }
+        else {
+          return false;
+        }
       }
     } catch (error) {
       console.error("Error altering strength exp:", error);
+      return false;
     }
   };
 
@@ -160,12 +170,22 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           newTotal = 0;
         }
 
+        const {level, neededEXP, progressEXP} = calcEXP(userData.vitalityEXP);
+
         await updateDoc(userDoc, {
           vitalityEXP: newTotal,
         });
+
+        if(neededEXP-progressEXP < alterAmount && alterAmount > 0) {
+          return true;
+        }
+        else {
+          return false;
+        }
       }
     } catch (error) {
       console.error("Error altering vitality exp avatar:", error);
+      return false;
     }
   };
 
@@ -188,12 +208,22 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           newTotal = 0;
         }
 
+        const {level, neededEXP, progressEXP} = calcEXP(userData.agilityEXP);
+
         await updateDoc(userDoc, {
           agilityEXP: newTotal,
         });
+
+        if(neededEXP-progressEXP < alterAmount && alterAmount > 0) {
+          return true;
+        }
+        else {
+          return false;
+        }
       }
     } catch (error) {
       console.error("Error altering agility exp:", error);
+      return false;
     }
   };
 
@@ -216,12 +246,22 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           newTotal = 0;
         }
 
+        const {level, neededEXP, progressEXP} = calcEXP(userData.staminaEXP);
+
         await updateDoc(userDoc, {
           staminaEXP: newTotal,
         });
+
+        if(neededEXP-progressEXP < alterAmount && alterAmount > 0) {
+          return true;
+        }
+        else {
+          return false;
+        }
       }
     } catch (error) {
       console.error("Error altering stamina exp:", error);
+      return false;
     }
   };
 
@@ -244,12 +284,22 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           newTotal = 0;
         }
 
+        const {level, neededEXP, progressEXP} = calcEXP(userData.intelligenceEXP);
+
         await updateDoc(userDoc, {
           intelligenceEXP: newTotal,
         });
+
+        if(neededEXP-progressEXP < alterAmount && alterAmount > 0) {
+          return true;
+        }
+        else {
+          return false;
+        }
       }
     } catch (error) {
       console.error("Error altering intelligence exp:", error);
+      return false;
     }
   };
 
@@ -272,12 +322,22 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           newTotal = 0;
         }
 
+        const {level, neededEXP, progressEXP} = calcEXP(userData.charismaEXP);
+
         await updateDoc(userDoc, {
           charismaEXP: newTotal,
         });
+
+        if(neededEXP-progressEXP < alterAmount && alterAmount > 0) {
+          return true;
+        }
+        else {
+          return false;
+        }
       }
     } catch (error) {
       console.error("Error altering charisma exp:", error);
+      return false;
     }
   };
 
@@ -299,10 +359,18 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         if (newTotal < 0) {
           newTotal = 0;
         }
+        const {level, neededEXP, progressEXP} = calcEXP(userData.exp);
 
         await updateDoc(userDoc, {
           exp: newTotal,
         });
+
+        if(neededEXP-progressEXP < alterAmount && alterAmount > 0) {
+          return true;
+        }
+        else {
+          return false;
+        }
       }
     } catch (error) {
       console.error("Error altering overall skill:", error);
@@ -312,8 +380,9 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   // Function that alters the exp of a skill
   // Calls the alterTrait function to alter the traits' exp
   // Input: alterAmount (number added to charismaEXP)
-  const alterSkillEXP = async (alterAmount: number, skillName: string) => {
-    if (!userData || !auth.currentUser) return;
+  const alterSkillEXP = async (alterAmount: number, skillName: string) : Promise<string[]> => {
+    if (!userData || !auth.currentUser) return [];
+    let leveledUp: string[] = [];
     try {
       const skillsRef = collection(db, "users", auth.currentUser.uid, "skills");
       const q = query(skillsRef, where("name", "==", skillName));
@@ -326,9 +395,11 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         );
         if (!skill) {
           console.log("Tried altering exp to a skill that doesn't exist");
-          return;
+          return [];
         }
 
+        const {level, neededEXP, progressEXP} = calcEXP(skill.exp);
+        
         const currentEXP = skill.exp;
         let newTotal = currentEXP + alterAmount;
         if (newTotal < 0) {
@@ -347,18 +418,24 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         } else if (currentEXP == 0) {
           //No deterioration.
         } else {
-          alterTraitEXP(
+            leveledUp = await alterTraitEXP(
             alterAmount,
             skill.primaryTrait,
             skill.secondaryTrait || ""
           );
         }
+
+        if(neededEXP-progressEXP < alterAmount && alterAmount > 0) {
+          leveledUp.push(skill?.name)
+        }
+        
       } else {
         console.log(`No skill found with name: ${skillName}`);
       }
     } catch (error) {
       console.error("Error altering skill exp:", error);
     }
+    return leveledUp;
   };
 
   const deteriorateSkill = async (deteriorateAmmount: number, id: string) => {
@@ -385,27 +462,41 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     alterAmount: number,
     primary: string,
     secondary: string
-  ) => {
+  ): Promise<string[]> => {
+
+    const leveledUpTraits: string[] = []
     // If there is no secondary trait, the primary trait gets the entirety of the exp.
     if (secondary === "") {
       switch (primary) {
         case "Strength":
-          alterStrengthEXP(alterAmount);
+          if(await alterStrengthEXP(alterAmount) == true){
+            leveledUpTraits.push("Strength");
+          }
           break;
         case "Vitality":
-          alterVitalityEXP(alterAmount);
+          if (await alterVitalityEXP(alterAmount) == true){
+            leveledUpTraits.push("Vitality");
+          }
           break;
         case "Agility":
-          alterAgilityEXP(alterAmount);
+          if(await alterAgilityEXP(alterAmount) == true){
+            leveledUpTraits.push("Agility");
+          }
           break;
         case "Stamina":
-          alterStaminaEXP(alterAmount);
+          if(await alterStaminaEXP(alterAmount) == true){
+            leveledUpTraits.push("Stamina");
+          }
           break;
         case "Intelligence":
-          alterIntelligenceEXP(alterAmount);
+          if(await alterIntelligenceEXP(alterAmount) == true){
+            leveledUpTraits.push("Intelligence");
+          }
           break;
         case "Charisma":
-          alterCharismaEXP(alterAmount);
+          if(await alterCharismaEXP(alterAmount) == true){
+            leveledUpTraits.push("Charisma");
+          }
           break;
       }
     }
@@ -413,45 +504,70 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     else {
       switch (primary) {
         case "Strength":
-          alterStrengthEXP(alterAmount * 0.75);
+          if(await alterStrengthEXP(alterAmount * 0.75) == true){
+            leveledUpTraits.push("Strength");
+          }
           break;
         case "Vitality":
-          alterVitalityEXP(alterAmount * 0.75);
+          if(await alterVitalityEXP(alterAmount * 0.75) == true){
+            leveledUpTraits.push("Vitality");
+          }
           break;
         case "Agility":
-          alterAgilityEXP(alterAmount * 0.75);
+          if(await alterAgilityEXP(alterAmount * 0.75) == true){
+            leveledUpTraits.push("Agility");
+          }
           break;
         case "Stamina":
-          alterStaminaEXP(alterAmount * 0.75);
+          if(await alterStaminaEXP(alterAmount * 0.75) == true){
+            leveledUpTraits.push("Stamina");
+          }
           break;
         case "Intelligence":
-          alterIntelligenceEXP(alterAmount * 0.75);
+          if(await alterIntelligenceEXP(alterAmount * 0.75) == true){
+            leveledUpTraits.push("Intelligence");
+          }
           break;
         case "Charisma":
-          alterCharismaEXP(alterAmount * 0.75);
+          if(await alterCharismaEXP(alterAmount * 0.75) == true){
+            leveledUpTraits.push("Charisma");
+          }
           break;
       }
       switch (secondary) {
         case "Strength":
-          alterStrengthEXP(alterAmount * 0.25);
+          if(await alterStrengthEXP(alterAmount * 0.25) == true){
+            leveledUpTraits.push("Strength");
+          }
           break;
         case "Vitality":
-          alterVitalityEXP(alterAmount * 0.25);
+          if(await alterVitalityEXP(alterAmount * 0.25) == true){
+            leveledUpTraits.push("Vitality");
+          }
           break;
         case "Agility":
-          alterAgilityEXP(alterAmount * 0.25);
+          if(await alterAgilityEXP(alterAmount * 0.25) == true){
+            leveledUpTraits.push("Agility");
+          }
           break;
         case "Stamina":
-          alterStaminaEXP(alterAmount * 0.25);
+          if(await alterStaminaEXP(alterAmount * 0.25) == true){
+            leveledUpTraits.push("Stamina");
+          }
           break;
         case "Intelligence":
-          alterIntelligenceEXP(alterAmount * 0.25);
+          if(await alterIntelligenceEXP(alterAmount * 0.25) == true){
+            leveledUpTraits.push("Intelligence");
+          }
           break;
         case "Charisma":
-          alterCharismaEXP(alterAmount * 0.25);
+          if(await alterCharismaEXP(alterAmount * 0.25) == true){
+            leveledUpTraits.push("Charisma");
+          }
           break;
       }
     }
+    return leveledUpTraits;
   };
 
   /*
@@ -576,6 +692,34 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     try {
       if (auth.currentUser) {
         const skillDoc = doc(db, "users", auth.currentUser.uid, "skills", id);
+        const docSnap = await getDoc(skillDoc);
+        let name = ""
+        if (docSnap.exists()) {
+          name = docSnap.data().name;
+        } else {
+          console.log("No such skill!");
+          return;
+        }
+        const questsRef = collection(db, "users", auth.currentUser.uid, "quests");
+        
+        const qPrimary = query(questsRef, where("primarySkill", "==", name));
+        const querySnapshotPrimary = await getDocs(qPrimary);
+        const updatePromisesPrimary = querySnapshotPrimary.docs.map(async (questDoc) => {
+          await updateDoc(questDoc.ref, {
+            primarySkill: newName,
+          });
+        });
+        await Promise.all(updatePromisesPrimary);
+
+        const qSecondary = query(questsRef, where("secondarySkill", "==", name));
+        const querySnapshotSecondary = await getDocs(qSecondary);
+        const updatePromisesSecondary = querySnapshotSecondary.docs.map(async (questDoc) => {
+          await updateDoc(questDoc.ref, {
+            secondarySkill: newName,
+          });
+        });
+        await Promise.all(updatePromisesSecondary);
+
         await updateDoc(skillDoc, {
           name: newName,
         });
@@ -692,22 +836,27 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   // Function that sets a quest's 'active' field to false and rewards exp to skills and overall exp
   // Validation of quest meeting requirements to be completed is handled in the function that calls it in QuestViewModal
   // Input: id (string of the quest's id)
-  const completeQuest = async (id: string) => {
-    if (!auth.currentUser || !userData) return;
+  const completeQuest = async (id: string) : Promise<string[]> => {
+    if (!auth.currentUser || !userData) return [];
+    let leveledUp: string[] = []
+    console.log(id);
     try {
       const docRef = doc(db, "users", auth.currentUser.uid, "quests", id);
       const quest = userData.quests?.find((quest) => quest.id === id);
       if (!quest) {
         console.log("Tried to complete a quest that doesn't exist!");
-        return;
+        return[];
       }
 
       // Double check the quest is active
       // The button should not appear when quest is inactive, so this shouldnt happen
       if (quest.active == false) {
         console.log("Cannot complete a 'completed' quest!");
-        return;
+        return[];
       }
+      
+      await updateDoc(docRef, { active: false });
+      
 
       let expGain = 150;
       if (quest.difficulty === "Normal") {
@@ -718,40 +867,44 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       }
 
       if (!quest.secondarySkill) {
-        alterSkillEXP(expGain, quest.primarySkill);
+        leveledUp = await alterSkillEXP(expGain, quest.primarySkill);
       } else {
-        alterSkillEXP(expGain * 0.75, quest.primarySkill);
-        alterSkillEXP(expGain * 0.25, quest.secondarySkill);
+        const primary = await alterSkillEXP(expGain * 0.75, quest.primarySkill);
+        const secondary = await alterSkillEXP(expGain * 0.25, quest.secondarySkill);
+        leveledUp = [...primary, ...secondary]
       }
-      alterOverallEXP(expGain);
+      if (await alterOverallEXP(expGain) == true){
+        leveledUp.push("Character")
+      }
 
-      await updateDoc(docRef, {
-        active: false,
-      });
+      
+      
     } catch (error) {
       console.error("Error completing quest:", error);
     }
+    return leveledUp;
   };
 
   // Function rewards exp to skills and overall exp based on a quests difficulty
   // Almost identicle to completing a quest, only the quest is still set as active
   // Validation of quest meeting requirements to be completed is handled in the function that calls it in QuestViewModal
   // Input: id (string of the quest's id)
-  const repeatQuest = async (id: string) => {
-    if (!auth.currentUser || !userData) return;
+  const repeatQuest = async (id: string): Promise<string[]> => {
+    if (!auth.currentUser || !userData) return [];
+    let leveledUp: string[] = []
     try {
       const docRef = doc(db, "users", auth.currentUser.uid, "quests", id);
       const quest = userData.quests?.find((quest) => quest.id === id);
       if (!quest) {
         console.log("Tried to repeate a quest that doesn't exist!");
-        return;
+        return [];
       }
 
       // Double check the quest is active
       // The button should not appear when quest is inactive, so this shouldnt happen
       if (quest.active == false) {
         console.log("Cannot repeat a 'completed' quest!");
-        return;
+        return [];
       }
 
       let expGain = 150;
@@ -763,15 +916,19 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       }
 
       if (!quest.secondarySkill) {
-        alterSkillEXP(expGain, quest.primarySkill);
+        leveledUp = await alterSkillEXP(expGain, quest.primarySkill);
       } else {
-        alterSkillEXP(expGain * 0.75, quest.primarySkill);
-        alterSkillEXP(expGain * 0.25, quest.secondarySkill);
+        const primary = await alterSkillEXP(expGain * 0.75, quest.primarySkill);
+        const secondary = await alterSkillEXP(expGain * 0.25, quest.secondarySkill);
+        leveledUp = [...primary, ...secondary]
       }
-      alterOverallEXP(expGain);
+      if (await alterOverallEXP(expGain) == true){
+        leveledUp.push("Character")
+      }
     } catch (error) {
       console.error("Error repeating quest:", error);
     }
+    return leveledUp;
   };
 
   const editQuestName = async (id: string, newQuestName: string) => {

@@ -32,7 +32,8 @@ interface QuestRewardModalProps {
   onModalHide?: () => void;
   onClose: () => void;
   id: string;
-  onLevelUp: () => void;
+  onLevelUp: (traits: string[]) => void
+  complete: boolean
 }
 
 const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
@@ -452,8 +453,8 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
   }
 
   const userData = useUserData();
-  const { completeQuest } = useUserData();
-  const quest = userData.userData?.quests?.find((quest) => quest.id === id);
+  const {completeQuest, repeatQuest} = useUserData();
+  const quest = userData.userData?.quests?.find(quest => quest.id === id);
 
   // CALCULATE EXP REWARDS for Character, Skills, Traits
   const expRewards = () => {
@@ -465,6 +466,7 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
     } else {
       exp = 450;
     }
+
 
     const primarySkill = userData.userData?.skills?.find(
       (skill) => skill.name === quest?.primarySkill
@@ -545,33 +547,24 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
   const [completionReward, setCompletionReward] = useState("");
 
   const questReward = async () => {
-    if (userData && quest && auth.currentUser) {
-      const neededEXP = calcEXP(userData.userData?.exp || 0).neededEXP;
-      const progressEXP = calcEXP(userData.userData?.exp || 0).progressEXP;
-      console.log("calc neededEXP: ", neededEXP);
-      console.log("calc progressEXP: ", progressEXP);
-      console.log(quest.difficulty);
-      completeQuest(quest.id);
+        if ((userData && quest) && auth.currentUser) {
+            
+            let leveledUp: string[] = [];
+            if(!complete){
+              leveledUp = await repeatQuest(quest.id);
+            }
+            else{
+              leveledUp = await completeQuest(quest.id);
+            }
+            const uniqueLeveledUp = [...new Set(leveledUp)];
 
-      // Calculating level states for before and after was a bust
-      // Only way to get the level up modal to appear momentarily is by taking the difference
-      // between needed and progress EXP.
-      if (quest.difficulty === "Hard" && neededEXP - progressEXP <= 450) {
-        onLevelUp();
-      } else if (
-        quest.difficulty === "Normal" &&
-        neededEXP - progressEXP <= 300
-      ) {
-        onLevelUp();
-      } else if (
-        quest.difficulty === "Easy" &&
-        neededEXP - progressEXP <= 150
-      ) {
-        onLevelUp();
-      } else {
-        onClose();
-      }
-    }
+           // If there are unique LevelUp messages, then launch LevelUpModal
+            if (uniqueLeveledUp.length > 0) {
+                onLevelUp(uniqueLeveledUp);
+            } else {
+                onClose();
+            }
+        }
   };
 
   useEffect(() => {
