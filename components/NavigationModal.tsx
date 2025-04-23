@@ -146,9 +146,9 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
               <Image
                 style={styles.logo}
                 source={
-                  (colors.mode === "light") 
-                    ? require("../assets/images/RPGiconLine-sm.png")
-                    : require("../assets/images/RPGiconLine-v2.png")
+                  colors.mode === "light"
+                    ? require("../assets/images/RPGiconLine.webp")
+                    : require("../assets/images/RPGiconLine-v2.webp")
                 }
               />
 
@@ -220,7 +220,10 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
 
                 {/* Settings Button */}
                 <TouchableOpacity
-                  style={[styles.navButton, { borderTopWidth: 0, marginBottom: 40 }]}
+                  style={[
+                    styles.navButton,
+                    { borderTopWidth: 0, marginBottom: 40 },
+                  ]}
                   onPress={() => {
                     router.push("/(main)/settings");
                     setTimeout(() => {

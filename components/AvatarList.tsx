@@ -28,7 +28,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 0,
     catagory: "default",
-    source: require("../assets/images/iconDefault.png"),
+    source: require("../assets/images/iconDefault.webp"),
     unlockLevel: 0,
     progress: 0,
     message: "Unlocked at Character level 0!",
@@ -36,7 +36,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 1,
     catagory: "default",
-    source: require("../assets/images/iconSTR-v1.png"),
+    source: require("../assets/images/iconSTR-v1.webp"),
     unlockLevel: 0,
     progress: 0,
     message: "Unlocked at Character level 0!",
@@ -44,7 +44,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 2,
     catagory: "default",
-    source: require("../assets/images/iconVIT-v1.png"),
+    source: require("../assets/images/iconVIT-v1.webp"),
     unlockLevel: 0,
     progress: 0,
     message: "Unlocked at Character level 0!",
@@ -52,7 +52,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 3,
     catagory: "default",
-    source: require("../assets/images/iconAGI-v1.png"),
+    source: require("../assets/images/iconAGI-v1.webp"),
     unlockLevel: 0,
     progress: 0,
     message: "Unlocked at Character level 0!",
@@ -60,7 +60,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 4,
     catagory: "default",
-    source: require("../assets/images/iconINT-v1.png"),
+    source: require("../assets/images/iconINT-v1.webp"),
     unlockLevel: 0,
     progress: 0,
     message: "Unlocked at Character level 0!",
@@ -68,7 +68,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 5,
     catagory: "default",
-    source: require("../assets/images/iconCHR-v1.png"),
+    source: require("../assets/images/iconCHR-v1.webp"),
     unlockLevel: 0,
     progress: 0,
     message: "Unlocked at Character level 0!",
@@ -76,7 +76,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 6,
     catagory: "strength",
-    source: require("../assets/images/iconSTR-v2.png"),
+    source: require("../assets/images/iconSTR-v2.webp"),
     unlockLevel: 5,
     progress: 0,
     message: "Unlocked at Strength level 5!",
@@ -84,7 +84,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 7,
     catagory: "vitality",
-    source: require("../assets/images/iconVIT-v2.png"),
+    source: require("../assets/images/iconVIT-v2.webp"),
     unlockLevel: 5,
     progress: 0,
     message: "Unlocked at Vitality level 5!",
@@ -92,7 +92,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 8,
     catagory: "agility",
-    source: require("../assets/images/iconAGI-v2.png"),
+    source: require("../assets/images/iconAGI-v2.webp"),
     unlockLevel: 5,
     progress: 0,
     message: "Unlocked at Agility level 5!",
@@ -100,7 +100,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 9,
     catagory: "intelligence",
-    source: require("../assets/images/iconINT-v2.png"),
+    source: require("../assets/images/iconINT-v2.webp"),
     unlockLevel: 5,
     progress: 0,
     message: "Unlocked at Intelligence level 5!",
@@ -108,7 +108,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 10,
     catagory: "charisma",
-    source: require("../assets/images/iconCHR-v2.png"),
+    source: require("../assets/images/iconCHR-v2.webp"),
     unlockLevel: 5,
     progress: 0,
     message: "Unlocked at Charisma level 5!",
@@ -116,7 +116,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 11,
     catagory: "strength",
-    source: require("../assets/images/avatarSTR-v1.png"),
+    source: require("../assets/images/avatarSTR-v1.webp"),
     unlockLevel: 15,
     progress: 0,
     message: "Unlocked at Strength level 15!",
@@ -124,7 +124,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 12,
     catagory: "vitality",
-    source: require("../assets/images/avatarVIT-v1.png"),
+    source: require("../assets/images/avatarVIT-v1.webp"),
     unlockLevel: 15,
     progress: 0,
     message: "Unlocked at Vitality level 15!",
@@ -132,7 +132,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 13,
     catagory: "agility",
-    source: require("../assets/images/avatarAGI-v1.png"),
+    source: require("../assets/images/avatarAGI-v1.webp"),
     unlockLevel: 15,
     progress: 0,
     message: "Unlocked at Agility level 15!",
@@ -140,7 +140,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 14,
     catagory: "intelligence",
-    source: require("../assets/images/avatarINT-v1.png"),
+    source: require("../assets/images/avatarINT-v1.webp"),
     unlockLevel: 15,
     progress: 0,
     message: "Unlocked at Intelligence level 15!",
@@ -148,7 +148,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 15,
     catagory: "charisma",
-    source: require("../assets/images/avatarCHR-v1.png"),
+    source: require("../assets/images/avatarCHR-v1.webp"),
     unlockLevel: 15,
     progress: 0,
     message: "Unlocked at Charisma level 15!",
@@ -156,7 +156,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 16,
     catagory: "strength",
-    source: require("../assets/images/avatarSTR-v2.png"),
+    source: require("../assets/images/avatarSTR-v2.webp"),
     unlockLevel: 25,
     progress: 0,
     message: "Unlocked at Strength level 25!",
@@ -164,7 +164,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 17,
     catagory: "vitality",
-    source: require("../assets/images/avatarVIT-v2.png"),
+    source: require("../assets/images/avatarVIT-v2.webp"),
     unlockLevel: 25,
     progress: 0,
     message: "Unlocked at Vitality level 25!",
@@ -172,7 +172,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 18,
     catagory: "agility",
-    source: require("../assets/images/avatarAGI-v2.png"),
+    source: require("../assets/images/avatarAGI-v2.webp"),
     unlockLevel: 25,
     progress: 0,
     message: "Unlocked at Agility level 25!",
@@ -180,7 +180,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 19,
     catagory: "intelligence",
-    source: require("../assets/images/avatarINT-v2.png"),
+    source: require("../assets/images/avatarINT-v2.webp"),
     unlockLevel: 25,
     progress: 0,
     message: "Unlocked at Intelligence level 25!",
@@ -188,7 +188,7 @@ export const avatarsData: Avatar[] = [
   {
     id: 20,
     catagory: "charisma",
-    source: require("../assets/images/avatarCHR-v2.png"),
+    source: require("../assets/images/avatarCHR-v2.webp"),
     unlockLevel: 25,
     progress: 0,
     message: "Unlocked at Charisma level 25!",
@@ -342,7 +342,7 @@ const AvatarList = () => {
   // FLATLIST DISPLAY AVATARS
   const renderAvatarItem = ({ item }: { item: Avatar }) => {
     let isUnlocked = item.progress >= item.unlockLevel;
-    if(userData.userData?.testerMode){
+    if (userData.userData?.testerMode) {
       isUnlocked = true;
     }
     return (

@@ -71,7 +71,7 @@ export default function PasswordReset() {
 
       <Image
         style={styles.logo}
-        source={require("../../assets/images/RPGiconShield.png")}
+        source={require("../../assets/images/RPGiconShield.webp")}
       />
 
       <View style={styles.form}>
