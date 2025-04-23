@@ -547,25 +547,32 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
 
   const [completionReward, setCompletionReward] = useState("");
 
-  const questReward = async () => {
-        if ((userData && quest) && auth.currentUser) {
-            
-            let leveledUp: string[] = [];
-            if(!complete){
-              leveledUp = await repeatQuest(quest.id);
-            }
-            else{
-              leveledUp = await completeQuest(quest.id);
-            }
-            const uniqueLeveledUp = [...new Set(leveledUp)];
+  useEffect(() => {
+    if (visible) {
+      setButtonPressed(false);
+    }
+  }, [visible]);
+  const [buttonPressed, setButtonPressed] = useState(false);
 
-           // If there are unique LevelUp messages, then launch LevelUpModal
-            if (uniqueLeveledUp.length > 0) {
-                onLevelUp(uniqueLeveledUp);
-            } else {
-                onClose();
-            }
+  const questReward = async () => {
+    if ((userData && quest) && auth.currentUser) {
+        
+        let leveledUp: string[] = [];
+        if(!complete){
+          leveledUp = await repeatQuest(quest.id);
         }
+        else{
+          leveledUp = await completeQuest(quest.id);
+        }
+        const uniqueLeveledUp = [...new Set(leveledUp)];
+
+        // If there are unique LevelUp messages, then launch LevelUpModal
+        if (uniqueLeveledUp.length > 0) {
+            onLevelUp(uniqueLeveledUp);
+        } else {
+            onClose();
+        }
+    }
   };
 
   useEffect(() => {
@@ -810,6 +817,8 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
             <TouchableOpacity
               style={styles.closeButton}
               onPress={() => {
+                if (buttonPressed) return; // Prevent multiple taps
+                setButtonPressed(true);    
                 questReward();
               }}
             >

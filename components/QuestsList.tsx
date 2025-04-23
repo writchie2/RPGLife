@@ -277,8 +277,6 @@ const QuestsList: React.FC<QuestsListProps> = ({
           setQuestID("");
           setLeveledUp(traits);
           setLevelUpModalVisible(true);
-          
-          console.log("quest triggered level up")
         }}
       ></QuestRewardModal>
       <LevelUpModal
