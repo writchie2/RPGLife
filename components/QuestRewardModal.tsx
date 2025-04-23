@@ -41,6 +41,7 @@ const QuestRewardModal: React.FC<QuestRewardModalProps> = ({
   onClose,
   id,
   onLevelUp,
+  complete
 }) => {
   const colors = useTheme(); // used for themes, replaces colors import
 
