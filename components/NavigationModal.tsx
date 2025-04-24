@@ -147,7 +147,7 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
                 style={styles.logo}
                 source={
                   colors.mode === "light"
-                    ? require("../assets/images/RPGiconLine.webp")
+                    ? require("../assets/images/RPGiconLineLightTheme25.webp")
                     : require("../assets/images/RPGiconLine-v2.webp")
                 }
               />
