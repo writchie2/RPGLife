@@ -225,7 +225,7 @@ const AvatarList = () => {
       marginBottom: -50,
       zIndex: -1,
       borderRadius: 8,
-      width: "100%",
+      // width: "100%",
       paddingTop: 50,
       backgroundColor: colors.bgDropdown,
       shadowColor: "#000",
