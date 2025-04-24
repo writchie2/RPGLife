@@ -122,6 +122,9 @@ export default function RegisterScreen() {
             intelligenceEXP: 0,
             charismaEXP: 0,
             testerMode: false,
+            avatarIndex: 0,
+            characterTitle: "- None -",
+            theme: "Default",
           });
           try {
             const verStatus = sendEmailVerification(curUser);
