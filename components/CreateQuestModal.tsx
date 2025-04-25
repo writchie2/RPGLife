@@ -291,6 +291,13 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
       width: 20,
       height: 20,
     },
+    repeatIcon: {
+      fontFamily: "MaterialIconsRound_400Regular",
+      fontSize: 32,
+      color: colors.textLight,
+      backgroundColor: colors.bgPrimary,
+      borderRadius: 99,
+    }
   });
 
   if (!auth.currentUser) {
@@ -585,11 +592,12 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
                       </View>
                       <View style={styles.rowRight}>
                         <TouchableOpacity
-                          style={
+                          /*style={
                             repeatable === true
                               ? styles.difficultyButtonPressed
                               : styles.difficultyButton
                           }
+                              */
                           onPress={() => {
                             if (repeatable) {
                               setRepeatable(false);
@@ -598,7 +606,15 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
                             }
                           }}
                         >
-                          <Text style={styles.difficultyButtonText}>X</Text>
+                        {repeatable ? (
+                          <Text style = {styles.repeatIcon}>
+                            radio_button_checked
+                          </Text>
+                        ) : (
+                          <Text style = {styles.repeatIcon}>
+                            radio_button_unchecked
+                          </Text>
+                        )}
                         </TouchableOpacity>
                       </View>
                     </View>
