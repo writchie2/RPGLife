@@ -78,9 +78,16 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
       justifyContent: "space-between",
     },
     formContainer: {
-      width: "100%",
-      backgroundColor: colors.bgSecondary,
+      width: "95%",
+      marginHorizontal: 20,
+      marginBottom: 10,
       borderRadius: 10,
+      backgroundColor: colors.bgDropdown,
+      shadowColor: "#000",
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.2,
+      shadowRadius: 5,
+      elevation:3,
       paddingBottom: 50,
       flexShrink: 1,
     },
@@ -111,7 +118,7 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
       borderRadius: 6,
     },
     titleContainer: {
-      backgroundColor: colors.bgQuaternary,
+      backgroundColor: colors.bgTertiary,
       width: "100%",
       justifyContent: "center",
       alignItems: "center",
@@ -653,3 +660,4 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
 };
 
 export default CreateQuestModal;
+
