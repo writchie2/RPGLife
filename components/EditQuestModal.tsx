@@ -64,9 +64,16 @@ const EditQuestModal: React.FC<EditQuestModalProps> = ({
       justifyContent: "space-between",
     },
     formContainer: {
-      width: "100%",
-      backgroundColor: colors.bgSecondary,
+      width: "95%",
+      marginHorizontal: 20,
+      marginBottom: 10,
       borderRadius: 10,
+      backgroundColor: colors.bgDropdown,
+      shadowColor: "#000",
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.2,
+      shadowRadius: 5,
+      elevation:3,
       paddingBottom: 50,
       flexShrink: 1,
     },
@@ -97,7 +104,7 @@ const EditQuestModal: React.FC<EditQuestModalProps> = ({
       borderRadius: 6,
     },
     titleContainer: {
-      backgroundColor: colors.bgQuaternary,
+      backgroundColor: colors.bgTertiary,
       width: "100%",
       justifyContent: "center",
       alignItems: "center",
@@ -113,7 +120,7 @@ const EditQuestModal: React.FC<EditQuestModalProps> = ({
     dropdown: {
       height: 50,
       borderColor: "gray",
-      borderWidth: 0.5,
+      borderWidth: 2,
       borderRadius: 8,
       paddingHorizontal: 8,
       flex: 1,
@@ -270,6 +277,13 @@ const EditQuestModal: React.FC<EditQuestModalProps> = ({
       width: 20,
       height: 20,
     },
+    repeatIcon: {
+      fontFamily: "MaterialIconsRound_400Regular",
+      fontSize: 32,
+      color: colors.textLight,
+      backgroundColor: colors.bgPrimary,
+      borderRadius: 99,
+    }
   });
 
   if (!auth.currentUser) {
@@ -611,11 +625,12 @@ const EditQuestModal: React.FC<EditQuestModalProps> = ({
                       </View>
                       <View style={styles.rowRight}>
                         <TouchableOpacity
-                          style={
+                          /*style={
                             repeatable === true
                               ? styles.difficultyButtonPressed
                               : styles.difficultyButton
                           }
+                              */
                           onPress={() => {
                             if (repeatable) {
                               setRepeatable(false);
@@ -624,7 +639,15 @@ const EditQuestModal: React.FC<EditQuestModalProps> = ({
                             }
                           }}
                         >
-                          <Text style={styles.difficultyButtonText}>X</Text>
+                        {repeatable ? (
+                          <Text style = {styles.repeatIcon}>
+                            radio_button_unchecked
+                          </Text>
+                        ) : (
+                          <Text style = {styles.repeatIcon}>
+                            radio_button_unchecked
+                          </Text>
+                        )}
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -633,7 +656,11 @@ const EditQuestModal: React.FC<EditQuestModalProps> = ({
                     <Text
                       style={[
                         styles.inputLabel,
-                        { borderTopWidth: 1, marginTop: 10, paddingTop: 10 },
+                        { borderTopWidth: 1, 
+                          marginTop: 10, 
+                          paddingTop: 10,
+                          borderColor: colors.borderLight,
+                         },
                       ]}
                     >
                       Completion Reward:

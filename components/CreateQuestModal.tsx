@@ -134,7 +134,7 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
     dropdown: {
       height: 50,
       borderColor: "gray",
-      borderWidth: 0.5,
+      borderWidth: 2,
       borderRadius: 8,
       paddingHorizontal: 8,
       flex: 1,
@@ -623,7 +623,11 @@ const CreateQuestModal: React.FC<CreateQuestModalProps> = ({
                     <Text
                       style={[
                         styles.inputLabel,
-                        { borderTopWidth: 1, marginTop: 10, paddingTop: 10 },
+                        { borderTopWidth: 1, 
+                          marginTop: 10, 
+                          paddingTop: 10,
+                          borderColor: colors.borderLight,
+                         },
                       ]}
                     >
                       Completion Reward:
