@@ -37,6 +37,7 @@ Required Test Scenarios
 4.	Create a quest that is repeatable
 5.	Edit the info on both created skills and quests
 6.	Complete the quest 
+
 Optional Test Scenarios
 1.	Create a quest (not repeatable) that is due on the current date. Do not complete it. Log in the next day and confirm that you lost exp. 
 2.	In settings, select Tester Mode. This will unlock all avatars, titles, and themes. 
