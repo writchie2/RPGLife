@@ -80,6 +80,7 @@ const QuestsList: React.FC<QuestsListProps> = ({
       backgroundColor: "transparent",
       // borderBottomWidth: 1,
       borderBottomWidth: 0.5,
+      borderRadius: 10,
       borderColor: colors.borderLight,
     },
     questName: {
@@ -158,10 +159,13 @@ const QuestsList: React.FC<QuestsListProps> = ({
 
 
   const renderItem = ({ item }: { item: Quest }) => {
-    // const time = new Timestamp(item.dueDate.getSeconds(), item.dueDate.getMilliseconds())
+    const overdue = (new Date(item.dueDate) < toMidnight(new Date()) && !item.repeatable && item.active);
     return (
       <TouchableOpacity
-        style={styles.questItem}
+        style={[
+          styles.questItem,
+          overdue && { backgroundColor: colors.cancel }
+        ]}
         onPress={() => {
           setQuestID(item.id);
           setQuestsModalVisible(true);
@@ -199,7 +203,16 @@ const QuestsList: React.FC<QuestsListProps> = ({
 
   let chosenQuests: Quest[] = quests;
   if (mode === "active") {
-    chosenQuests = quests.filter((quest) => quest.active);
+    chosenQuests = quests
+    .filter((quest) => quest.active)
+    .sort((a, b) => {
+      
+      if (a.repeatable && !b.repeatable) return -1;
+      if (!a.repeatable && b.repeatable) return 1;
+      const dateA = new Date(a.dueDate);
+      const dateB = new Date(b.dueDate);
+      return dateA.getTime() - dateB.getTime();
+    });
   } else if (mode === "inactive") {
     chosenQuests = quests.filter((quest) => !quest.active);
   } else if (mode === "overdue") {
@@ -228,10 +241,6 @@ const QuestsList: React.FC<QuestsListProps> = ({
     <View
       style={[
         styles.list,
-        {
-          backgroundColor:
-            mode === "overdue" ? colors.cancel : colors.bgDropdown,
-        },
       ]}
     >
       <FlatList

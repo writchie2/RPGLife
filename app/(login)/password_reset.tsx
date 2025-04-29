@@ -17,6 +17,8 @@ import {
   SafeAreaView,
   View,
   Image,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import {
   getAuth,
@@ -66,31 +68,33 @@ export default function PasswordReset() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Reset Password</Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.title}>Reset Password</Text>
 
-      <Image
-        style={styles.logo}
-        source={require("../../assets/images/RPGiconShield.webp")}
-      />
+        <Image
+          style={styles.logo}
+          source={require("../../assets/images/RPGiconShield.webp")}
+        />
 
-      <View style={styles.form}>
-        <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>Email:</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="account email..."
-            placeholderTextColor={colors.textPlaceholder}
-            value={email}
-            onChangeText={setEmail}
-          />
+        <View style={styles.form}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>Email:</Text>
+            <TextInput
+              style={styles.inputField}
+              placeholder="account email..."
+              placeholderTextColor={colors.textPlaceholder}
+              value={email}
+              onChangeText={setEmail}
+            />
+          </View>
         </View>
-      </View>
 
-      <TouchableOpacity style={styles.button} onPress={forgotPassword}>
-        <Text style={styles.buttonText}>Send reset email</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+        <TouchableOpacity style={styles.button} onPress={forgotPassword}>
+          <Text style={styles.buttonText}>Send reset email</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 

@@ -17,6 +17,8 @@ import {
   Alert,
   Image,
   View,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { auth } from "../../FirebaseConfig";
@@ -104,50 +106,53 @@ const index = () => {
     return null; // or add a loading indicator in future!
   } else {
     return (
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.title}>Welcome!</Text>
-        <Image
-          style={styles.logo}
-          source={require("../../assets/images/RPGiconAlt.webp")}
-        />
-        <View style={styles.form}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Email:</Text>
-            <TextInput
-              style={styles.inputField}
-              placeholder="email..."
-              placeholderTextColor={colors.textPlaceholder}
-              value={email}
-              onChangeText={setEmail}
-            />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <SafeAreaView style={styles.container}>
+        
+          <Text style={styles.title}>Welcome!</Text>
+          <Image
+            style={styles.logo}
+            source={require("../../assets/images/RPGiconAlt.webp")}
+          />
+          <View style={styles.form}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Email:</Text>
+              <TextInput
+                style={styles.inputField}
+                placeholder="email..."
+                placeholderTextColor={colors.textPlaceholder}
+                value={email}
+                onChangeText={setEmail}
+              />
+            </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Password:</Text>
+              <TextInput
+                style={styles.inputField}
+                placeholder="password..."
+                placeholderTextColor={colors.textPlaceholder}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+            </View>
           </View>
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Password:</Text>
-            <TextInput
-              style={styles.inputField}
-              placeholder="password..."
-              placeholderTextColor={colors.textPlaceholder}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-          </View>
-        </View>
 
-        <TouchableOpacity style={styles.button} onPress={signIn}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button2}
-          onPress={() => router.push("/(login)/register")}
-        >
-          <Text style={styles.buttonText2}>Create Account</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={signIn}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button2}
+            onPress={() => router.push("/(login)/register")}
+          >
+            <Text style={styles.buttonText2}>Create Account</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.link} onPress={resetPassword}>
-          <Text style={styles.linkText}>Reset Password</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
+          <TouchableOpacity style={styles.link} onPress={resetPassword}>
+            <Text style={styles.linkText}>Reset Password</Text>
+          </TouchableOpacity>
+        </SafeAreaView> 
+      </TouchableWithoutFeedback>
     );
   }
 };

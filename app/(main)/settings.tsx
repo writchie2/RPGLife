@@ -29,6 +29,7 @@ import {
   updatePassword,
   verifyPasswordResetCode,
   EmailAuthCredential,
+  onAuthStateChanged,
 } from "@firebase/auth";
 
 import { useEffect } from "react";
@@ -48,6 +49,16 @@ import EditPasswordModal from "@/components/EditPasswordModal";
 export default function Settings() {
   const colors = useTheme(); // used for themes, replaces colors import
 
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.replace("/(login)");
+      }
+    });
+  
+    return () => unsubscribe(); // Clean up on unmount
+  }, []);
   const styles = StyleSheet.create({
     container: {
       flex: 1,

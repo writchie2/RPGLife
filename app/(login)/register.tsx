@@ -21,6 +21,8 @@ import {
   View,
   Image,
   Modal,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { auth } from "../../FirebaseConfig";
 import { validatePassword, sendEmailVerification } from "firebase/auth";
@@ -162,83 +164,85 @@ export default function RegisterScreen() {
     return null; // or add a loading indicator in future!
   } else {
     return (
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.title}>Create Account</Text>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <SafeAreaView style={styles.container}>
+          <Text style={styles.title}>Create Account</Text>
 
-        <Image
-          style={styles.logo}
-          source={require("../../assets/images/RPGiconLine.webp")}
-        />
+          <Image
+            style={styles.logo}
+            source={require("../../assets/images/RPGiconLine.webp")}
+          />
 
-        <View style={styles.form}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Username:</Text>
-            <TextInput
-              style={styles.inputField}
-              placeholder="username..."
-              placeholderTextColor={colors.textPlaceholder}
-              autoCapitalize="none"
-              autoCorrect={false}
-              value={userName}
-              onChangeText={setUserName}
-            />
-          </View>
-
-          <View style={styles.inputRow}>
-            <View style={styles.inputGroupRowLeft}>
-              <Text style={styles.inputLabel}>Email:</Text>
+          <View style={styles.form}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Username:</Text>
               <TextInput
                 style={styles.inputField}
-                placeholder="email..."
+                placeholder="username..."
                 placeholderTextColor={colors.textPlaceholder}
                 autoCapitalize="none"
-                value={email}
-                onChangeText={setEmail}
+                autoCorrect={false}
+                value={userName}
+                onChangeText={setUserName}
               />
             </View>
 
-            <View style={styles.inputGroupRowRight}>
-              <Text style={styles.inputLabel}>Birthday:</Text>
-              <DatePickerComponent
-                style={styles.inputDate}
-                label="- select -"
-                dateSelected={dateSelected}
-                onDateChange={(date: Date) => {
-                  setDate(date);
-                  setDateSelected(true);
-                }}
+            <View style={styles.inputRow}>
+              <View style={styles.inputGroupRowLeft}>
+                <Text style={styles.inputLabel}>Email:</Text>
+                <TextInput
+                  style={styles.inputField}
+                  placeholder="email..."
+                  placeholderTextColor={colors.textPlaceholder}
+                  autoCapitalize="none"
+                  value={email}
+                  onChangeText={setEmail}
+                />
+              </View>
+
+              <View style={styles.inputGroupRowRight}>
+                <Text style={styles.inputLabel}>Birthday:</Text>
+                <DatePickerComponent
+                  style={styles.inputDate}
+                  label="- select -"
+                  dateSelected={dateSelected}
+                  onDateChange={(date: Date) => {
+                    setDate(date);
+                    setDateSelected(true);
+                  }}
+                />
+              </View>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Password:</Text>
+              <TextInput
+                style={styles.inputField}
+                placeholder="password..."
+                placeholderTextColor={colors.textPlaceholder}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Confirm Password:</Text>
+              <TextInput
+                style={styles.inputField}
+                placeholder="confirm password..."
+                placeholderTextColor={colors.textPlaceholder}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
               />
             </View>
           </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Password:</Text>
-            <TextInput
-              style={styles.inputField}
-              placeholder="password..."
-              placeholderTextColor={colors.textPlaceholder}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Confirm Password:</Text>
-            <TextInput
-              style={styles.inputField}
-              placeholder="confirm password..."
-              placeholderTextColor={colors.textPlaceholder}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry
-            />
-          </View>
-        </View>
-        <TouchableOpacity style={styles.button} onPress={signUp}>
-          <Text style={styles.buttonText}>Create</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
+          <TouchableOpacity style={styles.button} onPress={signUp}>
+            <Text style={styles.buttonText}>Create</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
     );
   }
 }
