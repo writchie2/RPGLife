@@ -8,26 +8,43 @@ The RPG LIFE app helps a user (anyone in the community) with organization and mo
 
 Access Instructions
 
-Go to https://nodejs.org/ and download the LTS version 
+Go to https://nodejs.org/ and download the LTS version
+
 Go to https://code.visualstudio.com/download and download for your platform
+
 Once Node.js is installed, run the following commands in Command Prompt/device terminal:
+
 node -v
+
 npm -v
+
 Once those commands have completed, run this command in Command Prompt:
+
 npm install --global yarn
+
 Once those commands have completed, run this command in Command Prompt:
+
 npm install --global expo-cli
 
+
 In VSCode, select Clone Git Repository and use this link in the URL section:
-https://github.com/writchie2/RPGLife.git 
+
+https://github.com/writchie2/RPGLife.git
+
 Optionally, go to https://github.com/writchie2/RPGLife to download the repository as a zip file. Unzip the file into a folder. Open VSCode and select file -> open folder. Choose folder “RPGLife” that was unzipped. 
 
-Once open, in VSCode select Terminal -> New Terminal. 
+Once open, in VSCode select Terminal -> New Terminal.
+
 In the terminal that appears at the bottom, run the command:
+
 yarn
-While that is installing dependencies, go on a smartphone and install the app called “Expo Go”. You will need to create an account for it to work. 
-Back on your computer, once the yarn command has finished, run the command: 
+
+While that is installing dependencies, go on a smartphone and install the app called “Expo Go”. You will need to create an account for it to work.
+
+Back on your computer, once the yarn command has finished, run the command:
+
 npx expo start
+
 Once that command has completed, a QR code should appear in the terminal. Once you have created an account and logged in to Expo Go, go to your camera app and scan the QR code. The link will open Expo Go and begin running our application on your phone
 
 Required Test Scenarios
