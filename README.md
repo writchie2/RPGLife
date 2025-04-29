@@ -1,9 +1,13 @@
 Team info
 
 Group name: Group 7
+
 Groupmate names: Connor Brhely, Dillan Smith, Henry Ritchie, Ishika Patel, Magan Greenfield
+
 Preferred communication: email writchie@uwm.edu
+
 Overview
+
 The RPG LIFE app helps a user (anyone in the community) with organization and motivation toward task completion, self-improvement, and skill learning through RPG gaming elements.  It gives a user a way to organize quests, skills, and achievements that they earn while they progress their character’s level.  The app also provides a user motivation via a rewards system.  A user earns XP by completing quests and when they level up, a reward is given.
 
 Access Instructions
