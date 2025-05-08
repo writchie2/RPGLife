@@ -4,7 +4,7 @@ Group name: Group 7
 
 Groupmate names: Connor Brhely, Dillan Smith, Henry Ritchie, Ishika Patel, Magan Greenfield
 
-Preferred communication: email writchie@uwm.edu
+Preferred communication: email 
 
 Overview
 
